@@ -2,11 +2,13 @@ Polymer.dart
 ============
 
 ----
-# NOTE: This copy of polymer.dart is not currently in active use. Polymer
-sources are still being developed in the main Dart repo under
+# NOTE: This copy of polymer.dart is not currently in active use.
+
+Polymer sources are still being developed in the main Dart repo under
 `branches/bleeding_edge/dart/pkg/polymer/`. We are in the process of moving the
 code here, but you may find the sources here to be stale. Pull requests will not
 be merged here until the migration is complete. 
+
 ----
 
 Polymer.dart is a set of comprehensive UI and utility components
