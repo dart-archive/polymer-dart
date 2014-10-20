@@ -19,7 +19,12 @@ build/test/build/*: Skip     # tests that don't need to be ran after pub-build
 e2e_test/*: Skip
 build/e2e_test/*: Skip
 
+build/test/bind_mdv_test: Timeout # need to investigate
 test/build/script_compactor_test: Pass, Slow
+
+[ $compiler == dart2js ]
+test/*: Skip  # raw tests only meant to be run in dartium. Other browsers run
+              # the output of pub-build
 
 [ $compiler == none && ($runtime == dartium || $runtime == ContentShellOnAndroid) ]
 test/attr_deserialize_test: Pass, RuntimeError # Issue 18931
