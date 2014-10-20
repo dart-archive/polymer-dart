@@ -147,7 +147,7 @@ e2e_test/canonicalization: Skip
 e2e_test/experimental_boot: Skip
 
 [ $compiler == dart2js && $browser ]
-example/component: Fail # Issue 13198
+example/component: Skip # Issue 13198
 e2e_test/canonicalization/test/dev1_test: Fail, OK # tests development only behavior
 e2e_test/canonicalization/test/dev2_test: Fail, OK # tests development only behavior
 e2e_test/canonicalization/test/dev3_test: Fail, OK # tests development only behavior
