@@ -79,7 +79,7 @@ transformers:
 #       - test/template_distribute_dynamic_test.html
 #       - test/two_way_bind_test.html
 #       - test/unbind_test.html
-# ---prehook: end uncomment ---
+# ---prehook: end uncomment---
 
 environment:
   sdk: '>=1.4.0 <2.0.0'
