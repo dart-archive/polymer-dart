@@ -28,7 +28,7 @@ main() {
   }
   var newContents = new StringBuffer()
       ..write(contents.substring(0, begin))
-      ..write(contents.substring(begin, end).replaceAll('\n#', '\n'))
+      ..write(contents.substring(begin, end).replaceAll('\n# ', '\n'))
       ..write(contents.substring(end));
   pubspec.writeAsStringSync(newContents.toString());
   print('updated pubspec successfully');
