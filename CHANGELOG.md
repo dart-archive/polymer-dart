@@ -1,3 +1,58 @@
+#### 0.15.3
+
+  * Narrow the constraint on observe to ensure that new features are reflected
+    in polymer's version.
+
+#### 0.15.2
+  * Upgraded to polymer js version
+    [0.5.1](https://github.com/Polymer/polymer/releases/tag/0.5.1).
+    **Dart Note**: Since dirty checking is only a development feature for
+    Polymer Dart, we did not include the functionality to stop dirty checks in
+    inactive windows.
+  * `polymer.js` is now the unminified version, and `polymer.min.js` is the
+    minified version.
+  * Fixed bug where polymer js was creating instances of extended elements in
+    order to check if they had been registered. All dart custom elements now get
+    registered with polymer js using the HTMLElement prototype.
+
+#### 0.15.1+5
+  * Increase code_transformers lower bound and use shared transformers from it.
+
+#### 0.15.1+4
+  * Fix double-registration bug when using exports
+    [21439](http://dartbug.com/21439).
+
+#### 0.15.1+3
+  * Make sure that `dart_support.js` is always appended after `platform.js`,
+    [21435](http://dartbug.com/21435).
+
+#### 0.15.1+2
+  * Handle and warn about cases where a script file is included twice from the
+    same entrypoint [21332](http://dartbug.com/21332).
+
+#### 0.15.1+1
+  * Fix typo in error message polymer#42
+
+#### 0.15.1
+  * Upgraded to polymer [0.4.2][]
+  * No need to include dart_support.js in your entrypoints anymore.
+
+#### 0.15.0+1
+  * Widen web_components version constraint.
+
+#### 0.15.0
+  * Upgraded to polymer 0.4.1
+  * Added Polymer.forceReady method. This forces a ready state regardless of
+    whether or not there are still polymer-element declarations waiting for
+    their class definitions to be loaded.
+  * Added Polymer.waitingFor method. This returns a list of all polymer-element
+    declarations that are still waiting for their class definitions to be
+    loaded.
+  * Add runtime checking of the waitingFor queue and print to the console if a
+    deadlock situation is suspected to help diagnose the white screen of death.
+  * Added injectBoundHTML instance method. This can be used to dynamically
+    inject html that is bound to your current element into a target element.
+
 #### 0.14.3
   * Warn if the same css file is inlined more than once,
     [19996](http://dartbug.com/19996).
@@ -258,5 +313,6 @@
 #### 0.9.2+2
   * fix enteredView in dart2js, by using custom_element >= 0.9.1+1
 
+[0.4.2]: https://github.com/Polymer/polymer-dev/commit/8c339cf8614eb65145ec1ccbdba7ecbadf65b343
 [6ad2d61]:https://github.com/Polymer/polymer-dev/commit/6a3e1b0e2a0bbe546f6896b3f4f064950d7aee8f
 [3b690ad]:https://github.com/Polymer/polymer-dev/commit/3b690ad0d995a7ea339ed601075de2f84d92bafd

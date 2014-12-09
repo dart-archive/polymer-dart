@@ -256,8 +256,8 @@ class CommandLineOptions {
 ///   * `--deploy`: force deploy.
 ///   * `--no-js`: deploy replaces *.dart scripts with *.dart.js. You can turn
 ///     this feature off with --no-js, which leaves "packages/browser/dart.js".
-///   * `--csp`: replaces *.dart with *.dart.precompiled.js to comply with
-///     Content Security Policy restrictions.
+///   * `--csp`: extracts inlined JavaScript code to comply with Content
+///     Security Policy restrictions.
 ///   * `--help`: print documentation for each option and exit.
 ///
 /// Currently not all the flags are used by [lint] or [deploy] above, but they
@@ -293,11 +293,11 @@ CommandLineOptions parseOptions([List<String> args]) {
         'leaves "packages/browser/dart.js" to do the replacement at runtime.',
         defaultsTo: true)
     ..addFlag('csp', help:
-        'replaces *.dart with *.dart.precompiled.js to comply with \n'
+        'extracts inlined JavaScript code to comply with \n'
         'Content Security Policy restrictions.')
     ..addFlag('debug', help:
         'run in debug mode. For example, use the debug polyfill \n'
-        'web_components/platform.concat.js instead of the minified one.\n',
+        'web_components/webcomponents.js instead of the minified one.\n',
         defaultsTo: false)
     ..addFlag('help', abbr: 'h',
         negatable: false, help: 'Displays this help and exit.');
@@ -346,7 +346,7 @@ List<String> _parseEntryPointsFromPubspec() {
     var polymer = t['polymer'];
     if (polymer == null || polymer is! Map) return;
 
-    var parsedEntryPoints = readEntrypoints(polymer['entry_points']);
+    var parsedEntryPoints = readFileList(polymer['entry_points']);
     if (parsedEntryPoints == null) return;
 
     entryPoints.addAll(parsedEntryPoints);

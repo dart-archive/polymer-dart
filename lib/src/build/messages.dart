@@ -551,10 +551,80 @@ To do this, use the following pattern to update your pubspec.yaml:
 
     transformers:
     - polymer:
-      inline_stylesheets:
-        web/my_file.css: false
+        inline_stylesheets:
+          web/my_file.css: false
 
 If you would like to hide this warning and keep it inlined, do the same thing
 but assign the value to true.
-'''
-);
+''');
+
+const DART_SUPPORT_NO_LONGER_REQUIRED = const MessageTemplate(
+    const MessageId('polymer', 43),
+    'No need to include "dart_support.js" by hand anymore.',
+    '"dart_support.js" injected automatically',
+    '''
+The script `packages/web_components/dart_support.js` is still used, but you no
+longer need to put it in your application's entrypoint.
+
+In the past this file served two purposes:
+
+  * to make dart2js work well with the web_components polyfills, and
+  * to support registering Dart APIs for JavaScript custom elements.
+
+Now, the code from `dart_support.js` is split in two halves. The half for
+dart2js is now injected by the polymer transformers automatically during `pub
+build`. The `web_components` package provides an HTML file containing the other
+half.  Developers of packages that wrap JavaScript custom elements (like
+`core_elements` and `paper_elements`) will import that file directly, so
+application developers don't have to worry about it anymore.
+''');
+
+const SCRIPT_INCLUDED_MORE_THAN_ONCE = const MessageTemplate(
+    const MessageId('polymer', 44),
+    'The `%-url-%` script was included more than once.',
+    'Dart script file included more than once.',
+    '''
+Duplicate dart scripts often happen if you have multiple html imports that
+include the same script. The simplest workaround for this is to move your dart
+script to its own html file, and import that instead of the script (html imports
+are automatically deduped).
+
+For example:
+
+    <script type="application/dart" src="foo.dart"></script>
+
+Should turn into:
+
+    <link rel="import" href="foo.html">
+
+And `foo.html` should look like:
+
+    <script type="application/dart" src="foo.dart"></script>
+''');
+
+const WEB_COMPONENTS_NO_LONGER_REQUIRED = const MessageTemplate(
+    const MessageId('polymer', 45),
+    'No need to include "webcomponents.js" by hand anymore.',
+    '"webcomponents.js" injected automatically',
+    '''
+The script `packages/web_components/webcomponents.js` is still used, but you no
+longer need to put it in your application's entrypoint.
+
+The polyfills provided by this file are no longer required in chrome and will
+automatically be added during `pub build` and `pub serve`.
+''');
+
+const PLATFORM_JS_RENAMED = const MessageTemplate(
+    const MessageId('polymer', 46),
+    '"platform.js" has been renamed to "webcomponents.js".',
+    '"platform.js" renamed to "webcomponents.js".',
+    '''
+The script `packages/web_components/platform.js` has been renamed to
+`packages/web_components/webcomponents.js`. This is automatically fixed in
+`pub serve` and `pub build` but we may remove this functionality in the next
+breaking version of Polymer.
+
+In addition, it is no longer required that you include this file directly, as
+`pub build` and `pub serve` will inject it for you, and its not required when
+running in dartium with a local server.
+''');

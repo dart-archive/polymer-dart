@@ -8,8 +8,6 @@
 
 <head>
   <title>template attribute test</title>
-  <script src="packages/web_components/platform.js"></script>
-  <script src="packages/web_components/dart_support.js"></script>
   <link rel="import" href="packages/polymer/polymer.html">
   <script src="/root_dart/tools/testing/dart/test_controller.js"></script>
   <link rel="import" href="template_attr_template_test_import.html">
@@ -20,11 +18,9 @@
   <template>
     <table>
       <thead>
-        <tr>
-          <th>one</th>
-          <th>two</th>
-          <th>three</th>
-        </tr>
+      <th>one</th>
+      <th>two</th>
+      <th>three</th>
       </thead>
       <tbody id="tbody">
       <tr template repeat="{{ arr in arrs }}">

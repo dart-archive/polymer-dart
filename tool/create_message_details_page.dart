@@ -81,6 +81,7 @@ _getMessagesFrom(Symbol libName, Map seen, List templates) {
 _generateMessage(MessageTemplate template, bool forSite, StringBuffer sb) {
   var details = template.details == null
       ? 'No details available' : template.details;
+  if (forSite) details = '{% raw %}$details{% endraw %}';
   var id = template.id;
   var hashTag = '${id.package}_${id.id}';
   var title = '### ${template.description} [#${id.id}](#$hashTag)';

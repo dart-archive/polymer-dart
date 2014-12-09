@@ -26,7 +26,8 @@ import 'package:args/args.dart';
 import 'package:code_transformers/tests.dart' show testingDartSdkDirectory;
 import 'package:path/path.dart' as path;
 
-import 'src/build/common.dart' show TransformOptions, phasesForPolymer;
+import 'src/build/common.dart' show TransformOptions, LintOptions,
+    phasesForPolymer;
 import 'src/build/runner.dart';
 import 'transformer.dart';
 
@@ -93,7 +94,7 @@ BarbackOptions _createTestOptions(String testFile, String outDir,
       directlyIncludeJS: directlyIncludeJS,
       contentSecurityPolicy: contentSecurityPolicy,
       releaseMode: releaseMode,
-      lint: false), sdkDir: testingDartSdkDirectory);
+      lint: new LintOptions.disabled()), sdkDir: testingDartSdkDirectory);
   var dirs = {};
   // Note: we include all packages in pkg/ to keep things simple. Ideally this
   // should be restricted to the transitive dependencies of this package.
@@ -159,10 +160,10 @@ ArgResults _parseArgs(arguments) {
           defaultsTo: true)
       ..addFlag('debug', help:
           'run in debug mode. For example, use the debug polyfill \n'
-          'web_components/platform.concat.js instead of the minified one.\n',
+          'web_components/webcomponents.js instead of the minified one.\n',
           defaultsTo: false)
       ..addFlag('csp', help:
-          'replaces *.dart with *.dart.precompiled.js to comply with \n'
+          'extracts inlined JavaScript code to comply with \n'
           'Content Security Policy restrictions.');
   try {
     var results = parser.parse(arguments);
