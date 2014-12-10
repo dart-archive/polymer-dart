@@ -46,7 +46,7 @@ test/js_custom_event_test: Pass, RuntimeError # Issue 18931
 test/js_interop_test: Pass, RuntimeError # Issue 18931
 test/nested_binding_test: Pass, RuntimeError # Issue 18931
 test/noscript_test: Pass, RuntimeError # Issue 18931
-test/platform_less_test: Pass, RuntimeError # Issue 18931
+test/web_components_less_test: Pass, RuntimeError # Issue 18931
 test/prop_attr_bind_reflection_test: Pass, RuntimeError # Issue 18931
 test/prop_attr_reflection_test: Pass, RuntimeError # Issue 18931
 test/property_change_test: Pass, Timeout # Issue 18931
@@ -98,6 +98,7 @@ test/event_path_declarative_test: Skip #uses dart:html
 test/event_path_test: Skip #uses dart:html
 test/events_test: Skip #uses dart:html
 test/force_ready_test: Skip # uses dart:html
+test/import_test: Skip # uses dart:html
 test/inject_bound_html_test: Skip # uses dart:html
 test/instance_attrs_test: Skip #uses dart:html
 test/js_custom_event_test: Skip #uses dart:html
@@ -106,7 +107,7 @@ test/layout_test: Skip #uses dart:html
 test/mirror_loader_test: Skip # uses dart:html
 test/nested_binding_test: Skip # uses dart:html
 test/noscript_test: Skip #uses dart:html
-test/platform_less_test: Skip #uses dart:html
+test/web_components_less_test: Skip #uses dart:html
 test/prop_attr_bind_reflection_test: Skip #uses dart:html
 test/prop_attr_reflection_test: Skip #uses dart:html
 test/property_change_test: Skip # uses dart:html
