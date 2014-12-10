@@ -1,4 +1,7 @@
-///
+// Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 /// Script to create boilerplate for a Polymer element.
 /// Produces new .html entry point for a polymer app and updates the
 /// pubspec.yaml to reflect it.
@@ -7,6 +10,8 @@
 ///
 ///     pub run polymer:new_entry <html_file>
 ///
+library polymer.bin.new_entry;
+
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as path;
