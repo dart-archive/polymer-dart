@@ -27,10 +27,10 @@ import 'messages.dart';
 class Linter extends Transformer with PolymerTransformer {
   final TransformOptions options;
 
-  /// Only run on .html files.
-  final String allowedExtensions = '.html';
-
   Linter(this.options);
+
+  isPrimary(AssetId id) =>
+      id.extension == '.html' && options.lint.shouldLint(id.path);
 
   Future apply(Transform transform) {
     var seen = new Set<AssetId>();
@@ -307,6 +307,18 @@ class _LinterVisitor extends TreeVisitor {
         _logger.warning(NO_DART_SCRIPT_AND_EXPERIMENTAL, span: node.sourceSpan);
       }
       _dartTagSeen = true;
+    }
+
+    if (src != null && src.endsWith('web_components/dart_support.js')) {
+      _logger.warning(DART_SUPPORT_NO_LONGER_REQUIRED, span: node.sourceSpan);
+    }
+
+    if (src != null && src.contains('web_components/webcomponents.')) {
+      _logger.warning(WEB_COMPONENTS_NO_LONGER_REQUIRED, span: node.sourceSpan);
+    }
+
+    if (src != null && src.contains('web_components/platform.')) {
+      _logger.warning(PLATFORM_JS_RENAMED, span: node.sourceSpan);
     }
 
     var isEmpty = node.innerHtml.trim() == '';

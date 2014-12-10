@@ -7,8 +7,6 @@
 <html>
 
   <head><title>event path declarative test</title>
-    <script src="packages/web_components/platform.js"></script>
-    <script src="packages/web_components/dart_support.js"></script>
     <link rel="import" href="packages/polymer/polymer.html">
     <script src="/root_dart/tools/testing/dart/test_controller.js"></script>
     <!--
@@ -16,7 +14,7 @@
     https://github.com/Polymer/polymer/blob/7936ff8/test/html/event-path-declarative.html
     -->
   </head>
-  <body unresolved>
+  <body>
     <x-bar><div id="target">Test</div></x-bar>
     <polymer-element name="x-zug" on-test-event="{{testEventHandler}}">
       <template>
