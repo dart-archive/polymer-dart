@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 
 main() {
-  var path = join(dirname(dirname(Platform.script.path)), 'pubspec.yaml');
+  var path = url.join(url.dirname(url.dirname(Platform.script.path)), 'pubspec.yaml');
   print('uncomment_test_section_in_pubspec: processing $path');
   var pubspec = new File(path);
   if (!pubspec.existsSync()) {
