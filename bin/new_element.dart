@@ -1,4 +1,7 @@
-/// 
+// Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 /// Script to create boilerplate for a Polymer element.
 /// Produces .dart and .html files for the element.
 /// 
@@ -6,6 +9,8 @@
 /// 
 ///     pub run polymer:new_element element-name [-o output_dir]
 /// 
+library polymer.bin.new_element;
+
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as path show absolute, dirname, join, split;
