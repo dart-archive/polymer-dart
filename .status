@@ -13,6 +13,8 @@
 
 example/scoped_style/*: Skip # non-test files ending with '_test'
 build/test/build/*: Skip     # tests that don't need to be ran after pub-build
+test/import_test: Skip # Issue 17873
+build/test/import_test: Skip # Issue 17873
 
 # We need a hook in package-bots to invoke pub-build in nested folders before we
 # can run these tests:
