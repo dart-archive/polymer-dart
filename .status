@@ -125,18 +125,18 @@ test/unbind_test: Skip # uses dart:html
 build/test/*: Skip     # tests that don't need to be ran after pub-build
 
 [ $ie ]
-test/noscript_test: RuntimeError, Pass # Issue 13260
-test/template_attr_template_test: RuntimeError # Issue 20897
+build/test/noscript_test: RuntimeError, Pass # Issue 13260
+build/test/template_attr_template_test: RuntimeError # Issue 20897
 
 [ $runtime == ie10 ]
 e2e_test/*: Pass, RuntimeError # Issue 19265
-test/event_handlers_test: Pass, Timeout # Issue 19327
+build/test/event_handlers_test: Pass, Timeout # Issue 19327
 
 [ $runtime == safari ]
-test/js_interop_test: Pass, RuntimeError # Issue 20075
+build/test/js_interop_test: Pass, RuntimeError # Issue 20075
 
 [ $runtime == safari || $ie ]
-test/two_way_bind_test: Pass, RuntimeError # Issue 20075
+build/test/two_way_bind_test: Pass, RuntimeError # Issue 20075
 
 
 [ $compiler == dartanalyzer || $compiler == dart2analyzer ]
@@ -159,7 +159,7 @@ e2e_test/canonicalization/test/dir/dev2_test: Fail, OK # tests development only 
 e2e_test/bad_import1: RuntimeError # Issue 17596
 e2e_test/bad_import2: RuntimeError # Issue 17596
 e2e_test/bad_import3: Fail, OK # tests broken import
-test/mirror_loader_test: Skip # tests development only behavior
+build/test/mirror_loader_test: Skip # tests development only behavior
 
 [ $browser ]
 test/build/all_phases_test: Skip               # vm only test
