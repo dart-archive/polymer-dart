@@ -1,5 +1,5 @@
 name: polymer
-version: 0.15.3+1
+version: 0.15.3+2
 author: Polymer.dart Authors <web-ui-dev@dartlang.org>
 description: >
   Polymer.dart is a new type of library for the web, built on top of Web
@@ -60,13 +60,15 @@ transformers:
 #       - test/event_path_declarative_test.html
 #       - test/event_path_test.html
 #       - test/events_test.html
+#       - test/force_ready_test.html
+#       - test/import_test.html
+#       - test/inject_bound_html_test.html
 #       - test/instance_attrs_test.html
 #       - test/js_custom_event_test.html
 #       - test/js_interop_test.html
 #       - test/layout_test.html
 #       - test/nested_binding_test.html
 #       - test/noscript_test.html
-#       - test/platform_less_test.html
 #       - test/prop_attr_bind_reflection_test.html
 #       - test/prop_attr_reflection_test.html
 #       - test/property_change_test.html
@@ -79,6 +81,7 @@ transformers:
 #       - test/template_distribute_dynamic_test.html
 #       - test/two_way_bind_test.html
 #       - test/unbind_test.html
+#       - test/web_components_less_test.html
 # ---prehook: end uncomment---
 
 environment:
