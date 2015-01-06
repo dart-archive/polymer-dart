@@ -1362,10 +1362,22 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     return job..start(callback, wait);
   }
 
+  // Deprecated: Please use injectBoundHtml.
+  @deprecated
+  DocumentFragment injectBoundHTML(String html, [Element element]) =>
+      injectBoundHtml(html, element: element);
+
   /// Inject HTML which contains markup bound to this element into
   /// a target element (replacing target element content).
-  DocumentFragment injectBoundHTML(String html, [Element element]) {
-    var template = new TemplateElement()..innerHtml = html;
+  DocumentFragment injectBoundHtml(
+      String html,
+      {
+        Element element,
+        NodeValidator validator,
+        NodeTreeSanitizer treeSanitizer
+      }) {
+    var template = new TemplateElement()..setInnerHtml(
+        html, validator: validator, treeSanitizer: treeSanitizer);
     var fragment = this.instanceTemplate(template);
     if (element != null) {
       element.text = '';

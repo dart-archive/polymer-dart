@@ -1,3 +1,9 @@
+#### 0.15.4-dev
+  * Renamed `injectBoundHTML` to `injectBoundHtml` and changed its signature to
+    use named instead of positional optional arguments. Also added support for
+    custom `NodeValidator` and/or `TreeSanitizer`. The old version still exists
+    for now with an `@deprecated` annotation.
+
 #### 0.15.3+1
   * Fix logic for detecting when the compiler is linting within an
     `auto-binding-dart` template element. This removes some false positive
