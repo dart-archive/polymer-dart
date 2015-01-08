@@ -432,15 +432,16 @@ class _ScriptCompactor extends PolymerTransformer {
   /// file.
   void _emitFiles(_) {
     StringBuffer code = new StringBuffer()..writeln(MAIN_HEADER);
+    if (options.injectBuildLogsInOutput) {
+      code.writeln("import 'package:polymer/src/build/log_injector.dart';");
+    }
+
     Map<AssetId, String> prefixes = {};
     int i = 0;
     for (var id in entryLibraries) {
       var url = assetUrlFor(id, bootstrapId, logger);
       if (url == null) continue;
       code.writeln("import '$url' as i$i;");
-      if (options.injectBuildLogsInOutput) {
-        code.writeln("import 'package:polymer/src/build/log_injector.dart';");
-      }
       prefixes[id] = 'i$i';
       i++;
     }
