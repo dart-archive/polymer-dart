@@ -1193,8 +1193,8 @@ void logElementInjectionTests() {
         '</body></html>',
       'a|web/test.html_bootstrap.dart':
         '''$MAIN_HEADER
-          import 'a.dart' as i0;
           import 'package:polymer/src/build/log_injector.dart';
+          import 'a.dart' as i0;
           ${DEFAULT_IMPORTS.join('\n')}
 
           void main() {
