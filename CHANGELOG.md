@@ -1,3 +1,8 @@
+#### 0.15.5
+  * Update to polymer js version
+    [0.5.2](https://github.com/Polymer/polymer/releases/tag/0.5.2). This fixes
+    [11](https://github.com/dart-lang/polymer-dart/issues/11).
+
 #### 0.15.4
   * Fix template if when using template attribute
     [209](https://github.com/Polymer/TemplateBinding/issues/209).
