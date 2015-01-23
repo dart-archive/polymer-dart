@@ -61,7 +61,7 @@ test/template_distribute_dynamic_test: Pass, RuntimeError # Issue 18931
 test/two_way_bind_test: Pass, RuntimeError # Issue 18931
 
 [ $compiler == dart2js && $runtime == ff && $system == windows ]
-test/layout_test: RuntimeError # Issue 8
+build/test/layout_test: RuntimeError # Issue 8
 
 [ $compiler == none && ($runtime == dartium) && $mode == debug ]
 test/instance_attrs_test: Skip # Issue 19496
