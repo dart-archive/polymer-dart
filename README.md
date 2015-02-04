@@ -122,5 +122,5 @@ internals of the code, code reviews, etc.
 [spec]: https://www.dartlang.org/articles/dart-web-components/spec.html
 [features]: https://www.dartlang.org/articles/dart-web-components/summary.html
 [home_page]: https://www.dartlang.org/polymer-dart/
-[polymer_expressions]: http://pub.dartlang.org/packages/polymer_expressions/
+[polymer_expressions]: http://pub.dartlang.org/packages/polymer_expressions
 [polymer]: http://www.polymer-project.org/
