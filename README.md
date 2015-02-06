@@ -114,7 +114,7 @@ internals of the code, code reviews, etc.
 [cs_win]: http://gsdview.appspot.com/dartium-archive/continuous/drt-win.zip
 [dartium_src]: http://code.google.com/p/dart/wiki/BuildingDartium
 [TodoMVC]: http://todomvc.com/
-[issues]: http://dartbug.com/new
+[issues]: https://github.com/dart-lang/polymer-dart/issues/new
 [mailinglist]: https://groups.google.com/a/dartlang.org/forum/?fromgroups#!forum/web-ui
 [devlist]: https://groups.google.com/a/dartlang.org/forum/?fromgroups#!forum/web-ui-dev
 [overview]: http://www.dartlang.org/articles/dart-web-components/
