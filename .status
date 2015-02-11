@@ -131,6 +131,7 @@ build/test/*: Skip     # tests that don't need to be ran after pub-build
 [ $ie ]
 build/test/noscript_test: RuntimeError, Pass # Issue 13260
 build/test/template_attr_template_test: RuntimeError # Issue 20897
+build/test/sort_registration_test: RuntimeError # Issue 18
 
 [ $runtime == ie10 ]
 e2e_test/*: Pass, RuntimeError # Issue 19265
