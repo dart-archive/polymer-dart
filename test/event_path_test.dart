@@ -9,32 +9,28 @@ import 'package:polymer/polymer.dart';
 import 'package:unittest/html_config.dart';
 import 'package:unittest/unittest.dart';
 
+@CustomTag('x-selector')
 class XSelector extends PolymerElement {
   XSelector.created() : super.created();
 }
 
+@CustomTag('x-overlay')
 class XOverlay extends PolymerElement {
   XOverlay.created() : super.created();
 }
 
-class XMenu extends PolymerElement {
+@CustomTag('x-menu')
+class XMenu extends XSelector {
   XMenu.created() : super.created();
 }
 
+@CustomTag('x-menu-button')
 class XMenuButton extends PolymerElement {
   XMenuButton.created() : super.created();
 }
 
 main() => initPolymer().run(() {
   useHtmlConfiguration();
-
-  // TODO(sigmund): use @CustomTag instead of Polymer.regsiter. A bug is making
-  // this code sensitive to the order in which we register elements (e.g. if
-  // x-menu is registered before x-selector). See dartbug.com/17926.
-  Polymer.register('x-selector', XSelector);
-  Polymer.register('x-overlay', XOverlay);
-  Polymer.register('x-menu', XMenu);
-  Polymer.register('x-menu-button', XMenuButton);
 
   setUp(() => Polymer.onReady);
 

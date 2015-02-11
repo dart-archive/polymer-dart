@@ -259,11 +259,33 @@ class _ScriptCompactor extends PolymerTransformer {
         _processFunction(fun, id);
       }
 
-      for (var cls in _visibleClassesOf(lib)) {
-        if (classesSeen.contains(cls)) continue;
+      var classes = _visibleClassesOf(lib);
+      classes.sort((a, b) {
+        // Make registration order deterministic. Order by file, then by
+        // declaration order.
+        var aUri = '${a.enclosingElement.source.uri}';
+        var bUri = '${b.enclosingElement.source.uri}';
+        var partOrder = aUri.compareTo(bUri);
+        if (partOrder != 0) return partOrder;
+        return a.nameOffset - b.nameOffset;
+      });
+
+      // Helper to ensure that within a library we register superclasses before
+      // subclasses.
+      void processClassHelper(cls) {
+        var superClass = cls.supertype.element;
+        if (cls.enclosingElement.enclosingElement ==
+            superClass.enclosingElement.enclosingElement) {
+          // The superclass is declared in the same library.
+          processClassHelper(superClass);
+        }
+
+        if (classesSeen.contains(cls)) return;
         classesSeen.add(cls);
         _processClass(cls, id, recorder);
       }
+
+      classes.forEach(processClassHelper);
     }
   }
 
