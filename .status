@@ -120,6 +120,7 @@ test/property_observe_test: Skip #uses dart:html
 test/publish_attributes_test: Skip #uses dart:html
 test/publish_inherited_properties_test: Skip #uses dart:html
 test/register_test: Skip #uses dart:html
+test/sort_registration_test: Skip #uses dart:html
 test/take_attributes_test: Skip #uses dart:html
 test/template_attr_template_test: Skip #uses dart:html
 test/template_distribute_dynamic_test: Skip #uses dart:html
