@@ -1,3 +1,9 @@
+#### 0.15.5+1
+  * Changes order in which CustomTags are registered to guarantee that the order
+    is deterministic and that within a library superclasses are registered
+    before subclasses. This fixes
+    [17](https://github.com/dart-lang/polymer-dart/issues/17).
+
 #### 0.15.5
   * Update to polymer js version
     [0.5.2](https://github.com/Polymer/polymer/releases/tag/0.5.2). This fixes
