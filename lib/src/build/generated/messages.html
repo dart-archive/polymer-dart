@@ -489,7 +489,8 @@ before it finishes loading. See <a href="http://goo.gl/iN03Pj">http://goo.gl/iN0
 <p>Css files are inlined by default, but if you import the same one in multiple
 places you probably want to change this behavior to prevent duplicate code.</p>
 <p>There are three typical options for dealing with this:</p><ol><li>
-<p><em>Recommended</em>: Use the <code>core-style</code> element from the <code>core_elements</code> package.</p>
+<p><strong>Recommended</strong>: Use the <code>core-style</code> element from the <code>core_elements</code>
+package.</p>
 <p>The easiest way to do this is change your <code>*.css</code> file into a <code>*.html</code> file,
 and wrap the entire thing in a <code>core-style</code> with an id, something like the
 following:</p>
@@ -519,22 +520,22 @@ original html:</p>
   &lt;/template&gt;
 &lt;/polymer-element&gt;
 </code></pre></li><li>
-<p><em>Acceptable</em>: Opt out of the inlining for this file in your pubspec.yaml:</p>
+<p>Opt out of the inlining for this file in your pubspec.yaml:</p>
 <pre><code>transformers:
 - polymer:
     inline_stylesheets:
       web/my_file.css: false
 </code></pre>
-<p><em>Warning</em>: <code>&lt;link rel="stylesheet"&gt;</code> tags are not natively supported in
+<p><strong>Warning</strong>: <code>&lt;link rel="stylesheet"&gt;</code> tags are not natively supported in
 shadow-dom. Polymer will do an xhr request for the stylesheet and inject an
 inline style with its contents in each place this stylesheet occurs.</p></li><li>
-<p><em>Worst</em>: Opt into multiple inlining in your pubspec.yaml:</p>
+<p>Opt into multiple inlining in your pubspec.yaml:</p>
 <pre><code>transformers:
 - polymer:
     inline_stylesheets:
       web/my_file.css: true
 </code></pre>
-<p><em>Warning</em>: You should only ever do this if your stylesheet is very small.
+<p><strong>Warning</strong>: You should only ever do this if your stylesheet is very small.
 Even then stylesheets tend to grow quickly and almost never decrease in size
 so this method is highly discouraged.</p></li></ol>
 </div><hr />
