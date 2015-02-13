@@ -487,11 +487,11 @@ before it finishes loading. See <a href="http://goo.gl/iN03Pj">http://goo.gl/iN0
 
 <div id="polymer_42"><h3>A css file was inlined multiple times. <a href="#polymer_42">#42</a></h3>
 <p>Css files are inlined by default, but if you import the same one in multiple
-places you probably want to override this behavior to prevent duplicate code.</p>
-<p>There are two typical options for dealing with this:</p><ol><li>
-<p>Use the <code>core-style</code> element from the <code>core_elements</code> package.</p>
+places you probably want to change this behavior to prevent duplicate code.</p>
+<p>There are three typical options for dealing with this:</p><ol><li>
+<p><em>Recommended</em>: Use the <code>core-style</code> element from the <code>core_elements</code> package.</p>
 <p>The easiest way to do this is change your <code>*.css</code> file into a <code>*.html</code> file,
-andwrap the entire thing in a <code>core-style</code> with an id, something like the
+and wrap the entire thing in a <code>core-style</code> with an id, something like the
 following:</p>
 <pre><code>&lt;core-style id="my-theme"&gt;
   p {
@@ -500,10 +500,11 @@ following:</p>
 &lt;/core-style&gt;
 </code></pre>
 <p>Now, in the files where you were previously including the
-&lt;link rel="stylesheet"> tag, add an html import to the top of your document
-pointing to the new html file. Once that is done, replace the &lt;link> tag with
-a &lt;core-style> tag which has a <code>ref</code> attribute that is the same as the <code>id</code>
-attribute on the &lt;core-style> you created. So you original html:</p>
+<code>&lt;link rel="stylesheet"&gt;</code> tag, add an html import to the top of your
+document pointing to the new html file. Once that is done, replace the
+<code>&lt;link&gt;</code> tag with a <code>&lt;core-style&gt;</code> tag which has a <code>ref</code> attribute that is
+the same as the <code>id</code> attribute on the <code>&lt;core-style&gt;</code> you created. So your
+original html:</p>
 <pre><code>&lt;polymer-element name="my-element"&gt;
   &lt;template&gt;
     &lt;link rel="stylesheet" href="my_theme.css"&gt;
@@ -518,15 +519,24 @@ attribute on the &lt;core-style> you created. So you original html:</p>
   &lt;/template&gt;
 &lt;/polymer-element&gt;
 </code></pre></li><li>
-<p>The alternative option is to use the following pattern to update your
-pubspec.yaml so this file is not inlined at all:</p>
+<p><em>Acceptable</em>: Opt out of the inlining for this file in your pubspec.yaml:</p>
 <pre><code>transformers:
 - polymer:
     inline_stylesheets:
       web/my_file.css: false
 </code></pre>
-<p>If you would like to hide this warning and keep it inlined, do the same thing
-  but assign the value to true.</p></li></ol>
+<p><em>Warning</em>: <code>&lt;link rel="stylesheet"&gt;</code> tags are not natively supported in
+shadow-dom. Polymer will do an xhr request for the stylesheet and inject an
+inline style with its contents in each place this stylesheet occurs.</p></li><li>
+<p><em>Worst</em>: Opt into multiple inlining in your pubspec.yaml:</p>
+<pre><code>transformers:
+- polymer:
+    inline_stylesheets:
+      web/my_file.css: true
+</code></pre>
+<p><em>Warning</em>: You should only ever do this if your stylesheet is very small.
+Even then stylesheets tend to grow quickly and almost never decrease in size
+so this method is highly discouraged.</p></li></ol>
 </div><hr />
 
 <div id="polymer_43"><h3>"dart_support.js" injected automatically <a href="#polymer_43">#43</a></h3>
