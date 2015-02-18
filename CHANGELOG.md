@@ -1,3 +1,6 @@
+#### 0.15.5+2
+  * Update duplicate css file message.
+
 #### 0.15.5+1
   * Changes order in which CustomTags are registered to guarantee that the order
     is deterministic and that within a library superclasses are registered
