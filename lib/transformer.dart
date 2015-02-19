@@ -83,17 +83,17 @@ _parseLintOption(value) {
 
   // Any other case it is an error:
   print('Invalid value for "lint" in the polymer transformer. '
-        'Expected one of the following: \n'
-        '    lint: true  # or\n'
-        '    lint: false # or\n'
-        '    lint: \n'
-        '      include: \n'
-        '        - file1 \n'
-        '        - file2 # or \n'
-        '    lint: \n'
-        '      exclude: \n'
-        '        - file1 \n'
-        '        - file2 \n');
+      'Expected one of the following: \n'
+      '    lint: true  # or\n'
+      '    lint: false # or\n'
+      '    lint: \n'
+      '      include: \n'
+      '        - file1 \n'
+      '        - file2 # or \n'
+      '    lint: \n'
+      '      exclude: \n'
+      '        - file1 \n'
+      '        - file2 \n');
   return new LintOptions();
 }
 
@@ -129,7 +129,8 @@ Map<String, bool> _readInlineStylesheets(settingValue) {
       if (key == 'default') {
         inlineStylesheets[key] = value;
         return;
-      };
+      }
+
       key = systemToAssetPath(key);
       // Special case package urls, convert to AssetId and use serialized form.
       var packageMatch = _PACKAGE_PATH_REGEX.matchAsPrefix(key);
@@ -155,15 +156,19 @@ Map<String, bool> _readInlineStylesheets(settingValue) {
 /// comes first (other than linter, if [options.linter] is enabled), which
 /// allows the rest of the HTML-processing phases to operate only on HTML that
 /// is actually imported.
-List<List<Transformer>> createDeployPhases(
-    TransformOptions options, {String sdkDir}) {
+List<List<Transformer>> createDeployPhases(TransformOptions options,
+    {String sdkDir}) {
   // TODO(sigmund): this should be done differently. We should lint everything
   // that is reachable and have the option to lint the rest (similar to how
   // dart2js can analyze reachable code or entire libraries).
   var phases = options.lint.enabled ? [[new Linter(options)]] : [];
   phases.addAll([
     [new ImportInliner(options)],
-    [new ObservableTransformer()],
+    [
+      new ObservableTransformer(
+          releaseMode: options.releaseMode,
+          injectBuildLogsInOutput: options.injectBuildLogsInOutput)
+    ],
     [new ScriptCompactor(options, sdkDir: sdkDir)],
     [new PolyfillInjector(options)],
     [new BuildFilter(options)],

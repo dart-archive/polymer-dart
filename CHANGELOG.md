@@ -1,3 +1,7 @@
+#### 0.15.5+3
+  * Pass more state to the observe transformer so it won't output log files in
+    release mode.
+
 #### 0.15.5+2
   * Update duplicate css file message.
 
