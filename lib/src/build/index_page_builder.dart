@@ -57,8 +57,8 @@ class IndexPageBuilder extends AggregateTransformer {
 
   Future _createOutput(
       String directory, List<String> files, AggregateTransform transform) {
-    var indexAsset = new AssetId(
-        transform.package, path.join(directory, 'index.html'));
+    var indexAsset =
+        new AssetId(transform.package, path.join(directory, 'index.html'));
 
     return transform.hasInput(indexAsset).then((exists) {
       // Don't overwrite existing outputs!
@@ -92,13 +92,12 @@ class IndexPageBuilder extends AggregateTransformer {
       // Add all the assets to the list.
       for (var file in files) {
         doc.write('<li><a href="$file">$file</a></li>');
-      };
+      }
 
       doc.write('</ul></body></html>');
 
       // Output the index.html file
-      transform.addOutput(new Asset.fromString(indexAsset , doc.toString()));
+      transform.addOutput(new Asset.fromString(indexAsset, doc.toString()));
     });
   }
-
 }

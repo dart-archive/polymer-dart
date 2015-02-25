@@ -33,8 +33,8 @@ const _ignoredErrors = const [
 Document _parseHtml(String contents, String sourcePath, BuildLogger logger,
     {bool checkDocType: true, bool showWarnings: true}) {
   // TODO(jmesserly): make HTTP encoding configurable
-  var parser = new HtmlParser(contents, encoding: 'utf8',
-      generateSpans: true, sourceUrl: sourcePath);
+  var parser = new HtmlParser(contents,
+      encoding: 'utf8', generateSpans: true, sourceUrl: sourcePath);
   var document = parser.parse();
 
   // Note: errors aren't fatal in HTML (unless strict mode is on).
@@ -96,7 +96,8 @@ class TransformOptions {
       this.contentSecurityPolicy: false, this.directlyIncludeJS: true,
       this.releaseMode: true, this.lint: const LintOptions(),
       this.injectBuildLogsInOutput: false, this.injectWebComponentsJs: true})
-      : entryPoints = entryPoints == null ? null
+      : entryPoints = entryPoints == null
+          ? null
           : entryPoints.map(systemToAssetPath).toList();
 
   /// Whether an asset with [id] is an entry point HTML file.
@@ -130,8 +131,8 @@ class TransformOptions {
   // Whether a stylesheet with [id] has an overriden inlining setting.
   bool stylesheetInliningIsOverridden(AssetId id) {
     return inlineStylesheets != null &&
-        (inlineStylesheets.containsKey(id.toString())
-          || inlineStylesheets.containsKey(id.path));
+        (inlineStylesheets.containsKey(id.toString()) ||
+            inlineStylesheets.containsKey(id.path));
   }
 }
 
@@ -146,9 +147,14 @@ class LintOptions {
   final bool isInclude;
 
   const LintOptions()
-      : enabled = true, patterns = null, isInclude = true;
+      : enabled = true,
+        patterns = null,
+        isInclude = true;
+
   const LintOptions.disabled()
-      : enabled = false, patterns = null, isInclude = true;
+      : enabled = false,
+        patterns = null,
+        isInclude = true;
 
   LintOptions.include(List<String> patterns)
       : enabled = true,
@@ -179,20 +185,20 @@ abstract class PolymerTransformer {
     var id = asset.id;
     return asset.readAsString().then((content) {
       return _parseHtml(content, id.path, logger,
-        checkDocType: options.isHtmlEntryPoint(id));
+          checkDocType: options.isHtmlEntryPoint(id));
     });
   }
 
-  Future<Document> readAsHtml(AssetId id, Transform transform,
-      BuildLogger logger,
+  Future<Document> readAsHtml(
+      AssetId id, Transform transform, BuildLogger logger,
       {bool showWarnings: true}) {
     var primaryId = transform.primaryInput.id;
     bool samePackage = id.package == primaryId.package;
     var url = spanUrlFor(id, transform, logger);
     return transform.readInputAsString(id).then((content) {
       return _parseHtml(content, url, logger,
-        checkDocType: samePackage && options.isHtmlEntryPoint(id),
-        showWarnings: showWarnings);
+          checkDocType: samePackage && options.isHtmlEntryPoint(id),
+          showWarnings: showWarnings);
     });
   }
 
@@ -214,7 +220,8 @@ abstract class PolymerTransformer {
 String spanUrlFor(AssetId id, Transform transform, logger) {
   var primaryId = transform.primaryInput.id;
   bool samePackage = id.package == primaryId.package;
-  return samePackage ? id.path
+  return samePackage
+      ? id.path
       : assetUrlFor(id, primaryId, logger, allowAssetUrl: true);
 }
 
@@ -235,9 +242,10 @@ String assetUrlFor(AssetId id, AssetId sourceId, BuildLogger logger,
   if (id.path.startsWith('asset/')) {
     if (!allowAssetUrl) {
       logger.error(INTERNAL_ERROR_DONT_KNOW_HOW_TO_IMPORT.create({
-            'target': id,
-            'source': sourceId,
-            'extra': ' (asset urls not allowed.)'}));
+        'target': id,
+        'source': sourceId,
+        'extra': ' (asset urls not allowed.)'
+      }));
       return null;
     }
     return 'asset:${id.package}/${id.path.substring(6)}';
@@ -253,7 +261,6 @@ String assetUrlFor(AssetId id, AssetId sourceId, BuildLogger logger,
   return builder.relative(builder.join('/', id.path),
       from: builder.join('/', builder.dirname(sourceId.path)));
 }
-
 
 /// Convert system paths to asset paths (asset paths are posix style).
 String systemToAssetPath(String assetPath) {

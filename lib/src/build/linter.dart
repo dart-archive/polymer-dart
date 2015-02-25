@@ -26,8 +26,9 @@ import 'messages.dart';
 /// creates a new asset containing all the warnings.
 class Linter extends Transformer with PolymerTransformer {
   final TransformOptions options;
+  final bool skipMissingElementWarning;
 
-  Linter(this.options);
+  Linter(this.options, {this.skipMissingElementWarning: false});
 
   isPrimary(AssetId id) =>
       id.extension == '.html' && options.lint.shouldLint(id.path);
@@ -45,9 +46,10 @@ class Linter extends Transformer with PolymerTransformer {
         detailsUri: 'http://goo.gl/5HPeuP');
 
     return readPrimaryAsHtml(transform, logger).then((document) {
-      return _collectElements(document, id, transform, logger, seen)
-          .then((elements) {
-        new _LinterVisitor(id, logger, elements, isEntryPoint).run(document);
+      return _collectElements(document, id, transform, logger, seen).then(
+          (elements) {
+        new _LinterVisitor(id, logger, elements, isEntryPoint,
+            skipMissingElementWarning).run(document);
 
         // Write out the logs collected by our [BuildLogger].
         if (options.injectBuildLogsInOutput && logger is BuildLogger) {
@@ -61,26 +63,23 @@ class Linter extends Transformer with PolymerTransformer {
   /// [document] or any of it's imports, unless they have already been [seen].
   /// Elements are added in the order they appear, transitive imports are added
   /// first.
-  Future<Map<String, _ElementSummary>> _collectElements(
-      Document document, AssetId sourceId, Transform transform,
-      BuildLogger logger, Set<AssetId> seen,
-      [Map<String, _ElementSummary> elements]) {
+  Future<Map<String, _ElementSummary>> _collectElements(Document document,
+      AssetId sourceId, Transform transform, BuildLogger logger,
+      Set<AssetId> seen, [Map<String, _ElementSummary> elements]) {
     if (elements == null) elements = <String, _ElementSummary>{};
     return _getImportedIds(document, sourceId, transform, logger)
         // Note: the import order is relevant, so we visit in that order.
-        .then((ids) => Future.forEach(ids,
-              (id) => _readAndCollectElements(
-                  id, transform, logger, seen, elements)))
+        .then((ids) => Future.forEach(ids, (id) =>
+            _readAndCollectElements(id, transform, logger, seen, elements)))
         .then((_) {
-          if (sourceId.package == 'polymer' &&
-              sourceId.path == 'lib/src/js/polymer/polymer.html' &&
-              elements['polymer-element'] == null) {
-            elements['polymer-element'] =
-                new _ElementSummary('polymer-element', null, null);
-          }
-          return _addElements(document, logger, elements);
-        })
-        .then((_) => elements);
+      if (sourceId.package == 'polymer' &&
+          sourceId.path == 'lib/src/js/polymer/polymer.html' &&
+          elements['polymer-element'] == null) {
+        elements['polymer-element'] =
+            new _ElementSummary('polymer-element', null, null);
+      }
+      return _addElements(document, logger, elements);
+    }).then((_) => elements);
   }
 
   Future _readAndCollectElements(AssetId id, Transform transform,
@@ -92,9 +91,8 @@ class Linter extends Transformer with PolymerTransformer {
         (doc) => _collectElements(doc, id, transform, logger, seen, elements));
   }
 
-  Future<List<AssetId>> _getImportedIds(
-      Document document, AssetId sourceId, Transform transform,
-      BuildLogger logger) {
+  Future<List<AssetId>> _getImportedIds(Document document, AssetId sourceId,
+      Transform transform, BuildLogger logger) {
     var importIds = [];
     for (var tag in document.querySelectorAll('link')) {
       if (tag.attributes['rel'] != 'import') continue;
@@ -105,8 +103,9 @@ class Linter extends Transformer with PolymerTransformer {
       importIds.add(assetExists(id, transform).then((exists) {
         if (exists) return id;
         if (sourceId == transform.primaryInput.id) {
-          logger.warning(IMPORT_NOT_FOUND.create(
-                {'path': id.path, 'package': id.package}), span: span);
+          logger.warning(
+              IMPORT_NOT_FOUND.create({'path': id.path, 'package': id.package}),
+              span: span);
         }
       }));
     }
@@ -126,11 +125,11 @@ class Linter extends Transformer with PolymerTransformer {
         // Report warning only once.
         if (existing.hasConflict) continue;
         existing.hasConflict = true;
-        logger.warning(DUPLICATE_DEFINITION.create(
-              {'name': name, 'second': ''}),
+        logger.warning(
+            DUPLICATE_DEFINITION.create({'name': name, 'second': ''}),
             span: existing.span);
-        logger.warning(DUPLICATE_DEFINITION.create(
-              {'name': name, 'second': ' (second definition).'}),
+        logger.warning(DUPLICATE_DEFINITION
+                .create({'name': name, 'second': ' (second definition).'}),
             span: span);
         continue;
       }
@@ -139,7 +138,6 @@ class Linter extends Transformer with PolymerTransformer {
     }
   }
 }
-
 
 /// Information needed about other polymer-element tags in order to validate
 /// how they are used and extended.
@@ -175,9 +173,11 @@ class _LinterVisitor extends TreeVisitor {
   bool _polymerExperimentalHtmlSeen = false;
   bool _isEntryPoint;
   Map<String, _ElementSummary> _elements;
+  bool _skipMissingElementWarning;
 
   _LinterVisitor(
-      this._sourceId, this._logger, this._elements, this._isEntryPoint) {
+      this._sourceId, this._logger, this._elements, this._isEntryPoint,
+      this._skipMissingElementWarning) {
     // We normalize the map, so each element has a direct reference to any
     // element it extends from.
     for (var tag in _elements.values) {
@@ -189,10 +189,18 @@ class _LinterVisitor extends TreeVisitor {
 
   void visitElement(Element node) {
     switch (node.localName) {
-      case 'link': _validateLinkElement(node); break;
-      case 'element': _validateElementElement(node); break;
-      case 'polymer-element': _validatePolymerElement(node); break;
-      case 'script': _validateScriptElement(node); break;
+      case 'link':
+        _validateLinkElement(node);
+        break;
+      case 'element':
+        _validateElementElement(node);
+        break;
+      case 'polymer-element':
+        _validatePolymerElement(node);
+        break;
+      case 'script':
+        _validateScriptElement(node);
+        break;
       case 'template':
         var isTag = node.attributes['is'];
         var oldInAutoBindingElement = _inAutoBindingElement;
@@ -274,7 +282,8 @@ class _LinterVisitor extends TreeVisitor {
           span: node.sourceSpan);
     }
 
-    if (_elements[extendsTag] == null && isCustomTagName(extendsTag)) {
+    if (!_skipMissingElementWarning && _elements[extendsTag] == null &&
+        isCustomTagName(extendsTag)) {
       _logger.warning(CUSTOM_ELEMENT_NOT_FOUND.create({'tag': extendsTag}),
           span: node.sourceSpan);
     }
@@ -370,34 +379,39 @@ class _LinterVisitor extends TreeVisitor {
       hasIsAttribute = true;
     }
 
-    if (customTagName == null || 
+    if (customTagName == null ||
         INTERNALLY_DEFINED_ELEMENTS.contains(customTagName)) {
       return;
     }
-    
+
     var info = _elements[customTagName];
     if (info == null) {
-      _logger.warning(CUSTOM_ELEMENT_NOT_FOUND.create({'tag': customTagName}),
-          span: node.sourceSpan);
+      if (!_skipMissingElementWarning) {
+        _logger.warning(CUSTOM_ELEMENT_NOT_FOUND.create({'tag': customTagName}),
+            span: node.sourceSpan);
+      }
       return;
     }
 
     var baseTag = info.baseExtendsTag;
     if (baseTag != null && !hasIsAttribute) {
-      _logger.warning(BAD_INSTANTIATION_MISSING_BASE_TAG.create(
-            {'tag': customTagName, 'base': baseTag}), span: node.sourceSpan);
+      _logger.warning(BAD_INSTANTIATION_MISSING_BASE_TAG
+              .create({'tag': customTagName, 'base': baseTag}),
+          span: node.sourceSpan);
       return;
     }
 
     if (hasIsAttribute && baseTag == null) {
-      _logger.warning(BAD_INSTANTIATION_BOGUS_BASE_TAG.create(
-            {'tag': customTagName, 'base': nodeTag}), span: node.sourceSpan);
+      _logger.warning(BAD_INSTANTIATION_BOGUS_BASE_TAG
+              .create({'tag': customTagName, 'base': nodeTag}),
+          span: node.sourceSpan);
       return;
     }
 
     if (hasIsAttribute && baseTag != nodeTag) {
-      _logger.warning(BAD_INSTANTIATION_WRONG_BASE_TAG.create(
-            {'tag': customTagName, 'base': baseTag}), span: node.sourceSpan);
+      _logger.warning(BAD_INSTANTIATION_WRONG_BASE_TAG
+              .create({'tag': customTagName, 'base': baseTag}),
+          span: node.sourceSpan);
     }
 
     // FOUC check, if content is supplied
@@ -421,8 +435,8 @@ class _LinterVisitor extends TreeVisitor {
     if (name.contains('-')) {
       var newName = toCamelCase(name);
       var alternative = '"$newName" or "${newName.toLowerCase()}"';
-      _logger.warning(NO_DASHES_IN_CUSTOM_ATTRIBUTES.create(
-            {'name': name, 'alternative': alternative}), span: span);
+      _logger.warning(NO_DASHES_IN_CUSTOM_ATTRIBUTES
+          .create({'name': name, 'alternative': alternative}), span: span);
       return false;
     }
     return true;
@@ -438,13 +452,14 @@ class _LinterVisitor extends TreeVisitor {
       return;
     }
 
-
     // Valid bindings have {{ }}, don't look like method calls foo(bar), and are
     // non empty.
-    if (!value.startsWith("{{") || !value.endsWith("}}") || value.contains('(')
-        || value.substring(2, value.length - 2).trim() == '') {
-      _logger.warning(INVALID_EVENT_HANDLER_BODY.create(
-            {'value': value, 'name': name}),
+    if (!value.startsWith("{{") ||
+        !value.endsWith("}}") ||
+        value.contains('(') ||
+        value.substring(2, value.length - 2).trim() == '') {
+      _logger.warning(
+          INVALID_EVENT_HANDLER_BODY.create({'value': value, 'name': name}),
           span: node.attributeSpans[name]);
     }
   }
@@ -464,7 +479,11 @@ Message usePolymerHtmlMessageFrom(AssetId id) {
   return USE_POLYMER_HTML.create({'reachOutPrefix': reachOutPrefix});
 }
 
-const List<String> INTERNALLY_DEFINED_ELEMENTS = 
-    const ['auto-binding-dart', 'polymer-element'];
-const List<String> AUTO_BINDING_ELEMENTS =
-    const ['auto-binding-dart', 'auto-binding'];
+const List<String> INTERNALLY_DEFINED_ELEMENTS = const [
+  'auto-binding-dart',
+  'polymer-element'
+];
+const List<String> AUTO_BINDING_ELEMENTS = const [
+  'auto-binding-dart',
+  'auto-binding'
+];

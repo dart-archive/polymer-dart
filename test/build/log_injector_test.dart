@@ -8,13 +8,10 @@ import 'package:unittest/unittest.dart';
 import 'package:unittest/html_config.dart';
 import 'package:polymer/src/build/log_injector.dart';
 
-
 main() {
-
   useHtmlConfiguration();
 
-  setUp(() => new LogInjector().injectLogs(
-      '''{
+  setUp(() => new LogInjector().injectLogs('''{
         "polymer#0":[{
             "level":"Info",
             "message":{"id":"polymer#0","snippet":"foo"}}
@@ -45,8 +42,7 @@ main() {
             {"level":"Error","message":{"id":"polymer#2","snippet":"baz1"}}
         ],
         "foo#44":[{"level":"Error","message":{"id":"foo#44","snippet":"baz2"}}]
-      }'''
-  ));
+      }'''));
 
   test('can inject a functioning log widget', () {
     var logsElement = document.querySelector(".build-logs");

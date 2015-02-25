@@ -6,17 +6,17 @@
 library polymer.transformer;
 
 import 'package:barback/barback.dart';
+import 'package:web_components/transformer.dart' as web_components;
 import 'package:observe/transformer.dart';
-import 'package:path/path.dart' as path;
 
 import 'src/build/build_filter.dart';
 import 'src/build/common.dart';
 import 'src/build/index_page_builder.dart';
-import 'src/build/import_inliner.dart';
+import 'src/build/html_finalizer.dart';
 import 'src/build/linter.dart';
 import 'src/build/build_log_combiner.dart';
 import 'src/build/polyfill_injector.dart';
-import 'src/build/script_compactor.dart';
+import 'src/build/polymer_bootstrap.dart';
 
 /// The Polymer transformer, which internally runs several phases that will:
 ///   * Extract inlined script tags into their separate files
@@ -161,15 +161,24 @@ List<List<Transformer>> createDeployPhases(TransformOptions options,
   // TODO(sigmund): this should be done differently. We should lint everything
   // that is reachable and have the option to lint the rest (similar to how
   // dart2js can analyze reachable code or entire libraries).
-  var phases = options.lint.enabled ? [[new Linter(options)]] : [];
+  var phases = [];
+
   phases.addAll([
-    [new ImportInliner(options)],
-    [
-      new ObservableTransformer(
-          releaseMode: options.releaseMode,
-          injectBuildLogsInOutput: options.injectBuildLogsInOutput)
-    ],
-    [new ScriptCompactor(options, sdkDir: sdkDir)],
+    [new web_components.ScriptCompactorTransformer(options.entryPoints)],
+    [new PolymerBootstrapTransformer(options)],
+  ]);
+
+  // Lint after injecting @HtmlImport imports otherwise we will likely have
+  // incorrect warnings about missing elements.
+  if (options.lint.enabled) phases.add([new Linter(options)]);
+
+  phases.addAll([
+    [new web_components.ImportInlinerTransformer(options.entryPoints)],
+    [new HtmlFinalizer(options)],
+    [new ObservableTransformer(
+        releaseMode: options.releaseMode,
+        injectBuildLogsInOutput: options.injectBuildLogsInOutput)],
+    // TODO(jakemac): Move to web_components.
     [new PolyfillInjector(options)],
     [new BuildFilter(options)],
     [new BuildLogCombiner(options)],

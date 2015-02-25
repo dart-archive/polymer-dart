@@ -151,7 +151,7 @@ Future lint({List<String> entryPoints, CommandLineOptions options,
   if (currentPackage == null) currentPackage = readCurrentPackageFromPubspec();
   if (entryPoints == null) entryPoints = _parseEntryPointsFromPubspec();
   var linterOptions = new TransformOptions(entryPoints: entryPoints);
-  var linter = new Linter(linterOptions);
+  var linter = new Linter(linterOptions, skipMissingElementWarning: true);
 
   return runBarback(new BarbackOptions([[linter]], null,
       currentPackage: currentPackage, packageDirs: packageDirs,

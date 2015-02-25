@@ -2,11 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// Transfomer that combines multiple dart script tags into a single one.
-library polymer.src.build.script_compactor;
+/// Transfomer that combines multiple Dart script tags into a single one.
+library polymer.src.build.polymer_smoke_generator;
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:html5lib/dom.dart' show Document, Element, Text;
 import 'package:html5lib/dom_parsing.dart';
@@ -16,37 +15,40 @@ import 'package:analyzer/src/generated/element.dart' hide Element;
 import 'package:analyzer/src/generated/element.dart' as analyzer show Element;
 import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';
+import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
 import 'package:source_span/source_span.dart';
 import 'package:smoke/codegen/generator.dart';
 import 'package:smoke/codegen/recorder.dart';
 import 'package:code_transformers/resolver.dart';
-import 'package:code_transformers/src/dart_sdk.dart';
 import 'package:template_binding/src/mustache_tokens.dart' show MustacheTokens;
 
 import 'package:polymer_expressions/expression.dart' as pe;
 import 'package:polymer_expressions/parser.dart' as pe;
 import 'package:polymer_expressions/visitor.dart' as pe;
 
+import 'package:web_components/build/import_crawler.dart';
+
 import 'common.dart';
-import 'import_inliner.dart' show ImportInliner; // just for docs.
 import 'messages.dart';
 
-/// Combines Dart script tags into a single script tag, and creates a new Dart
-/// file that calls the main function of each of the original script tags.
-///
-/// This transformer assumes that all script tags point to external files. To
-/// support script tags with inlined code, use this transformer after running
-/// [ImportInliner] on an earlier phase.
-///
-/// Internally, this transformer will convert each script tag into an import
-/// statement to a library, and then uses `initPolymer` (see polymer.dart)  to
-/// process `@initMethod` and `@CustomTag` annotations in those libraries.
-class ScriptCompactor extends Transformer {
+/// Method to generate a bootstrap file for Polymer given a [Transform] and a
+/// [Resolver]. This can be used inside any transformer to share the [Resolver]
+/// with other steps.
+Future<Asset> generatePolymerBootstrap(Transform transform, Resolver resolver,
+    AssetId entryPointId, AssetId bootstrapId, Document document,
+    TransformOptions options, {AssetId resolveFromId}) {
+  return new PolymerSmokeGenerator(
+      transform, resolver, entryPointId, bootstrapId, document, options,
+      resolveFromId: resolveFromId).apply();
+}
+
+class PolymerSmokeGeneratorTransformer extends Transformer
+    with PolymerTransformer {
   final Resolvers resolvers;
   final TransformOptions options;
 
-  ScriptCompactor(this.options, {String sdkDir})
+  PolymerSmokeGeneratorTransformer(this.options, {String sdkDir})
       // TODO(sigmund): consider restoring here a resolver that uses the real
       // SDK once the analyzer is lazy and only an resolves what it needs:
       //: resolvers = new Resolvers(sdkDir != null ? sdkDir : dartSdkDirectory);
@@ -91,47 +93,58 @@ class ScriptCompactor extends Transformer {
             ''',
       });
 
-
-
   /// Only run on entry point .html files.
-  // TODO(nweiz): This should just take an AssetId when barback <0.13.0 support
-  // is dropped.
-  Future<bool> isPrimary(idOrAsset) {
-    var id = idOrAsset is AssetId ? idOrAsset : idOrAsset.id;
-    return new Future.value(options.isHtmlEntryPoint(id));
-  }
+  bool isPrimary(AssetId id) => options.isHtmlEntryPoint(id);
 
-  Future apply(Transform transform) =>
-      new _ScriptCompactor(transform, options, resolvers).apply();
+  Future apply(Transform transform) {
+    var logger = new BuildLogger(transform,
+        convertErrorsToWarnings: !options.releaseMode,
+        detailsUri: 'http://goo.gl/5HPeuP');
+    var primaryId = transform.primaryInput.id;
+    return readPrimaryAsHtml(transform, logger).then((document) {
+      var script = document.querySelector('script[type="application/dart"]');
+      if (script == null) return null;
+      var entryScriptId = uriToAssetId(
+          primaryId, script.attributes['src'], logger, script.sourceSpan);
+      var bootstrapId = primaryId.addExtension('_bootstrap.dart');
+      script.attributes['src'] = path.basename(bootstrapId.path);
+
+      return resolvers.get(transform, [entryScriptId]).then((resolver) {
+        return generatePolymerBootstrap(transform, resolver, entryScriptId,
+            bootstrapId, document, options).then((bootstrapAsset) {
+          transform.addOutput(bootstrapAsset);
+          transform
+              .addOutput(new Asset.fromString(primaryId, document.outerHtml));
+          resolver.release();
+        });
+      });
+    });
+  }
 }
 
-/// Helper class mainly use to flatten the async code.
-class _ScriptCompactor extends PolymerTransformer {
+/// Class which generates the static smoke configuration for polymer.
+// TODO(jakemac): Investigate further turning this into an [InitializerPlugin].
+// The main difficulty is this actually recognizes any class which extends the
+// [PolymerElement] class, not just things annotated with [CustomTag].
+class PolymerSmokeGenerator {
   final TransformOptions options;
   final Transform transform;
   final BuildLogger logger;
   final AssetId docId;
   final AssetId bootstrapId;
 
+  /// Id of the Dart script found in the document (can only be one).
+  AssetId entryScriptId;
+
+  /// Id of the Dart script to start resolution from.
+  AssetId resolveFromId;
+
   /// HTML document parsed from [docId].
   Document document;
-
-  /// List of ids for each Dart entry script tag (the main tag and any tag
-  /// included on each custom element definition).
-  List<AssetId> entryLibraries;
-
-  /// Whether we are using the experimental bootstrap logic.
-  bool experimentalBootstrap;
-
-  /// Initializers that will register custom tags or invoke `initMethod`s.
-  final List<_Initializer> initializers = [];
 
   /// Attributes published on a custom-tag. We make these available via
   /// reflection even if @published was not used.
   final Map<String, List<String>> publishedAttributes = {};
-
-  /// Hook needed to access the analyzer within barback transformers.
-  final Resolvers resolvers;
 
   /// Resolved types used for analyzing the user's sources and generating code.
   _ResolvedTypes types;
@@ -144,84 +157,31 @@ class _ScriptCompactor extends PolymerTransformer {
 
   _SubExpressionVisitor expressionVisitor;
 
-  _ScriptCompactor(Transform transform, options, this.resolvers)
+  PolymerSmokeGenerator(Transform transform, Resolver resolver,
+      this.entryScriptId, this.bootstrapId, this.document, options,
+      {this.resolveFromId})
       : transform = transform,
         options = options,
-        logger = new BuildLogger(
-            transform, convertErrorsToWarnings: !options.releaseMode,
+        logger = new BuildLogger(transform,
+            convertErrorsToWarnings: !options.releaseMode,
             detailsUri: 'http://goo.gl/5HPeuP'),
         docId = transform.primaryInput.id,
-        bootstrapId = transform.primaryInput.id.addExtension('_bootstrap.dart');
-
-  Future apply() =>
-      _loadDocument()
-      .then(_loadEntryLibraries)
-      .then(_processHtml)
-      .then(_emitNewEntrypoint)
-      .then((_) {
-        // Write out the logs collected by our [BuildLogger].
-        if (options.injectBuildLogsInOutput) return logger.writeOutput();
-      });
-
-  /// Loads the primary input as an html document.
-  Future _loadDocument() =>
-      readPrimaryAsHtml(transform, logger).then((doc) { document = doc; });
-
-  /// Populates [entryLibraries] as a list containing the asset ids of each
-  /// library loaded on a script tag. The actual work of computing this is done
-  /// in an earlier phase and emited in the `entrypoint._data` asset.
-  Future _loadEntryLibraries(_) =>
-      transform.readInputAsString(docId.addExtension('._data')).then((data) {
-        var map = JSON.decode(data);
-        experimentalBootstrap = map['experimental_bootstrap'];
-        entryLibraries = map['script_ids']
-              .map((id) => new AssetId.deserialize(id))
-              .toList();
-        return Future.forEach(entryLibraries, logger.addLogFilesFromAsset);
-      });
-
-  /// Removes unnecessary script tags, and identifies the main entry point Dart
-  /// script tag (if any).
-  void _processHtml(_) {
-    for (var tag in document.querySelectorAll('script')) {
-      var src = tag.attributes['src'];
-      if (src == 'packages/polymer/boot.js') {
-        tag.remove();
-        continue;
-      }
-      if (tag.attributes['type'] == 'application/dart') {
-        logger.warning(INTERNAL_ERROR_UNEXPECTED_SCRIPT, span: tag.sourceSpan);
-      }
-    }
+        resolver = resolver {
+    _ResolvedTypes.logger = logger;
+    types = new _ResolvedTypes(resolver);
+    if (resolveFromId == null) resolveFromId = entryScriptId;
   }
 
-  /// Emits the main HTML and Dart bootstrap code for the application. If there
-  /// were not Dart entry point files, then this simply emits the original HTML.
-  Future _emitNewEntrypoint(_) {
-    // If we don't find code, there is nothing to do.
-    if (entryLibraries.isEmpty) return null;
-    return _initResolver()
-        .then(_extractUsesOfMirrors)
-        .then(_emitFiles)
-        .whenComplete(() {
-          if (resolver != null) resolver.release();
-        });
-  }
+  Future<Asset> apply() {
+    return _extractUsesOfMirrors().then((_) {
+      var bootstrapAsset = _buildBootstrap();
+      _modifyDocument();
 
-  /// Load a resolver that computes information for every library in
-  /// [entryLibraries], then use it to initialize the [recorder] (for import
-  /// resolution) and to resolve specific elements (for analyzing the user's
-  /// code).
-  Future _initResolver() {
-    // We include 'polymer.dart' to simplify how we do resolution below. This
-    // way we can assume polymer is there, even if the user didn't include an
-    // import to it. If not, the polymer build will fail with an error when
-    // trying to create _ResolvedTypes below.
-    var libsToLoad = [new AssetId('polymer', 'lib/polymer.dart')]
-        ..addAll(entryLibraries);
-    return resolvers.get(transform, libsToLoad).then((r) {
-      resolver = r;
-      types = new _ResolvedTypes(resolver);
+      // Write out the logs collected by our [BuildLogger].
+      if (options.injectBuildLogsInOutput) {
+        return logger.writeOutput().then((_) => bootstrapAsset);
+      }
+      return bootstrapAsset;
     });
   }
 
@@ -230,70 +190,59 @@ class _ScriptCompactor extends PolymerTransformer {
   /// the mirror-based loader and the uses of mirrors through the `smoke`
   /// package. This includes:
   ///
-  ///   * visiting entry-libraries to extract initializers,
   ///   * visiting polymer-expressions to extract getters and setters,
   ///   * looking for published fields of custom elements, and
   ///   * looking for event handlers and callbacks of change notifications.
   ///
-  void _extractUsesOfMirrors(_) {
+  Future _extractUsesOfMirrors() {
     // Generate getters and setters needed to evaluate polymer expressions, and
     // extract information about published attributes.
     expressionVisitor = new _SubExpressionVisitor(generator, logger);
-    new _HtmlExtractor(logger, generator, publishedAttributes,
-        expressionVisitor).visit(document);
 
-    // Create a recorder that uses analyzer data to feed data to [generator].
-    var recorder = new Recorder(generator,
-        (lib) => resolver.getImportUri(lib, from: bootstrapId).toString());
-
-    // Process all classes and top-level functions to include initializers,
-    // register custom elements, and include special fields and methods in
-    // custom element classes.
-    var functionsSeen = new Set<FunctionElement>();
-    var classesSeen = new Set<ClassElement>();
-    for (var id in entryLibraries) {
-      var lib = resolver.getLibrary(id);
-      for (var fun in _visibleTopLevelMethodsOf(lib)) {
-        if (functionsSeen.contains(fun)) continue;
-        functionsSeen.add(fun);
-        _processFunction(fun, id);
+    return new ImportCrawler(transform, transform.primaryInput.id, logger)
+        .crawlImports()
+        .then((documentData) {
+      for (var data in documentData.values) {
+        new _HtmlExtractor(
+                logger, generator, publishedAttributes, expressionVisitor)
+            .visit(data.document);
       }
 
-      var classes = _visibleClassesOf(lib);
-      classes.sort((a, b) {
-        // Make registration order deterministic. Order by file, then by
-        // declaration order.
-        var aUri = '${a.enclosingElement.source.uri}';
-        var bUri = '${b.enclosingElement.source.uri}';
-        var partOrder = aUri.compareTo(bUri);
-        if (partOrder != 0) return partOrder;
-        return a.nameOffset - b.nameOffset;
-      });
+      // Create a recorder that uses analyzer data to feed data to [generator].
+      var recorder = new Recorder(generator,
+          (lib) => resolver.getImportUri(lib, from: bootstrapId).toString());
 
-      // Helper to ensure that within a library we register superclasses before
-      // subclasses.
-      void processClassHelper(cls) {
-        var superClass = cls.supertype.element;
-        if (cls.enclosingElement.enclosingElement ==
-            superClass.enclosingElement.enclosingElement) {
-          // The superclass is declared in the same library.
-          processClassHelper(superClass);
-        }
+      // Process all classes to include special fields and methods in custom
+      // element classes.
+      _visitLibraries(resolver.getLibrary(resolveFromId), recorder);
+    });
+  }
 
-        if (classesSeen.contains(cls)) return;
-        classesSeen.add(cls);
-        _processClass(cls, id, recorder);
-      }
+  _visitLibraries(LibraryElement library, Recorder recorder,
+      [Set<LibraryElement> librariesSeen, Set<ClassElement> classesSeen]) {
+    if (librariesSeen == null) librariesSeen = new Set<LibraryElement>();
+    librariesSeen.add(library);
 
-      classes.forEach(processClassHelper);
+    // Visit all our dependencies.
+    for (var importedLibrary in library.importedLibraries) {
+      // Don't include anything from the sdk.
+      if (importedLibrary.isInSdk) continue;
+      if (librariesSeen.contains(importedLibrary)) continue;
+      _visitLibraries(importedLibrary, recorder, librariesSeen, classesSeen);
+    }
+
+    // After visiting dependencies, then visit classes in this library.
+    if (classesSeen == null) classesSeen = new Set<ClassElement>();
+    var classes = _visibleClassesOf(library);
+    for (var clazz in classes) {
+      _processClass(clazz, recorder);
     }
   }
 
   /// Process a class ([cls]). If it contains an appropriate [CustomTag]
-  /// annotation, we include an initializer to register this class, and make
-  /// sure to include everything that might be accessed or queried from them
-  /// using the smoke package. In particular, polymer uses smoke for the
-  /// following:
+  /// annotation, we make sure to include everything that might be accessed or
+  /// queried from them using the smoke package. In particular, polymer uses
+  /// smoke for the following:
   ///    * invoke #registerCallback on custom elements classes, if present.
   ///    * query for methods ending in `*Changed`.
   ///    * query for methods with the `@ObserveProperty` annotation.
@@ -301,7 +250,7 @@ class _ScriptCompactor extends PolymerTransformer {
   ///    * read declarations of properties named in the `attributes` attribute.
   ///    * read/write the value of published properties .
   ///    * invoke methods in event handlers.
-  _processClass(ClassElement cls, AssetId id, Recorder recorder) {
+  _processClass(ClassElement cls, Recorder recorder) {
     if (!_hasPolymerMixin(cls)) return;
 
     // Check whether the class has a @CustomTag annotation. Typically we expect
@@ -314,8 +263,7 @@ class _ScriptCompactor extends PolymerTransformer {
 
     if (cls.isPrivate && tagNames.isNotEmpty) {
       var name = tagNames.first;
-      logger.error(PRIVATE_CUSTOM_TAG.create(
-              {'name': name, 'class': cls.name}),
+      logger.error(PRIVATE_CUSTOM_TAG.create({'name': name, 'class': cls.name}),
           span: _spanForNode(cls, cls.node.name));
       return;
     }
@@ -326,17 +274,21 @@ class _ScriptCompactor extends PolymerTransformer {
 
     // Include methods that end with *Changed.
     recorder.runQuery(cls, new QueryOptions(
-          includeFields: false, includeProperties: false,
-          includeInherited: true, includeMethods: true,
-          includeUpTo: types.htmlElementElement,
-          matches: (n) => n.endsWith('Changed') && n != 'attributeChanged'));
+        includeFields: false,
+        includeProperties: false,
+        includeInherited: true,
+        includeMethods: true,
+        includeUpTo: types.htmlElementElement,
+        matches: (n) => n.endsWith('Changed') && n != 'attributeChanged'));
 
     // Include methods marked with @ObserveProperty.
     recorder.runQuery(cls, new QueryOptions(
-          includeFields: false, includeProperties: false,
-          includeInherited: true, includeMethods: true,
-          includeUpTo: types.htmlElementElement,
-          withAnnotations: [types.observePropertyElement]));
+        includeFields: false,
+        includeProperties: false,
+        includeInherited: true,
+        includeMethods: true,
+        includeUpTo: types.htmlElementElement,
+        withAnnotations: [types.observePropertyElement]));
 
     // Include @published and @observable properties.
     // Symbols in @published are used when resolving bindings on published
@@ -345,28 +297,27 @@ class _ScriptCompactor extends PolymerTransformer {
     // TODO(sigmund): consider including only those symbols mentioned in
     // *Changed and @ObserveProperty instead.
     recorder.runQuery(cls, new QueryOptions(
-          includeUpTo: types.htmlElementElement,
-          withAnnotations: [types.publishedElement, types.observableElement,
-          types.computedPropertyElement]));
+        includeUpTo: types.htmlElementElement,
+        withAnnotations: [
+      types.publishedElement,
+      types.observableElement,
+      types.computedPropertyElement
+    ]));
 
     // Include @ComputedProperty and process their expressions
     var computed = [];
     recorder.runQuery(cls, new QueryOptions(
-          includeUpTo: types.htmlElementElement,
-          withAnnotations: [types.computedPropertyElement]),
-          results: computed);
+        includeUpTo: types.htmlElementElement,
+        withAnnotations: [types.computedPropertyElement]), results: computed);
     _processComputedExpressions(computed);
 
     for (var tagName in tagNames) {
-      // Include an initializer that will call Polymer.register
-      initializers.add(new _CustomTagInitializer(id, tagName, cls.displayName));
-
       // Include also properties published via the `attributes` attribute.
       var attrs = publishedAttributes[tagName];
       if (attrs == null) continue;
       for (var attr in attrs) {
-        recorder.lookupMember(cls, attr, recursive: true,
-            includeUpTo: types.htmlElementElement);
+        recorder.lookupMember(cls, attr,
+            recursive: true, includeUpTo: types.htmlElementElement);
       }
     }
   }
@@ -391,8 +342,8 @@ class _ScriptCompactor extends PolymerTransformer {
 
   /// Extract the first argument of an annotation and validate that it's type is
   /// String. For instance, return "bar" from `@Foo("bar")`.
-  String _extractFirstAnnotationArgument(Annotation meta, String name,
-      analyzer.Element context) {
+  String _extractFirstAnnotationArgument(
+      Annotation meta, String name, analyzer.Element context) {
 
     // Read argument from the AST
     var args = meta.arguments.arguments;
@@ -413,27 +364,6 @@ class _ScriptCompactor extends PolymerTransformer {
     return res.value.stringValue;
   }
 
-  /// Adds the top-level [function] as an initalizer if it's marked with
-  /// `@initMethod`.
-  _processFunction(FunctionElement function, AssetId id) {
-    bool initMethodFound = false;
-    for (var meta in function.metadata) {
-      var e = meta.element;
-      if (e is PropertyAccessorElement &&
-          e.variable == types.initMethodElement) {
-        initMethodFound = true;
-        break;
-      }
-    }
-    if (!initMethodFound) return;
-    if (function.isPrivate) {
-      logger.error(PRIVATE_INIT_METHOD.create({'name': function.displayName}),
-          span: _spanForNode(function, function.node.name));
-      return;
-    }
-    initializers.add(new _InitMethodInitializer(id, function.displayName));
-  }
-
   /// Process members that are annotated with `@ComputedProperty` and records
   /// the accessors of their expressions.
   _processComputedExpressions(List<analyzer.Element> computed) {
@@ -441,8 +371,8 @@ class _ScriptCompactor extends PolymerTransformer {
     for (var member in computed) {
       for (var meta in member.node.metadata) {
         if (meta.element != constructor) continue;
-        var expr = _extractFirstAnnotationArgument(
-            meta, 'ComputedProperty', member);
+        var expr =
+            _extractFirstAnnotationArgument(meta, 'ComputedProperty', member);
         if (expr == null) continue;
         expressionVisitor.run(pe.parse(expr), true,
             _spanForNode(member.enclosingElement, meta.arguments.arguments[0]));
@@ -450,23 +380,18 @@ class _ScriptCompactor extends PolymerTransformer {
     }
   }
 
-  /// Writes the final output for the bootstrap Dart file and entrypoint HTML
-  /// file.
-  void _emitFiles(_) {
+  // Builds the bootstrap Dart file asset.
+  Asset _buildBootstrap() {
     StringBuffer code = new StringBuffer()..writeln(MAIN_HEADER);
+
+    // TODO(jakemac): Inject this at some other stage.
+    // https://github.com/dart-lang/polymer-dart/issues/22
     if (options.injectBuildLogsInOutput) {
       code.writeln("import 'package:polymer/src/build/log_injector.dart';");
     }
 
-    Map<AssetId, String> prefixes = {};
-    int i = 0;
-    for (var id in entryLibraries) {
-      var url = assetUrlFor(id, bootstrapId, logger);
-      if (url == null) continue;
-      code.writeln("import '$url' as i$i;");
-      prefixes[id] = 'i$i';
-      i++;
-    }
+    var entryScriptUrl = assetUrlFor(entryScriptId, bootstrapId, logger);
+    code.writeln("import '$entryScriptUrl' as i0;");
 
     // Include smoke initialization.
     generator.writeImports(code);
@@ -476,51 +401,30 @@ class _ScriptCompactor extends PolymerTransformer {
     generator.writeStaticConfiguration(code);
     code.writeln(');');
 
+    // TODO(jakemac): Inject this at some other stage.
+    // https://github.com/dart-lang/polymer-dart/issues/22
     if (options.injectBuildLogsInOutput) {
       var buildUrl = "${path.basename(docId.path)}$LOG_EXTENSION";
       code.writeln("  new LogInjector().injectLogsFromUrl('$buildUrl');");
     }
 
-    if (experimentalBootstrap) {
-      code.write('  startPolymer([');
-    } else {
-      code.write('  configureForDeployment([');
-    }
-
-    // Include initializers to switch from mirrors_loader to static_loader.
-    if (!initializers.isEmpty) {
-      code.writeln();
-      for (var init in initializers) {
-        var initCode = init.asCode(prefixes[init.assetId]);
-        code.write("      $initCode,\n");
-      }
-      code.writeln('    ]);');
-    } else {
-      if (experimentalBootstrap) logger.warning(NO_INITIALIZATION);
-      code.writeln(']);');
-    }
-    if (!experimentalBootstrap) {
-      code.writeln('  i${entryLibraries.length - 1}.main();');
-    }
+    code.writeln('  configureForDeployment();');
+    code.writeln('  i0.main();');
 
     // End of main().
     code.writeln('}');
-    transform.addOutput(new Asset.fromString(bootstrapId, code.toString()));
+    return new Asset.fromString(bootstrapId, code.toString());
+  }
 
-
-    // Emit the bootstrap .dart file
-    var srcUrl = path.url.basename(bootstrapId.path);
-    document.body.nodes.add(parseFragment(
-        '<script type="application/dart" src="$srcUrl"></script>'));
-
-    // Add the styles for the logger widget.
+  // Add the styles for the logger widget.
+  // TODO(jakemac): Inject this at some other stage.
+  // https://github.com/dart-lang/polymer-dart/issues/22
+  void _modifyDocument() {
     if (options.injectBuildLogsInOutput) {
       document.head.append(parseFragment(
           '<link rel="stylesheet" type="text/css"'
           ' href="packages/polymer/src/build/log_injector.css">'));
     }
-
-    transform.addOutput(new Asset.fromString(docId, document.outerHtml));
   }
 
   _spanForNode(analyzer.Element context, AstNode node) {
@@ -529,38 +433,11 @@ class _ScriptCompactor extends PolymerTransformer {
   }
 }
 
-abstract class _Initializer {
-  AssetId get assetId;
-  String get symbolName;
-  String asCode(String prefix);
-}
-
-class _InitMethodInitializer implements _Initializer {
-  final AssetId assetId;
-  final String methodName;
-  String get symbolName => methodName;
-  _InitMethodInitializer(this.assetId, this.methodName);
-
-  String asCode(String prefix) => "$prefix.$methodName";
-}
-
-class _CustomTagInitializer implements _Initializer {
-  final AssetId assetId;
-  final String tagName;
-  final String typeName;
-  String get symbolName => typeName;
-  _CustomTagInitializer(this.assetId, this.tagName, this.typeName);
-
-  String asCode(String prefix) =>
-      "() => Polymer.register('$tagName', $prefix.$typeName)";
-}
-
 const MAIN_HEADER = """
 library app_bootstrap;
 
 import 'package:polymer/polymer.dart';
 """;
-
 
 /// An html visitor that:
 ///   * finds all polymer expressions and records the getters and setters that
@@ -583,7 +460,7 @@ class _HtmlExtractor extends TreeVisitor {
     var lastInPolymerJs = _inPolymerJs;
     if (node.localName == 'polymer-element') {
       // Detect Polymer JS elements, the current logic is any element with only
-      // non-dart script tags.
+      // non-Dart script tags.
       var scripts = node.querySelectorAll('script');
       _inPolymerJs = scripts.isNotEmpty &&
           scripts.every((s) => s.attributes['type'] != 'application/dart');
@@ -643,10 +520,13 @@ class _HtmlExtractor extends TreeVisitor {
       if (name is String) {
         name = name.toLowerCase();
         isEvent = name.startsWith('on-');
-        isTwoWay = !isEvent && bindings.isWhole && (isCustomTag ||
-            tag == 'input' && (name == 'value' || name =='checked') ||
-            tag == 'select' && (name == 'selectedindex' || name == 'value') ||
-            tag == 'textarea' && name == 'value');
+        isTwoWay = !isEvent &&
+            bindings.isWhole &&
+            (isCustomTag ||
+                tag == 'input' && (name == 'value' || name == 'checked') ||
+                tag == 'select' &&
+                    (name == 'selectedindex' || name == 'value') ||
+                tag == 'textarea' && name == 'value');
       }
       for (var exp in bindings.expressions) {
         _addExpression(exp, isEvent, isTwoWay, node.sourceSpan);
@@ -654,9 +534,8 @@ class _HtmlExtractor extends TreeVisitor {
     });
   }
 
-  void _addExpression(String stringExpression, bool inEvent, bool isTwoWay,
-      SourceSpan span) {
-
+  void _addExpression(
+      String stringExpression, bool inEvent, bool isTwoWay, SourceSpan span) {
     if (inEvent) {
       if (stringExpression.startsWith('@')) {
         logger.warning(AT_EXPRESSION_REMOVED, span: span);
@@ -750,8 +629,8 @@ class _Mustaches {
     var tokens = MustacheTokens.parse(text, (s) => () => s);
     if (tokens == null) return null;
     var length = tokens.length;
-    bool isWhole = length == 1 && tokens.getText(length) == '' &&
-        tokens.getText(0) == '';
+    bool isWhole =
+        length == 1 && tokens.getText(length) == '' && tokens.getText(0) == '';
     var expressions = new List(length);
     for (int i = 0; i < length; i++) {
       expressions[i] = tokens.getPrepareBinding(i)();
@@ -786,56 +665,45 @@ class _ResolvedTypes {
   /// Element representing the type of `@ComputedProperty`.
   final ClassElement computedPropertyElement;
 
-  /// Element representing the `@initMethod` annotation.
-  final TopLevelVariableElement initMethodElement;
-
+  /// Logger for reporting errors.
+  static BuildLogger logger;
 
   factory _ResolvedTypes(Resolver resolver) {
+    var coreLib = resolver.getLibraryByUri(Uri.parse('dart:core'));
+    // coreLib should never be null, its ok to throw if this fails.
+    var stringType = _lookupType(coreLib, 'String').type;
+
     // Load class elements that are used in queries for codegen.
-    var polymerLib = resolver.getLibrary(
-        new AssetId('polymer', 'lib/polymer.dart'));
-    if (polymerLib == null) _definitionError('the polymer library');
+    var polymerLib =
+        resolver.getLibrary(new AssetId('polymer', 'lib/polymer.dart'));
+    if (polymerLib == null) {
+      _definitionError('polymer');
+      return new _ResolvedTypes.internal(
+          null, stringType, null, null, null, null, null, null);
+    }
 
     var htmlLib = resolver.getLibraryByUri(Uri.parse('dart:html'));
-    if (htmlLib == null) _definitionError('the "dart:html" library');
+    var observeLib =
+        resolver.getLibrary(new AssetId('observe', 'lib/src/metadata.dart'));
 
-    var coreLib = resolver.getLibraryByUri(Uri.parse('dart:core'));
-    if (coreLib == null) _definitionError('the "dart:core" library');
-
-    var observeLib = resolver.getLibrary(
-        new AssetId('observe', 'lib/src/metadata.dart'));
-    if (observeLib == null) _definitionError('the observe library');
-
-    var initMethodElement = null;
-    for (var unit in polymerLib.parts) {
-      if (unit.uri == 'src/loader.dart') {
-        initMethodElement = unit.topLevelVariables.firstWhere(
-            (t) => t.displayName == 'initMethod');
-        break;
-      }
-    }
     var customTagConstructor =
         _lookupType(polymerLib, 'CustomTag').constructors.first;
     var publishedElement = _lookupType(polymerLib, 'PublishedProperty');
-    var observableElement = _lookupType(observeLib, 'ObservableProperty');
     var observePropertyElement = _lookupType(polymerLib, 'ObserveProperty');
     var computedPropertyElement = _lookupType(polymerLib, 'ComputedProperty');
     var polymerClassElement = _lookupType(polymerLib, 'Polymer');
+    var observableElement = _lookupType(observeLib, 'ObservableProperty');
     var htmlElementElement = _lookupType(htmlLib, 'HtmlElement');
-    var stringType = _lookupType(coreLib, 'String').type;
-    if (initMethodElement == null) _definitionError('@initMethod');
 
     return new _ResolvedTypes.internal(htmlElementElement, stringType,
-      polymerClassElement, customTagConstructor, publishedElement,
-      observableElement, observePropertyElement, computedPropertyElement,
-      initMethodElement);
+        polymerClassElement, customTagConstructor, publishedElement,
+        observableElement, observePropertyElement, computedPropertyElement);
   }
 
   _ResolvedTypes.internal(this.htmlElementElement, this.stringType,
       this.polymerClassElement, this.customTagConstructor,
       this.publishedElement, this.observableElement,
-      this.observePropertyElement, this.computedPropertyElement,
-      this.initMethodElement);
+      this.observePropertyElement, this.computedPropertyElement);
 
   static _lookupType(LibraryElement lib, String typeName) {
     var result = lib.getType(typeName);
@@ -844,12 +712,16 @@ class _ResolvedTypes {
   }
 
   static _definitionError(name) {
-    throw new StateError("Internal error in polymer-builder: couldn't find "
-        "definition of $name.");
+    var message = MISSING_POLYMER_DART;
+    if (logger != null) {
+      logger.warning(message);
+    } else {
+      throw new StateError(message.snippet);
+    }
   }
 }
 
-/// Retrieves all classses that are visible if you were to import [lib]. This
+/// Retrieves all classes that are visible if you were to import [lib]. This
 /// includes exported classes from other libraries.
 List<ClassElement> _visibleClassesOf(LibraryElement lib) {
   var result = [];
@@ -877,8 +749,8 @@ List<FunctionElement> _visibleTopLevelMethodsOf(LibraryElement lib) {
 
 /// Filters [elements] that come from an export, according to its show/hide
 /// combinators. This modifies [elements] in place.
-void _filter(List<analyzer.Element> elements,
-    List<NamespaceCombinator> combinators) {
+void _filter(
+    List<analyzer.Element> elements, List<NamespaceCombinator> combinators) {
   for (var c in combinators) {
     if (c is ShowElementCombinator) {
       var show = c.shownNames.toSet();

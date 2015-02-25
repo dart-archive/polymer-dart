@@ -33,8 +33,7 @@ class LogInjector {
     if (logs.entries.isEmpty) return;
 
     // Group all logs by level.
-    var logsByLevel = {
-    };
+    var logsByLevel = {};
     logs.entries.values.forEach((list) => list.forEach((log) {
       logsByLevel.putIfAbsent(log.level, () => []);
       logsByLevel[log.level].add(log);
@@ -43,10 +42,8 @@ class LogInjector {
 
     // Build the wrapper, menu, and content divs.
 
-    var menuWrapper = new DivElement()
-      ..classes.add('menu');
-    var contentWrapper = new DivElement()
-      ..classes.add('content');
+    var menuWrapper = new DivElement()..classes.add('menu');
+    var contentWrapper = new DivElement()..classes.add('content');
     var wrapperDiv = new DivElement()
       ..classes.add('build-logs')
       ..append(menuWrapper)
@@ -57,13 +54,11 @@ class LogInjector {
       var levelClassName = level.toLowerCase();
 
       // Add the menu item and content item.
-      var menuItem = new Element.html(
-          '<div class="$levelClassName">'
+      var menuItem = new Element.html('<div class="$levelClassName">'
           '$level <span class="num">(${logs.length})</span>'
           '</div>');
       menuWrapper.append(menuItem);
-      var contentItem = new DivElement()
-        ..classes.add(levelClassName);
+      var contentItem = new DivElement()..classes.add(levelClassName);
       contentWrapper.append(contentItem);
 
       // Set up the click handlers.
@@ -105,14 +100,14 @@ class LogInjector {
           var text = new HtmlEscape().convert(span.text);
           logHtml.write(
               '  <span class="location">${span.start.toolString}</span></div>'
-              '  <span class="text">$text</span>''</div>');
+              '  <span class="text">$text</span>' '</div>');
           logHtml.write('</div>');
         }
         logHtml.write('</div>');
 
         var logElement = new Element.html(logHtml.toString(),
             validator: new NodeValidatorBuilder.common()
-              ..allowNavigation(new _OpenUriPolicy()));
+          ..allowNavigation(new _OpenUriPolicy()));
         contentItem.append(logElement);
         var messageElement = logElement.querySelector('.message');
         messageElement.onClick.listen((e) {
@@ -120,12 +115,11 @@ class LogInjector {
             messageElement.classes.toggle('expanded');
           }
         });
-      };
+      }
     });
 
     document.body.append(wrapperDiv);
   }
-
 }
 
 final _urlRegex = new RegExp('http://[^ ]*');

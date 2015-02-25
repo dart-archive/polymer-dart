@@ -253,11 +253,16 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     return import(urls);
   }
 
+  /// Completes when polymer js is ready.
   static final Completer _onReady = new Completer();
+
+  /// Completes when all initialization is done.
+  static final Completer _onInitDone = new Completer();
 
   /// Future indicating that the Polymer library has been loaded and is ready
   /// for use.
-  static Future get onReady => _onReady.future;
+  static Future get onReady =>
+      Future.wait([_onReady.future, _onInitDone.future]);
 
   /// Returns a list of elements that have had polymer-elements created but
   /// are not yet ready to register. The list is an array of element

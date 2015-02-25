@@ -21,13 +21,13 @@ class BuildFilter extends Transformer with PolymerTransformer {
   isPrimary(AssetId id) {
     // nothing is filtered in debug mode
     return options.releaseMode &&
-      // TODO(sigmund): remove this exclusion once we have dev_transformers
-      // (dartbug.com/14187)
-      !id.path.startsWith('lib/') &&
-      // may filter non-entry HTML files and internal artifacts
-      (id.extension == '.html' || id.extension == _DATA_EXTENSION) &&
-      // keep any entry points
-      !options.isHtmlEntryPoint(id);
+        // TODO(sigmund): remove this exclusion once we have dev_transformers
+        // (dartbug.com/14187)
+        !id.path.startsWith('lib/') &&
+        // may filter non-entry HTML files and internal artifacts
+        (id.extension == '.html' || id.extension == _DATA_EXTENSION) &&
+        // keep any entry points
+        !options.isHtmlEntryPoint(id);
   }
 
   apply(Transform transform) {
@@ -37,7 +37,7 @@ class BuildFilter extends Transformer with PolymerTransformer {
     }
     var logger = new BuildLogger(transform,
         convertErrorsToWarnings: !options.releaseMode,
-          detailsUri: 'http://goo.gl/5HPeuP');
+        detailsUri: 'http://goo.gl/5HPeuP');
     return readPrimaryAsHtml(transform, logger).then((document) {
       // Keep .html files that don't use polymer, since the app developer might
       // have non-polymer entrypoints.

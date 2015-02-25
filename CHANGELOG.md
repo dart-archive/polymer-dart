@@ -1,3 +1,16 @@
+#### 0.16.0-dev
+  * Dropped support for the experimental bootstrap.
+  * The `polymer` transformer is now integrated with the `initialize`
+    transformer. This means you can now use `@HtmlImport` from
+    `package:web_components/html_import_annotation.dart`. This allows producers
+    of elements to declare their own html dependencies so consumers don't have
+    to know about html imports at all.
+  * The `startPolymer` method no longer takes a `deployMode` argument. This is
+    meant as an internal-only method and should not affect apps.
+  * The transformer has been heavily refactored and may behave slightly
+    differently. Please file any bugs related to this at
+    https://github.com/dart-lang/polymer-dart/issues/new.
+
 #### 0.15.5+3
   * Pass more state to the observe transformer so it won't output log files in
     release mode.

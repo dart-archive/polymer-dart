@@ -22,7 +22,7 @@ e2e_test/*: Skip
 build/e2e_test/*: Skip
 
 build/test/bind_mdv_test: Timeout # need to investigate
-test/build/script_compactor_test: Pass, Slow
+test/build/polymer_smoke_generator_test: Pass, Slow
 
 [ $compiler == dart2js ]
 test/*: Skip  # raw tests only meant to be run in dartium. Other browsers run
@@ -75,7 +75,7 @@ test/build/all_phases_test: Skip # Slow
 
 [ $runtime == vm && ( $arch == simarm || $arch == simmips ) ]
 test/build/all_phases_test: Skip # Slow
-test/build/script_compactor_test: Skip # Slow
+test/build/polymer_smoke_generator_test: Skip # Slow
 
 [ $compiler == dart2js ]
 test/build/unique_message_test: Skip # Intended only as a vm test.
@@ -109,7 +109,6 @@ test/instance_attrs_test: Skip #uses dart:html
 test/js_custom_event_test: Skip #uses dart:html
 test/js_interop_test: Skip #uses dart:html
 test/layout_test: Skip #uses dart:html
-test/mirror_loader_test: Skip # uses dart:html
 test/nested_binding_test: Skip # uses dart:html
 test/noscript_test: Skip #uses dart:html
 test/web_components_less_test: Skip #uses dart:html
@@ -164,20 +163,18 @@ e2e_test/canonicalization/test/dir/dev2_test: Fail, OK # tests development only 
 e2e_test/bad_import1: RuntimeError # Issue 17596
 e2e_test/bad_import2: RuntimeError # Issue 17596
 e2e_test/bad_import3: Fail, OK # tests broken import
-build/test/mirror_loader_test: Skip # tests development only behavior
 
 [ $browser ]
 test/build/all_phases_test: Skip               # vm only test
-test/build/polyfill_injector_test: Skip        # vm only test
-test/build/static_clean_test: Skip             # vm only test
 test/build/build_log_combiner_test: Skip       # vm only test
-test/build/script_compactor_test: Skip         # vm only test
-test/build/utils_test: Skip                    # vm only test
+test/build/html_finalizer_test: Skip           # vm only test
 test/build/index_page_builder_test: Skip       # vm only test
-test/build/import_inliner_test: Skip           # vm only test
 test/build/linter_test: Skip                   # vm only test
-test/build/remove_sourcemap_comment_test: Skip # vm only test
-test/build/unique_message_test: Skip           # vm only test.
+test/build/polyfill_injector_test: Skip        # vm only test
+test/build/polymer_smoke_generator_test: Skip  # vm only test
+test/build/static_clean_test: Skip             # vm only test
+test/build/unique_message_test: Skip           # vm only test
+test/build/utils_test: Skip                    # vm only test
 
 test/unbind_test: Pass, Fail # Issue 15259
 

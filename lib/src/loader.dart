@@ -5,19 +5,11 @@
 part of polymer;
 
 /// Annotation used to automatically register polymer elements.
-class CustomTag {
+class CustomTag implements Initializer<Type> {
   final String tagName;
   const CustomTag(this.tagName);
-}
 
-/// Metadata used to label static or top-level methods that are called
-/// automatically when loading the library of a custom element.
-const initMethod = const InitMethodAnnotation();
-
-/// Implementation behind [initMethod]. Only exposed for internal implementation
-/// details
-class InitMethodAnnotation {
-  const InitMethodAnnotation();
+  initialize(Type t) => Polymer.register(tagName, t);
 }
 
 /// Initializes a polymer application as follows:
@@ -30,55 +22,42 @@ class InitMethodAnnotation {
 ///   [initMethod]).
 Zone initPolymer() {
   _initializeLogging();
-  if (loader.deployMode) {
-    startPolymer(loader.initializers, loader.deployMode);
+  if (_deployMode) {
+    startPolymer();
     return Zone.current;
   }
-  return dirtyCheckZone()..run(
-      () => startPolymer(loader.initializers, loader.deployMode));
+  return dirtyCheckZone()..run(() => startPolymer());
 }
-
-/// True if we're in deployment mode.
-bool _deployMode = false;
 
 bool _startPolymerCalled = false;
 
-/// Starts polymer by running all [initializers] and hooking the polymer.js
-/// code. **Note**: this function is not meant to be invoked directly by
-/// application developers. It is invoked either by [initPolymer] or, if you are
-/// using the experimental bootstrap API, this would be invoked by an entry
-/// point that is automatically generated somehow. In particular, during
-/// development, the entry point would be generated dynamically in `boot.js`.
-/// Similarly, pub-build would generate the entry point for deployment.
-void startPolymer(List<Function> initializers, [bool deployMode = true]) {
-  if (_startPolymerCalled) throw 'Initialization was already done.';
-  _startPolymerCalled = true;
-  _hookJsPolymer();
-  _deployMode = deployMode;
+/// Starts polymer by hooking the polymer.js code. **Note**: this function is
+/// not meant to be invoked directly by application developers. It is invoked
+/// by [initPolymer].
+Future startPolymer() {
+  // First wait for all html imports to finish, then run the rest of the
+  // initializers.
+  return initialize
+      .run(typeFilter: [HtmlImport])
+      .then((_) {
+    // Polymer js is now loaded, hook it before running @CustomTag annotations.
+    if (_startPolymerCalled) throw 'Initialization was already done.';
+    _startPolymerCalled = true;
+    _hookJsPolymer();
+  }).then((_) => initialize.run()).then((_) {
+    Polymer.registerSync('auto-binding-dart', AutoBindingElement,
+        extendsTag: 'template');
 
-  if (initializers == null) {
-    throw 'Missing initialization of polymer elements. '
-        'Please check that the list of entry points in your pubspec.yaml '
-        'is correct. If you are using pub-serve, you may need to restart it.';
-  }
-
-  Polymer.registerSync('auto-binding-dart', AutoBindingElement,
-      extendsTag: 'template');
-
-  for (var initializer in initializers) {
-    initializer();
-  }
-
-  _watchWaitingFor();
+    _watchWaitingFor();
+    Polymer._onInitDone.complete();
+  });
 }
 
 /// Configures [initPolymer] making it optimized for deployment to the internet.
-/// With this setup the initializer list is supplied instead of searched for
-/// at runtime. Additionally, after this method is called [initPolymer] omits
-/// the [Zone] that automatically invokes [Observable.dirtyCheck].
-void configureForDeployment(List<Function> initializers) {
-  loader.initializers = initializers;
-  loader.deployMode = true;
+/// Additionally, after this method is called [initPolymer] omits the [Zone]
+/// that automatically invokes [Observable.dirtyCheck].
+void configureForDeployment() {
+  _deployMode = true;
 }
 
 /// To ensure Dart can interoperate with polymer-element registered by
@@ -102,8 +81,9 @@ void _hookJsPolymer() {
   // https://code.google.com/p/dart/issues/detail?id=17301
   var zone = Zone.current;
 
-  polymerJs.callMethod('whenPolymerReady',
-      [zone.bindCallback(() => Polymer._onReady.complete())]);
+  polymerJs.callMethod('whenPolymerReady', [
+    zone.bindCallback(() => Polymer._onReady.complete())
+  ]);
 
   JsFunction originalRegister = _polymerElementProto['register'];
   if (originalRegister == null) {
@@ -144,11 +124,18 @@ JsObject _polymerElementProto = () {
 void _initializeLogging() {
   hierarchicalLoggingEnabled = true;
   var webComponents = js.context['WebComponents'];
-  var logFlags = (webComponents == null || webComponents['flags'] == null) ? {}
+  var logFlags = (webComponents == null || webComponents['flags'] == null)
+      ? {}
       : webComponents['flags']['log'];
   if (logFlags == null) logFlags = {};
-  var loggers =
-      [_observeLog, _eventsLog, _unbindLog, _bindLog, _watchLog, _readyLog];
+  var loggers = [
+    _observeLog,
+    _eventsLog,
+    _unbindLog,
+    _bindLog,
+    _watchLog,
+    _readyLog
+  ];
   var polymerLogger = new Logger('polymer');
 
   // If no loggers specified then disable globally and return.
@@ -158,11 +145,14 @@ void _initializeLogging() {
   }
 
   // Disable the loggers that were not specified.
-  loggers.where((logger) => logFlags[logger.name] != true)
-      .forEach((logger) {logger.level = Level.OFF;});
+  loggers.where((logger) => logFlags[logger.name] != true).forEach((logger) {
+    logger.level = Level.OFF;
+  });
 
   // Listen to the polymer logs and print them to the console.
-  polymerLogger.onRecord.listen((rec) {print(rec);});
+  polymerLogger.onRecord.listen((rec) {
+    print(rec);
+  });
 }
 
 /// Watches the waitingFor queue and if it fails to make progress then prints

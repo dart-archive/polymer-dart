@@ -15,7 +15,6 @@ import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
 import 'package:yaml/yaml.dart';
 
-
 /// Collects different parameters needed to configure and run barback.
 class BarbackOptions {
   /// Phases of transformers to run for the current package.
@@ -57,15 +56,15 @@ class BarbackOptions {
 
   BarbackOptions(this.phases, this.outDir, {currentPackage, String packageHome,
       packageDirs, this.transformTests: false, this.machineFormat: false,
-      this.followLinks: false,
-      this.packagePhases: const {},
+      this.followLinks: false, this.packagePhases: const {},
       this.fileFilter: const []})
       : currentPackage = (currentPackage != null
-          ? currentPackage : readCurrentPackageFromPubspec()),
+          ? currentPackage
+          : readCurrentPackageFromPubspec()),
         packageHome = packageHome,
         packageDirs = (packageDirs != null
-          ? packageDirs : readPackageDirsFromPub(packageHome, currentPackage));
-
+            ? packageDirs
+            : readPackageDirsFromPub(packageHome, currentPackage));
 }
 
 /// Creates a barback system as specified by [options] and runs it.  Returns a
@@ -81,8 +80,8 @@ Future<AssetSet> runBarback(BarbackOptions options) {
 
 /// Extract the current package from the pubspec.yaml file.
 String readCurrentPackageFromPubspec([String dir]) {
-  var pubspec = new File(
-      dir == null ? 'pubspec.yaml' : path.join(dir, 'pubspec.yaml'));
+  var pubspec =
+      new File(dir == null ? 'pubspec.yaml' : path.join(dir, 'pubspec.yaml'));
   if (!pubspec.existsSync()) {
     print('error: pubspec.yaml file not found, please run this script from '
         'your package root directory.');
@@ -116,7 +115,9 @@ Map<String, String> readPackageDirsFromPub(
     exit(result.exitCode);
   }
   var map = JSON.decode(result.stdout)["packages"];
-  map.forEach((k, v) { map[k] = path.absolute(packageHome, path.dirname(v)); });
+  map.forEach((k, v) {
+    map[k] = path.absolute(packageHome, path.dirname(v));
+  });
 
   if (currentPackage == null) {
     currentPackage = readCurrentPackageFromPubspec(packageHome);
@@ -132,13 +133,14 @@ bool shouldSkip(List<String> filters, String path) {
 }
 
 /// Return the relative path of each file under [subDir] in [package].
-Iterable<String> _listPackageDir(String package, String subDir,
-    BarbackOptions options) {
+Iterable<String> _listPackageDir(
+    String package, String subDir, BarbackOptions options) {
   var packageDir = options.packageDirs[package];
   if (packageDir == null) return const [];
   var dir = new Directory(path.join(packageDir, subDir));
   if (!dir.existsSync()) return const [];
-  return dir.listSync(recursive: true, followLinks: options.followLinks)
+  return dir
+      .listSync(recursive: true, followLinks: options.followLinks)
       .where((f) => f is File)
       .where((f) => !shouldSkip(options.fileFilter, f.path))
       .map((f) => path.relative(f.path, from: packageDir));
@@ -151,9 +153,8 @@ class _PackageProvider implements PackageProvider {
 
   _PackageProvider(this.packageDirs);
 
-  Future<Asset> getAsset(AssetId id) => new Future.value(
-      new Asset.fromPath(id, path.join(packageDirs[id.package],
-      _toSystemPath(id.path))));
+  Future<Asset> getAsset(AssetId id) => new Future.value(new Asset.fromPath(
+      id, path.join(packageDirs[id.package], _toSystemPath(id.path))));
 }
 
 /// Convert asset paths to system paths (Assets always use the posix style).
@@ -228,9 +229,9 @@ Future _emitAllFiles(Barback barback, BarbackOptions options) {
     var dir = new Directory(options.outDir);
     if (dir.existsSync()) dir.deleteSync(recursive: true);
     return _emitPackagesDir(options)
-      .then((_) => _emitTransformedFiles(assets, options))
-      .then((_) => _addPackagesSymlinks(assets, options))
-      .then((_) => assets);
+        .then((_) => _emitTransformedFiles(assets, options))
+        .then((_) => _addPackagesSymlinks(assets, options))
+        .then((_) => assets);
   });
 }
 
@@ -250,8 +251,8 @@ Future _emitTransformedFiles(AssetSet assets, BarbackOptions options) {
     if (dir == 'lib') {
       // Put lib files directly under the packages folder (e.g. 'lib/foo.dart'
       // will be emitted at out/packages/package_name/foo.dart).
-      filepath = path.join(outPackages, id.package,
-          _toSystemPath(id.path.substring(4)));
+      filepath = path.join(
+          outPackages, id.package, _toSystemPath(id.path.substring(4)));
     } else if (id.package == currentPackage &&
         (dir == 'web' || (transformTests && dir == 'test'))) {
       filepath = path.join(options.outDir, _toSystemPath(id.path));
@@ -333,7 +334,8 @@ Future _writeAsset(String filepath, Asset asset) {
 
 String _kindFromEntry(LogEntry entry) {
   var level = entry.level;
-  return level == LogLevel.ERROR ? 'error'
+  return level == LogLevel.ERROR
+      ? 'error'
       : (level == LogLevel.WARNING ? 'warning' : 'info');
 }
 
@@ -344,14 +346,18 @@ String _jsonFormatter(LogEntry entry) {
   var span = entry.span;
   return JSON.encode((span == null)
       ? [{'method': kind, 'params': {'message': entry.message}}]
-      : [{'method': kind,
-          'params': {
-            'file': span.sourceUrl.toString(),
-            'message': entry.message,
-            'line': span.start.line + 1,
-            'charStart': span.start.offset,
-            'charEnd': span.end.offset,
-          }}]);
+      : [
+    {
+      'method': kind,
+      'params': {
+        'file': span.sourceUrl.toString(),
+        'message': entry.message,
+        'line': span.start.line + 1,
+        'charStart': span.start.offset,
+        'charEnd': span.end.offset,
+      }
+    }
+  ]);
 }
 
 /// Formatter that generates messages that are easy to read on the console (used
@@ -362,13 +368,15 @@ String _consoleFormatter(LogEntry entry) {
   var levelColor = (kind == 'error') ? _RED_COLOR : _MAGENTA_COLOR;
   var output = new StringBuffer();
   if (useColors) output.write(levelColor);
-  output..write(kind)..write(' ');
+  output
+    ..write(kind)
+    ..write(' ');
   if (useColors) output.write(_NO_COLOR);
   if (entry.span == null) {
     output.write(entry.message);
   } else {
     output.write(entry.span.message(entry.message,
-          color: useColors ? levelColor : null));
+        color: useColors ? levelColor : null));
   }
   return output.toString();
 }

@@ -8,8 +8,8 @@ library polymer.src.build.polyfill_injector;
 import 'dart:async';
 
 import 'package:barback/barback.dart';
-import 'package:html5lib/dom.dart' show
-    Document, DocumentFragment, Element, Node;
+import 'package:html5lib/dom.dart'
+    show Document, DocumentFragment, Element, Node;
 import 'package:html5lib/parser.dart' show parseFragment;
 import 'package:code_transformers/messages/build_logger.dart';
 import 'common.dart';
@@ -25,12 +25,7 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
   PolyfillInjector(this.options);
 
   /// Only run on entry point .html files.
-  // TODO(nweiz): This should just take an AssetId when barback <0.13.0 support
-  // is dropped.
-  Future<bool> isPrimary(idOrAsset) {
-    var id = idOrAsset is AssetId ? idOrAsset : idOrAsset.id;
-    return new Future.value(options.isHtmlEntryPoint(id));
-  }
+  bool isPrimary(AssetId id) => options.isHtmlEntryPoint(id);
 
   Future apply(Transform transform) {
     var logger = new BuildLogger(transform,
@@ -49,8 +44,8 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
           if (_webComponentsJS.hasMatch(last)) {
             webComponentsJs = tag;
           } else if (_platformJS.hasMatch(last)) {
-            tag.attributes['src'] = src.replaceFirst(
-                _platformJS, 'webcomponents.min.js');
+            tag.attributes['src'] =
+                src.replaceFirst(_platformJS, 'webcomponents.min.js');
             webComponentsJs = tag;
           } else if (_dartSupportJS.hasMatch(last)) {
             dartSupportFound = true;
@@ -92,13 +87,13 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
           }
         }
       } else {
-        document.body.nodes.add(parseFragment(
-              '<script src="packages/browser/dart.js"></script>'));
+        document.body.nodes.add(
+            parseFragment('<script src="packages/browser/dart.js"></script>'));
       }
 
       _addScriptFirst(urlSegment) {
-        document.head.nodes.insert(0, parseFragment(
-              '<script src="packages/$urlSegment"></script>\n'));
+        document.head.nodes.insert(
+            0, parseFragment('<script src="packages/$urlSegment"></script>\n'));
       }
 
       // Inserts dart_support.js either at the top of the document or directly
@@ -108,8 +103,7 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
           _addScriptFirst('web_components/dart_support.js');
         } else {
           var parentsNodes = webComponentsJs.parentNode.nodes;
-          parentsNodes.insert(
-              parentsNodes.indexOf(webComponentsJs) + 1,
+          parentsNodes.insert(parentsNodes.indexOf(webComponentsJs) + 1,
               parseFragment(
                   '\n<script src="packages/web_components/dart_support.js">'
                   '</script>'));
