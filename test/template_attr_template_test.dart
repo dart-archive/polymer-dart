@@ -41,7 +41,7 @@ class DecorationTest2 extends DecorationTest {
   }
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -49,4 +49,4 @@ main() => initPolymer().run(() {
   test('declaration-tests-ran', () {
     expect(testsRun, 2, reason: 'decoration-tests-ran');
   });
-});
+}));

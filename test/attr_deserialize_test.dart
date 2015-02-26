@@ -19,7 +19,7 @@ class MyElement extends PolymerElement {
   @published Object json;
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -46,4 +46,4 @@ main() => initPolymer().run(() {
         "{here: is, some: json, x: 123} ",
         reason: 'text should match expected HTML template');
   });
-});
+}));

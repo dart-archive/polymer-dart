@@ -8,7 +8,7 @@ import 'package:unittest/unittest.dart';
 import 'package:unittest/html_config.dart';
 import 'package:polymer/polymer.dart';
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -25,5 +25,5 @@ main() => initPolymer().run(() {
       });
     });
   });
-});
+}));
 

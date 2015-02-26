@@ -1,12 +1,32 @@
 #### 0.16.0-dev
+  * `initPolymer` now returns a `Future<Zone>` instead of a `Zone`. This will
+    likely affect most polymer applications.
+
+    Given a current program:
+
+        main() => initPolymer().run(realMain);
+        realMain() => ...
+
+    This should be translated to:
+    
+        main() => initPolymer().then((zone) => zone.run(realMain));
+        realMain() => ...
+
+    Or alternatively, you can use an @initMethod:
+
+        main() => initPolymer();    
+
+        @initMethod
+        realMain() => ...
+
   * Dropped support for the experimental bootstrap.
   * The `polymer` transformer is now integrated with the `initialize`
-    transformer. This means you can now use `@HtmlImport` from
-    `package:web_components/html_import_annotation.dart`. This allows producers
-    of elements to declare their own html dependencies so consumers don't have
-    to know about html imports at all.
+    transformer. This means you can now use `@HtmlImport` on library directives.
+    This allows producers of elements to declare their own html dependencies so
+    consumers don't have to know about your html imports at all.
   * The `startPolymer` method no longer takes a `deployMode` argument. This is
-    meant as an internal-only method and should not affect apps.
+    meant as an internal-only method and should not affect apps. It also now
+    returns a `Future`.
   * The transformer has been heavily refactored and may behave slightly
     differently. Please file any bugs related to this at
     https://github.com/dart-lang/polymer-dart/issues/new.

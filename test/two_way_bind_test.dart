@@ -26,7 +26,7 @@ class OuterElement extends PolymerElement {
   OuterElement.created() : super.created();
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -85,4 +85,4 @@ main() => initPolymer().run(() {
       expect(inner.string, 'a');
     });
   });
-});
+}));

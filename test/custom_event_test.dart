@@ -46,7 +46,7 @@ class TestCustomEvent extends PolymerElement {
 main() {
   enableBindingsReflection = true;
 
-  initPolymer().run(() {
+  initPolymer().then((zone) => zone.run(() {
     useHtmlConfiguration();
 
     setUp(() => Polymer.onReady);
@@ -71,5 +71,5 @@ main() {
       expect(events.map((e) => e[0]), ['foo', 'barbaz', 'foo']);
       expect(events.map((e) => e[1].detail), [123, 42, 777]);
     });
-  });
+  }));
 }

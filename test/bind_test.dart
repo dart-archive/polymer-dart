@@ -43,10 +43,10 @@ class XFoo extends PolymerElement {
   }
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
 
   test('ready called', () => (querySelector('x-foo') as XFoo).onTestDone);
-});
+}));

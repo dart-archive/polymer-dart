@@ -28,7 +28,7 @@ class XController extends PolymerElement {
   clickXJs() {++clickXJsCount;}
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -65,4 +65,4 @@ main() => initPolymer().run(() {
     xJs.click();
     expect(clickXJsCount, 1);
   });
-});
+}));

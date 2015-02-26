@@ -17,11 +17,11 @@ class A extends PolymerElement {
   A.created() : super.created();
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
   setUp(() => Polymer.onReady);
 
   test('registration is done in the right order', () {
     expect(querySelector('x-e') is E, isTrue);
   });
-});
+}));

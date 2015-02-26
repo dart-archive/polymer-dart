@@ -20,13 +20,13 @@ class CustomTag implements Initializer<Type> {
 ///   register custom elements declared there (labeled with [CustomTag]) and
 ///   invoke the initialization method on it (top-level functions annotated with
 ///   [initMethod]).
-Zone initPolymer() {
+Future<Zone> initPolymer() {
   _initializeLogging();
   if (_deployMode) {
-    startPolymer();
-    return Zone.current;
+    return startPolymer().then((_) => Zone.current);
   }
-  return dirtyCheckZone()..run(() => startPolymer());
+  return dirtyCheckZone().run(
+      () => startPolymer().then((_) => dirtyCheckZone()));
 }
 
 bool _startPolymerCalled = false;

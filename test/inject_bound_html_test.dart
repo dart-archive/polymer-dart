@@ -31,7 +31,7 @@ class NullNodeValidator implements NodeValidator {
 }
 final nullValidator = const NullNodeValidator();
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   XFoo xFoo;
@@ -73,4 +73,4 @@ main() => initPolymer().run(() {
         html, element: injectDiv, treeSanitizer: nullSanitizer);
     expect(injectDiv.innerHtml, html);
   });
-});
+}));

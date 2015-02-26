@@ -29,7 +29,7 @@ class XMenuButton extends PolymerElement {
   XMenuButton.created() : super.created();
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -76,4 +76,4 @@ main() => initPolymer().run(() {
 
     item1.dispatchEvent(new Event('x', canBubble: true));
   });
-});
+}));

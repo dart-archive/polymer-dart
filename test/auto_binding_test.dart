@@ -16,7 +16,7 @@ class TestModel {
   }
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -53,7 +53,7 @@ main() => initPolymer().run(() {
 
     return completer.future;
   });
-});
+}));
 
 class _NullSanitizer implements NodeTreeSanitizer {
   sanitizeTree(Node node) {}

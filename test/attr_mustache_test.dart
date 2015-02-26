@@ -44,7 +44,7 @@ class XTest extends PolymerElement {
   @observable var src = 'testSource';
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -54,4 +54,4 @@ main() => initPolymer().run(() {
     final xtarget = xtest.shadowRoot.querySelector('#target');
     return xtarget.foundSrc;
   });
-});
+}));

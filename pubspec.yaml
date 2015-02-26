@@ -21,7 +21,7 @@ dependencies:
   source_maps: '>=0.9.4 <0.11.0'
   source_span: '>=1.0.0 <2.0.0'
   template_binding: '>=0.12.0 <0.15.0'
-  web_components: '>=0.10.3 <0.11.0'
+  web_components: '>=0.10.4 <0.11.0'
   yaml: '>=0.9.0 <3.0.0'
 
   # Because polymer exports observe, it needs to keep its version constraint

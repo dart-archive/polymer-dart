@@ -61,7 +61,7 @@ Future onAttributeChange(Element node) {
   return completer.future;
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   // Most tests use @CustomTag, here we test out the impertive register:
@@ -181,4 +181,4 @@ main() => initPolymer().run(() {
           reason: 'extendee reflect false not honored');
     });
   });
-});
+}));

@@ -51,22 +51,27 @@ class XSquid extends XZot {
   @published int squid = 7;
 }
 
-main() => initPolymer().run(() {
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((r) => print('${r.loggerName} ${r.message}'));
+main() {
   useHtmlConfiguration();
 
-  Polymer.register('x-noscript', XZot);
+  initPolymer().then((zone) {
+    zone.run(() {
+      Logger.root.level = Level.ALL;
+      Logger.root.onRecord.listen((r) => print('${r.loggerName} ${r.message}'));
 
-  setUp(() => Polymer.onReady);
+      Polymer.register('x-noscript', XZot);
 
-  test('published properties', () {
-    published(tag) => (new Element.tag(tag) as PolymerElement)
+      setUp(() => Polymer.onReady);
+
+      test('published properties', () {
+        published(tag) => (new Element.tag(tag) as PolymerElement)
         .element.publishedProperties;
 
-    expect(published('x-zot'), ['Foo', 'Bar', 'zot', 'm']);
-    expect(published('x-squid'), ['Foo', 'Bar', 'zot', 'm', 'baz', 'squid']);
-    expect(published('x-noscript'), ['Foo', 'Bar', 'zot', 'm']);
-    expect(published('x-squid'), ['Foo', 'Bar', 'zot', 'm', 'baz', 'squid']);
+        expect(published('x-zot'), ['Foo', 'Bar', 'zot', 'm']);
+        expect(published('x-squid'), ['Foo', 'Bar', 'zot', 'm', 'baz', 'squid']);
+        expect(published('x-noscript'), ['Foo', 'Bar', 'zot', 'm']);
+        expect(published('x-squid'), ['Foo', 'Bar', 'zot', 'm', 'baz', 'squid']);
+      });
+    });
   });
-});
+}

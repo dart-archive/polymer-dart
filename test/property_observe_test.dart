@@ -81,10 +81,10 @@ class XTest2 extends XTest {
   }
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
 
   test('changes detected', () => _done.future);
-});
+}));

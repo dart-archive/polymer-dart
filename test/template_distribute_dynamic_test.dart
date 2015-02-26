@@ -44,10 +44,10 @@ class XTest extends PolymerElement {
   }
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
 
   test('inserted called', () => (querySelector('x-test') as XTest).onTestDone);
-});
+}));

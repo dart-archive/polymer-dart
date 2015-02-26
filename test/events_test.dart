@@ -44,7 +44,7 @@ class TestC extends TestBase {
   TestC.created() : super.created();
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -83,4 +83,4 @@ main() => initPolymer().run(() {
     c2.click();
     expect(testC.clicks, ['local click under test-c (id c) on c-2']);
   });
-});
+}));

@@ -52,7 +52,7 @@ import 'package:polymer_expressions/polymer_expressions.dart'
     as polymer_expressions;
 import 'package:smoke/smoke.dart' as smoke;
 import 'package:template_binding/template_binding.dart';
-import 'package:web_components/html_import_annotation.dart';
+import 'package:web_components/web_components.dart';
 
 import 'auto_binding.dart';
 import 'deserialize.dart' as deserialize;
@@ -60,6 +60,7 @@ import 'deserialize.dart' as deserialize;
 export 'package:initialize/initialize.dart' show initMethod;
 export 'package:observe/observe.dart';
 export 'package:observe/html.dart';
+export 'package:web_components/web_components.dart' show Htmlimport;
 export 'auto_binding.dart';
 
 part 'src/declaration.dart';

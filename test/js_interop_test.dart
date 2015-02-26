@@ -40,7 +40,7 @@ class DartTwoWay extends PolymerElement {
   DartTwoWay.created() : super.created();
 }
 
-main() => initPolymer().run(() {
+main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
@@ -100,7 +100,7 @@ main() => initPolymer().run(() {
       });
     });     
   });
-});
+}));
 
 Future<List<MutationRecord>> _onTextChanged(Node node) {
   var completer = new Completer();
