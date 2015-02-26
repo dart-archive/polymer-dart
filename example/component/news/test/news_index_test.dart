@@ -15,6 +15,8 @@ main() {
   extractLinks(nodes) => nodes.where((n) => n is Element)
       .map((n) => n.query('a').href.split('/').last).toList();
 
+  setUp(() => Polymer.onReady);
+
   test('initial state', () {
     final listComp = querySelector('ul');
     final items = listComp.querySelectorAll('li');

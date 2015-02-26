@@ -4,7 +4,6 @@
 
 library polymer.test.web.web_components_less_test;
 
-import 'dart:async';
 import 'dart:html';
 import 'dart:js';
 import 'package:polymer/polymer.dart';
