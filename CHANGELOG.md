@@ -1,3 +1,7 @@
+#### 0.15.5+4
+  * Fix for [#23](https://github.com/dart-lang/polymer-dart/issues/23) (0.15.5+3
+    missed an invocation of the observe transformer).
+
 #### 0.15.5+3
   * Pass more state to the observe transformer so it won't output log files in
     release mode.

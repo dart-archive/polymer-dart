@@ -220,7 +220,7 @@ String spanUrlFor(AssetId id, Transform transform, logger) {
 
 /// Transformer phases which should be applied to the Polymer package.
 List<List<Transformer>> get phasesForPolymer =>
-    [[new ObservableTransformer(['lib/src/instance.dart'])]];
+    [[new ObservableTransformer(files: ['lib/src/instance.dart'])]];
 
 /// Generate the import url for a file described by [id], referenced by a file
 /// with [sourceId].
