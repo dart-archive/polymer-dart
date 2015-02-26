@@ -59,6 +59,7 @@ test/take_attributes_test: Pass, RuntimeError # Issue 18931
 test/template_attr_template_test: Pass, RuntimeError # Issue 18931
 test/template_distribute_dynamic_test: Pass, RuntimeError # Issue 18931
 test/two_way_bind_test: Pass, RuntimeError # Issue 18931
+example/component/news/test/news_index_test: Timeout # Issue #25
 
 # Failing due to https://github.com/dart-lang/package-bots/issues/2
 build/test/publish_attributes_test: RuntimeError
