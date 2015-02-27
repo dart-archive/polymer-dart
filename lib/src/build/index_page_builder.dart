@@ -58,7 +58,7 @@ class IndexPageBuilder extends AggregateTransformer {
   Future _createOutput(
       String directory, List<String> files, AggregateTransform transform) {
     var indexAsset =
-        new AssetId(transform.package, path.join(directory, 'index.html'));
+        new AssetId(transform.package, path.url.join(directory, 'index.html'));
 
     return transform.hasInput(indexAsset).then((exists) {
       // Don't overwrite existing outputs!
@@ -66,8 +66,8 @@ class IndexPageBuilder extends AggregateTransformer {
 
       // Sort alphabetically by recursive path parts.
       files.sort((String a, String b) {
-        var aParts = path.split(a);
-        var bParts = path.split(b);
+        var aParts = path.url.split(a);
+        var bParts = path.url.split(b);
         int diff = 0;
         int minLength = min(aParts.length, bParts.length);
         for (int i = 0; i < minLength; i++) {

@@ -187,7 +187,7 @@ class _UrlNormalizer {
   _UrlNormalizer(transform, this.sourceId, this.logger)
       : transform = transform,
         topLevelPath = '../' *
-            (transform.primaryInput.id.path.split('/').length - 2);
+            (path.url.split(transform.primaryInput.id.path).length - 2);
 
   static final _URL = new RegExp(r'url\(([^)]*)\)', multiLine: true);
   static final _QUOTE = new RegExp('["\']', multiLine: true);
