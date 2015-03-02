@@ -60,7 +60,7 @@ import 'deserialize.dart' as deserialize;
 export 'package:initialize/initialize.dart' show initMethod;
 export 'package:observe/observe.dart';
 export 'package:observe/html.dart';
-export 'package:web_components/web_components.dart' show Htmlimport;
+export 'package:web_components/web_components.dart' show HtmlImport;
 export 'auto_binding.dart';
 
 part 'src/declaration.dart';
