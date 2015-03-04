@@ -35,6 +35,7 @@
 ///
 /// * [Upgrading to Polymer.dart](http://www.dartlang.org/polymer-dart/upgrading-to-polymer-from-web-ui.html):
 /// Tips for converting your apps from Web UI to Polymer.dart.
+@HtmlImport('polymer.html')
 library polymer;
 
 import 'dart:async';

@@ -93,29 +93,23 @@ void main() {
           '(web/foo/test.html 1 0)',
     ]);
 
-    _testLinter('missing polymer.html in lib', {
+    _testLinter('missing polymer.html doesn\'t warn in lib', {
       'a|lib/test.html': '<!DOCTYPE html><html>\n'
           '<polymer-element name="x-a"></polymer-element>'
           '<script type="application/dart" src="foo.dart">'
           '</script>'
           '<script src="packages/browser/dart.js"></script>'
           '</html>',
-    }, [
-      'warning: ${_usePolymerHtmlMessage(2)} '
-          '(lib/test.html 1 0)',
-    ]);
+    }, []);
 
-    _testLinter('missing polymer.html in lib/foo/bar', {
+    _testLinter('missing polymer.html doesn\'t warn in lib/foo/bar', {
       'a|lib/foo/bar/test.html': '<!DOCTYPE html><html>\n'
           '<polymer-element name="x-a"></polymer-element>'
           '<script type="application/dart" src="foo.dart">'
           '</script>'
           '<script src="packages/browser/dart.js"></script>'
           '</html>',
-    }, [
-      'warning: ${_usePolymerHtmlMessage(4)} '
-          '(lib/foo/bar/test.html 1 0)',
-    ]);
+    }, []);
 
     _testLinter('missing Dart code', {
       'a|web/test.html': '<!DOCTYPE html><html>'
@@ -354,20 +348,26 @@ void main() {
   ]);
 
   _testLinter('extend is a valid element or existing tag', {
-    'a|lib/test.html': '''<html>
+    'a|web/test.html': '''<!DOCTYPE html><html>
           <link rel="import" href="../../packages/polymer/polymer.html">
           <polymer-element name="x-a" extends="li"></polymer-element>
+          <script type="application/dart">
+            export 'package:polymer/init.dart';
+          </script>
           </html>'''.replaceAll('          ', ''),
   }, []);
 
   _testLinter('extend is a valid element or existing tag', {
-    'a|lib/test.html': '''<html>
+    'a|web/test.html': '''<!DOCTYPE html><html>
           <link rel="import" href="../../packages/polymer/polymer.html">
           <polymer-element name="x-a" extends="x-b"></polymer-element>
+          <script type="application/dart">
+            export 'package:polymer/init.dart';
+          </script>
           </html>'''.replaceAll('          ', ''),
   }, [
     'warning: ${CUSTOM_ELEMENT_NOT_FOUND.create({'tag': 'x-b'}).snippet} '
-        '(lib/test.html 2 0)'
+        '(web/test.html 2 0)'
   ]);
 
   group('script type matches code', () {
@@ -517,16 +517,27 @@ void main() {
   });
 
   group('using custom tags', () {
-    _testLinter('tag exists (x-tag)', {'a|lib/test.html': '<x-foo></x-foo>',}, [
+    _testLinter('tag exists (x-tag)', {
+      'a|web/test.html': '''<!DOCTYPE html>
+            <x-foo></x-foo>
+            <script type="application/dart">
+              export 'package:polymer/init.dart';
+            </script>
+            '''.replaceAll('            ', ''),
+    }, [
       'warning: ${CUSTOM_ELEMENT_NOT_FOUND.create({'tag': 'x-foo'}).snippet} '
-          '(lib/test.html 0 0)'
+          '(web/test.html 1 0)'
     ]);
 
     _testLinter('tag exists (type extension)', {
-      'a|lib/test.html': '<div is="x-foo"></div>',
+      'a|web/test.html': '''<!DOCTYPE html>
+            <div is="x-foo"></div>
+            <script type="application/dart">
+              export 'package:polymer/init.dart';
+            </script>'''.replaceAll('            ', ''),
     }, [
       'warning: ${CUSTOM_ELEMENT_NOT_FOUND.create({'tag': 'x-foo'}).snippet} '
-          '(lib/test.html 0 0)'
+          '(web/test.html 1 0)',
     ]);
 
     _testLinter('tag exists (internally defined in code)', {

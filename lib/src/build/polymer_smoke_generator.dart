@@ -199,7 +199,8 @@ class PolymerSmokeGenerator {
     // extract information about published attributes.
     expressionVisitor = new _SubExpressionVisitor(generator, logger);
 
-    return new ImportCrawler(transform, transform.primaryInput.id, logger)
+    return new ImportCrawler(
+        transform, transform.primaryInput.id, logger, primaryDocument: document)
         .crawlImports()
         .then((documentData) {
       for (var data in documentData.values) {
