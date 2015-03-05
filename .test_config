@@ -1,5 +1,0 @@
-{
-  "pre_pub_build_hooks" : {
-    "Enable tests in pubspec": "$dart $project_root/tool/uncomment_test_section_in_pubspec.dart"
-  }
-}

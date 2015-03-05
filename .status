@@ -29,6 +29,40 @@ test/*: Skip  # raw tests only meant to be run in dartium. Other browsers run
               # the output of pub-build
 
 [ $compiler == none && ($runtime == dartium || $runtime == ContentShellOnAndroid) ]
+build/test/attr_deserialize_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/attr_mustache_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/auto_binding_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/bind_properties_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/bind_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/computed_properties_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/custom_event_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/entered_view_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/event_binding_release_handler_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/event_controller_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/event_handlers_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/event_path_declarative_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/event_path_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/events_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/force_ready_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/inject_bound_html_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/instance_attrs_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/js_custom_event_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/js_interop_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/layout_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/nested_binding_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/noscript_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/prop_attr_bind_reflection_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/prop_attr_reflection_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/property_change_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/property_observe_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/register_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/sort_registration_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/take_attributes_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/template_attr_template_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/template_distribute_dynamic_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/two_way_bind_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/unbind_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
+build/test/web_components_less_test: RuntimeError # Issue https://github.com/dart-lang/package-bots/issues/2
 test/attr_deserialize_test: Pass, RuntimeError # Issue 18931
 test/attr_mustache_test: Pass, RuntimeError # Issue 18931
 test/bind_test: Pass, RuntimeError # Issue 18931
