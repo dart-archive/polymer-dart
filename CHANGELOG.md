@@ -1,4 +1,4 @@
-#### 0.16.0-dev
+#### 0.16.0
   * `initPolymer` now returns a `Future<Zone>` instead of a `Zone`. This will
     likely affect most polymer applications.
 
