@@ -21,6 +21,7 @@ import 'package:code_transformers/messages/messages.dart';
 import 'package:code_transformers/src/messages.dart' as m1; // used via mirrors
 import 'package:observe/src/messages.dart' as m2; // used via mirrors
 import 'package:polymer/src/build/messages.dart' as m3; // used via mirrors
+import 'package:web_components/build/messages.dart' as m4; // used via mirrors
 import 'package:markdown/markdown.dart';
 import 'package:path/path.dart' as path;
 import 'package:args/args.dart';
@@ -32,6 +33,7 @@ main(args) {
   _getMessagesFrom(#polymer.src.build.messages, seen, templates);
   _getMessagesFrom(#code_transformers.src.messages, seen, templates);
   _getMessagesFrom(#observe.src.messages, seen, templates);
+  _getMessagesFrom(#web_components.build.messages, seen, templates);
 
   templates.sort((a, b) => a.id.compareTo(b.id));
   var sb = new StringBuffer();
