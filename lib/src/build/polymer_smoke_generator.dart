@@ -16,6 +16,7 @@ import 'package:analyzer/src/generated/element.dart' as analyzer show Element;
 import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:code_transformers/assets.dart';
+import 'package:code_transformers/src/dart_sdk.dart' as dart_sdk;
 import 'package:path/path.dart' as path;
 import 'package:source_span/source_span.dart';
 import 'package:smoke/codegen/generator.dart';
@@ -52,46 +53,7 @@ class PolymerSmokeGeneratorTransformer extends Transformer
       // TODO(sigmund): consider restoring here a resolver that uses the real
       // SDK once the analyzer is lazy and only an resolves what it needs:
       //: resolvers = new Resolvers(sdkDir != null ? sdkDir : dartSdkDirectory);
-      : resolvers = new Resolvers.fromMock({
-        // The list of types below is derived from:
-        //   * types we use via our smoke queries, including HtmlElement and
-        //     types from `_typeHandlers` (deserialize.dart)
-        //   * types that are used internally by the resolver (see
-        //   _initializeFrom in resolver.dart).
-        'dart:core': '''
-            library dart.core;
-            class Object {}
-            class Function {}
-            class StackTrace {}
-            class Symbol {}
-            class Type {}
-
-            class String extends Object {}
-            class bool extends Object {}
-            class num extends Object {}
-            class int extends num {}
-            class double extends num {}
-            class DateTime extends Object {}
-            class Null extends Object {}
-
-            class Deprecated extends Object {
-              final String expires;
-              const Deprecated(this.expires);
-            }
-            const Object deprecated = const Deprecated("next release");
-            class _Override { const _Override(); }
-            const Object override = const _Override();
-            class _Proxy { const _Proxy(); }
-            const Object proxy = const _Proxy();
-
-            class List<V> extends Object {}
-            class Map<K, V> extends Object {}
-            ''',
-        'dart:html': '''
-            library dart.html;
-            class HtmlElement {}
-            ''',
-      });
+      : resolvers = new Resolvers.fromMock(dart_sdk.mockSdkSources);
 
   /// Only run on entry point .html files.
   bool isPrimary(AssetId id) => options.isHtmlEntryPoint(id);

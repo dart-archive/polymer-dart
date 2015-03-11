@@ -1,3 +1,7 @@
+#### 0.16.0+1
+  * Update analyzer and code_transformers versions and use new mock sdk from
+    code_transformers.
+
 #### 0.16.0
   * `initPolymer` now returns a `Future<Zone>` instead of a `Zone`. This will
     likely affect most polymer applications.
