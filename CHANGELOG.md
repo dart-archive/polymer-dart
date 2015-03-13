@@ -27,7 +27,9 @@
   * The `polymer` transformer is now integrated with the `initialize`
     transformer. This means you can now use `@HtmlImport` on library directives.
     This allows producers of elements to declare their own html dependencies so
-    consumers don't have to know about your html imports at all.
+    consumers don't have to know about your html imports at all. See
+    [web_components 0.10.2](https://github.com/dart-lang/web-components/blob/master/CHANGELOG.md#0102)
+    for more information on @HtmlImport.
   * The `startPolymer` method no longer takes a `deployMode` argument. This is
     meant as an internal-only method and should not affect apps. It also now
     returns a `Future`.
