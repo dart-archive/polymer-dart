@@ -21,7 +21,7 @@ build/test/import_test: Skip # Issue 17873
 e2e_test/*: Skip
 build/e2e_test/*: Skip
 
-build/test/bind_mdv_test: Timeout # need to investigate
+build/test/bind_mdv_test: Pass, Timeout # need to investigate
 test/build/polymer_smoke_generator_test: Pass, Slow
 
 [ $compiler == dart2js ]
