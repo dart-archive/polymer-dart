@@ -12,6 +12,7 @@ import 'package:html5lib/dom.dart'
     show Document, DocumentFragment, Element, Node;
 import 'package:html5lib/parser.dart' show parseFragment;
 import 'package:code_transformers/messages/build_logger.dart';
+import 'package:path/path.dart' as path;
 import 'common.dart';
 
 /// Ensures that any scripts and polyfills needed to run a polymer application
@@ -91,29 +92,30 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
             parseFragment('<script src="packages/browser/dart.js"></script>'));
       }
 
-      _addScriptFirst(urlSegment) {
-        document.head.nodes.insert(
-            0, parseFragment('<script src="packages/$urlSegment"></script>\n'));
+      _addScript(urlSegment, [Node parent, int position = 0]) {
+        if (parent == null) parent = document.head;
+        var pathToPackages = '../' *
+            (path.url.split(transform.primaryInput.id.path).length - 2);
+        parent.nodes.insert(position, parseFragment(
+            '<script src="${pathToPackages}packages/$urlSegment"></script>'));
       }
 
       // Inserts dart_support.js either at the top of the document or directly
       // after webcomponents.js if it exists.
       if (!dartSupportFound) {
         if (webComponentsJs == null) {
-          _addScriptFirst('web_components/dart_support.js');
+          _addScript('web_components/dart_support.js');
         } else {
-          var parentsNodes = webComponentsJs.parentNode.nodes;
-          parentsNodes.insert(parentsNodes.indexOf(webComponentsJs) + 1,
-              parseFragment(
-                  '\n<script src="packages/web_components/dart_support.js">'
-                  '</script>'));
+          var parentNode = webComponentsJs.parentNode;
+          _addScript('web_components/dart_support.js', parentNode,
+              parentNode.nodes.indexOf(webComponentsJs) + 1);
         }
       }
 
       // By default webcomponents.js should come before all other scripts.
       if (webComponentsJs == null && options.injectWebComponentsJs) {
         var suffix = options.releaseMode ? '.min.js' : '.js';
-        _addScriptFirst('web_components/webcomponents$suffix');
+        _addScript('web_components/webcomponents$suffix');
       }
 
       transform.addOutput(

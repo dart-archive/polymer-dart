@@ -198,14 +198,14 @@ String expectedData(List<String> urls, {package: 'a', experimental: false}) {
 const EMPTY_DATA = '{"experimental_bootstrap":false,"script_ids":[]}';
 
 const DART_SUPPORT_TAG =
-    '<script src="packages/web_components/dart_support.js"></script>\n';
+    '<script src="packages/web_components/dart_support.js"></script>';
 const WEB_COMPONENTS_JS_TAG =
-    '<script src="packages/web_components/webcomponents.min.js"></script>\n';
+    '<script src="packages/web_components/webcomponents.min.js"></script>';
 const COMPATIBILITY_JS_TAGS = '$WEB_COMPONENTS_JS_TAG$DART_SUPPORT_TAG';
 const PLATFORM_JS_TAG =
-    '<script src="packages/web_components/platform.js"></script>\n';
+    '<script src="packages/web_components/platform.js"></script>';
 
-const INTEROP_TAG = '<script src="packages/browser/interop.js"></script>\n';
+const INTEROP_TAG = '<script src="packages/browser/interop.js"></script>';
 const DART_JS_TAG = '<script src="packages/browser/dart.js"></script>';
 
 const POLYMER_MOCKS = const {

@@ -1,3 +1,7 @@
+#### 0.16.0+2
+  * Update the polyfill injector to work properly for entry points that live in
+    sub-folders.
+
 #### 0.16.0+1
   * Update analyzer and code_transformers versions and use new mock sdk from
     code_transformers.

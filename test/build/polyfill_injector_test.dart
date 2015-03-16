@@ -114,6 +114,18 @@ void runTests({bool js: true}) {
         '</body></html>',
   });
 
+  testPhases('in subfolder', phases, {
+    'a|web/sub/test.html': '<!DOCTYPE html><html><head></head><body>'
+        '<script type="application/dart" src="a.dart"></script>',
+  }, {
+    'a|web/sub/test.html': '<!DOCTYPE html><html><head>'
+        '${COMPATIBILITY_JS_TAGS.replaceAll('packages', '../packages')}'
+        '</head><body>'
+        '<script ${type}src="a.dart$ext"$async></script>'
+        '$dartJsTag'
+        '</body></html>',
+  });
+
   var noWebComponentsPhases = [
     [
       new PolyfillInjector(new TransformOptions(
