@@ -1,3 +1,6 @@
+#### 0.16.0+3
+  * Increase upper bound of `smoke` package to `<0.4.0`.
+
 #### 0.16.0+2
   * Update the polyfill injector to work properly for entry points that live in
     sub-folders.
