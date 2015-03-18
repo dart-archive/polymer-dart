@@ -62,7 +62,7 @@ void main() {
     'a|web/test.web_components.bootstrap.dart': '''
           import 'package:initialize/src/static_loader.dart';
           import 'package:initialize/initialize.dart';
-          import 'a.bootstrap.dart' as i0;
+          import 'test.bootstrap.dart' as i0;
           import 'a.dart' as i1;
           import 'package:polymer/polymer.dart' as i2;
 
@@ -72,8 +72,8 @@ void main() {
             i0.main();
           }
           '''.replaceAll('          ', ''),
-    'a|web/a.bootstrap.dart': '''
-          library a.web.a_bootstrap_dart;
+    'a|web/test.bootstrap.dart': '''
+          library a.web.test_bootstrap_dart;
 
           import 'a.dart' as i0;
 
@@ -118,7 +118,7 @@ void main() {
     'b|web/test.web_components.bootstrap.dart': '''
           import 'package:initialize/src/static_loader.dart';
           import 'package:initialize/initialize.dart';
-          import 'test.html.0.bootstrap.dart' as i0;
+          import 'test.bootstrap.dart' as i0;
           import 'test.html.0.dart' as i1;
           import 'package:polymer/polymer.dart' as i2;
 
@@ -128,8 +128,8 @@ void main() {
             i0.main();
           }
           '''.replaceAll('          ', ''),
-    'b|web/test.html.0.bootstrap.dart': '''
-          library b.web.test_html_0_bootstrap_dart;
+    'b|web/test.bootstrap.dart': '''
+          library b.web.test_bootstrap_dart;
 
           import 'test.html.0.dart' as i0;
 
@@ -165,19 +165,19 @@ void main() {
           import 'index.web_components.bootstrap.dart' as i0;
           ${DEFAULT_IMPORTS.join('\n')}
           import 'package:polymer/polymer.dart' as smoke_0;
-          import 'b.dart' as smoke_1;
-          import 'index.html.0.dart' as smoke_2;
+          import 'index.html.0.dart' as smoke_1;
+          import 'b.dart' as smoke_2;
 
           void main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 parents: {
-                  smoke_1.XB: smoke_0.PolymerElement,
-                  smoke_2.XA: smoke_0.PolymerElement,
+                  smoke_2.XB: smoke_0.PolymerElement,
+                  smoke_1.XA: smoke_0.PolymerElement,
                 },
                 declarations: {
-                  smoke_1.XB: {},
-                  smoke_2.XA: {},
+                  smoke_2.XB: {},
+                  smoke_1.XA: {},
                   smoke_0.PolymerElement: {},
                 }));
             configureForDeployment();
@@ -187,7 +187,7 @@ void main() {
     'a|web/index.web_components.bootstrap.dart': '''
           import 'package:initialize/src/static_loader.dart';
           import 'package:initialize/initialize.dart';
-          import 'b.bootstrap.dart' as i0;
+          import 'index.bootstrap.dart' as i0;
           import 'index.html.0.dart' as i1;
           import 'package:polymer/polymer.dart' as i2;
           import 'b.dart' as i3;
@@ -201,8 +201,8 @@ void main() {
             i0.main();
           }
           '''.replaceAll('          ', ''),
-    'a|web/b.bootstrap.dart': '''
-          library a.web.b_bootstrap_dart;
+    'a|web/index.bootstrap.dart': '''
+          library a.web.index_bootstrap_dart;
 
           import 'index.html.0.dart' as i0;
           import 'b.dart' as i1;

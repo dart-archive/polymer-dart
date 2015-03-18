@@ -1,3 +1,6 @@
+#### 0.16.0+5
+  * Update `web_components` constraint.
+
 #### 0.16.0+4
   * Fix static configuration for exported libraries.
 
