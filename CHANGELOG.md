@@ -1,3 +1,6 @@
+#### 0.16.0+4
+  * Fix static configuration for exported libraries.
+
 #### 0.16.0+3
   * Increase upper bound of `smoke` package to `<0.4.0`.
 

@@ -161,10 +161,8 @@ class PolymerSmokeGenerator {
     // extract information about published attributes.
     expressionVisitor = new _SubExpressionVisitor(generator, logger);
 
-    return new ImportCrawler(
-        transform, transform.primaryInput.id, logger, primaryDocument: document)
-        .crawlImports()
-        .then((documentData) {
+    return new ImportCrawler(transform, transform.primaryInput.id, logger,
+        primaryDocument: document).crawlImports().then((documentData) {
       for (var data in documentData.values) {
         new _HtmlExtractor(
                 logger, generator, publishedAttributes, expressionVisitor)
@@ -187,7 +185,7 @@ class PolymerSmokeGenerator {
     librariesSeen.add(library);
 
     // Visit all our dependencies.
-    for (var importedLibrary in library.importedLibraries) {
+    for (var importedLibrary in _libraryDependencies(library)) {
       // Don't include anything from the sdk.
       if (importedLibrary.isInSdk) continue;
       if (librariesSeen.contains(importedLibrary)) continue;
@@ -200,6 +198,16 @@ class PolymerSmokeGenerator {
     for (var clazz in classes) {
       _processClass(clazz, recorder);
     }
+  }
+
+  Iterable<LibraryElement> _libraryDependencies(LibraryElement library) {
+    getLibrary(UriReferencedElement element) {
+      if (element is ImportElement) return element.importedLibrary;
+      if (element is ExportElement) return element.exportedLibrary;
+    }
+
+    return (new List.from(library.imports)..addAll(library.exports))
+        .map(getLibrary);
   }
 
   /// Process a class ([cls]). If it contains an appropriate [CustomTag]

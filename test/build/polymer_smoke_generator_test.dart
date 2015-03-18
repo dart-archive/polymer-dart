@@ -104,6 +104,61 @@ initializerTests(phases) {
           '''.replaceAll('\n          ', '\n'),
   });
 
+  testPhases('simple initialization of imports and exports', phases, {
+    'a|web/test.html': '<!DOCTYPE html><html><head>'
+        '<script type="application/dart" src="a.dart"></script>',
+    'a|web/a.dart': '''
+        library a;
+        import "package:polymer/polymer.dart";
+        import 'b.dart';
+
+        @CustomTag("x-a")
+        class XA extends PolymerElement {}
+        main(){}'''.replaceAll('\n        ', '\n'),
+    'a|web/b.dart': '''
+        library b;
+        import "package:polymer/polymer.dart";
+        export 'c.dart';
+
+        @CustomTag("x-b")
+        class XB extends PolymerElement {}
+        ''',
+    'a|web/c.dart': '''
+        library c;
+        import "package:polymer/polymer.dart";
+
+        @CustomTag("x-c")
+        class XC extends PolymerElement {}
+        ''',
+  }, {
+    'a|web/test.html_bootstrap.dart': '''$MAIN_HEADER
+        import 'a.dart' as i0;
+        ${DEFAULT_IMPORTS.join('\n')}
+        import 'package:polymer/polymer.dart' as smoke_0;
+        import 'c.dart' as smoke_1;
+        import 'b.dart' as smoke_2;
+        import 'a.dart' as smoke_3;
+
+        void main() {
+          useGeneratedCode(new StaticConfiguration(
+              checkedMode: false,
+              parents: {
+                smoke_3.XA: smoke_0.PolymerElement,
+                smoke_2.XB: smoke_0.PolymerElement,
+                smoke_1.XC: smoke_0.PolymerElement,
+              },
+              declarations: {
+                smoke_3.XA: {},
+                smoke_2.XB: {},
+                smoke_1.XC: {},
+                smoke_0.PolymerElement: {},
+              }));
+          configureForDeployment();
+          i0.main();
+        }
+        '''.replaceAll('\n        ', '\n'),
+  });
+
   testPhases('use const expressions', phases, {
     'a|web/test.html': '<!DOCTYPE html><html><head>'
         '<script type="application/dart" src="a.dart"></script>',
