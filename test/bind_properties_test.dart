@@ -56,7 +56,9 @@ class XTest extends PolymerElement {
 
 var completer = new Completer();
 waitForElementReady(_) => completer.future;
-readyCalled() { completer.complete(null); }
+readyCalled() {
+  completer.complete(null);
+}
 
 @initMethod
 init() {
@@ -105,4 +107,3 @@ init() {
     expect(baz.val, 6);
   });
 }
-

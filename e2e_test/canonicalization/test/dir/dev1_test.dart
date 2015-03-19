@@ -4,4 +4,5 @@
 
 /// Tests canonicalization at deployment time from a subdir.
 library canonicalization.test.dir.dev1_test;
+
 export 'dev_common.dart';

@@ -44,25 +44,25 @@ main() => initPolymer().then((zone) => zone.run(() {
     var menu = menuButton.shadowRoot.querySelector('#menu');
     var overlay = menuButton.shadowRoot.querySelector('#overlay');
     var expectedPath = <Node>[
-        item1,
-        menuButton.shadowRoot.querySelector('#menuButtonContent'),
-        menu.shadowRoot.olderShadowRoot.querySelector('#selectorContent'),
-        menu.shadowRoot.olderShadowRoot.querySelector('#selectorDiv'),
-        menu.shadowRoot.olderShadowRoot,
-        menu.shadowRoot.querySelector('#menuShadow'),
-        menu.shadowRoot.querySelector('#menuDiv'),
-        menu.shadowRoot,
-        menu,
-        menuButton.shadowRoot.querySelector('#menuButtonDiv'),
-        // TODO(sigmund): this test is currently broken because currently
-        // registerElement is sensitive to the order in which each custom
-        // element is registered. When fixed, we should be able to add the
-        // following three targets:
-        //   overlay.shadowRoot.query('#overlayContent'),
-        //   overlay.shadowRoot,
-        //   overlay,
-        menuButton.shadowRoot,
-        menuButton
+      item1,
+      menuButton.shadowRoot.querySelector('#menuButtonContent'),
+      menu.shadowRoot.olderShadowRoot.querySelector('#selectorContent'),
+      menu.shadowRoot.olderShadowRoot.querySelector('#selectorDiv'),
+      menu.shadowRoot.olderShadowRoot,
+      menu.shadowRoot.querySelector('#menuShadow'),
+      menu.shadowRoot.querySelector('#menuDiv'),
+      menu.shadowRoot,
+      menu,
+      menuButton.shadowRoot.querySelector('#menuButtonDiv'),
+      // TODO(sigmund): this test is currently broken because currently
+      // registerElement is sensitive to the order in which each custom
+      // element is registered. When fixed, we should be able to add the
+      // following three targets:
+      //   overlay.shadowRoot.query('#overlayContent'),
+      //   overlay.shadowRoot,
+      //   overlay,
+      menuButton.shadowRoot,
+      menuButton
     ];
     var x = 0;
     for (int i = 0; i < expectedPath.length; i++) {

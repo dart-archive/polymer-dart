@@ -30,11 +30,11 @@ main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
-  
+
   test('inner element gets initial values', () {
     var outer = querySelector('outer-element');
     var inner = outer.shadowRoot.querySelector('inner-element');
-    
+
     expect(inner.number, 1);
     expect(inner.boolean, false);
     expect(inner.string, 'a');
@@ -43,7 +43,7 @@ main() => initPolymer().then((zone) => zone.run(() {
   test('inner element updates the outer element', () {
     var outer = querySelector('outer-element');
     var inner = outer.shadowRoot.querySelector('inner-element');
-    
+
     // Toggle the value in the child and make sure that propagates around.
     inner.number = 2;
     inner.boolean = true;
@@ -52,7 +52,7 @@ main() => initPolymer().then((zone) => zone.run(() {
       expect(outer.number, 2);
       expect(outer.boolean, true);
       expect(outer.string, 'b');
-      
+
       inner.number = 1;
       inner.boolean = false;
       inner.string = 'a';
@@ -62,11 +62,11 @@ main() => initPolymer().then((zone) => zone.run(() {
       expect(outer.string, 'a');
     });
   });
-  
+
   test('outer element updates the inner element', () {
     var outer = querySelector('outer-element');
     var inner = outer.shadowRoot.querySelector('inner-element');
-    
+
     // Toggle the value in the parent and make sure that propagates around.
     outer.number = 2;
     outer.boolean = true;
@@ -75,7 +75,7 @@ main() => initPolymer().then((zone) => zone.run(() {
       expect(inner.number, 2);
       expect(inner.boolean, true);
       expect(inner.string, 'b');
-      
+
       outer.number = 1;
       outer.boolean = false;
       outer.string = 'a';

@@ -112,10 +112,11 @@ main() => initPolymer().then((zone) => zone.run(() {
     expect(queryXTag("#arr1").values, [0, 1, 2]);
     expect(queryXTag("#arr2").values, [33]);
     // Object deserialization tests
-    expect(queryXTag("#obj1").values, { 'name': 'Brandon',
-        'nums': [1, 22, 33] });
-    expect(queryXTag("#obj2").values, { "color": "Red" });
-    expect(queryXTag("#obj3").values, { 'movie': 'Buckaroo Banzai',
-        'DOB': '07/31/1978' });
+    expect(queryXTag("#obj1").values, {'name': 'Brandon', 'nums': [1, 22, 33]});
+    expect(queryXTag("#obj2").values, {"color": "Red"});
+    expect(queryXTag("#obj3").values, {
+      'movie': 'Buckaroo Banzai',
+      'DOB': '07/31/1978'
+    });
   });
 }));

@@ -4,11 +4,11 @@
 
 /// Script to create boilerplate for a Polymer element.
 /// Produces .dart and .html files for the element.
-/// 
+///
 /// Run this script with pub run:
-/// 
+///
 ///     pub run polymer:new_element element-name [-o output_dir]
-/// 
+///
 library polymer.bin.new_element;
 
 import 'dart:io';
@@ -18,18 +18,19 @@ import 'package:polymer/html_element_names.dart';
 
 void printUsage(ArgParser parser) {
   print('pub run polymer:new_element [-o output_dir] [-e super-element] '
-        'element-name');
+      'element-name');
   print(parser.getUsage());
 }
 
 void main(List<String> args) {
   var parser = new ArgParser(allowTrailingOptions: true);
-  
+
   parser.addOption('output-dir', abbr: 'o', help: 'Output directory');
-  parser.addOption('extends', abbr: 'e', 
+  parser.addOption('extends',
+      abbr: 'e',
       help: 'Extends polymer-element or DOM element (e.g., div, span)');
   parser.addFlag('help', abbr: 'h');
-  
+
   var options, element;
   try {
     options = parser.parse(args);
@@ -45,23 +46,23 @@ void main(List<String> args) {
       throw new FormatException('Must specify polymer-element to create.\n'
           'polymer-element must be all lowercase with at least 1 hyphen.');
     }
-  } catch(e) {
+  } catch (e) {
     print('$e\n');
     printUsage(parser);
     exitCode = 1;
     return;
-  } 
-  
+  }
+
   var outputDir, startDir;
-  
+
   var outputPath = options['output-dir'];
-  
+
   if (outputPath == null) {
     if ((new File('pubspec.yaml')).existsSync()) {
       print('When creating elements in root directory of package, '
           '-o <dir> must be specified');
-        exitCode = 1;
-        return;
+      exitCode = 1;
+      return;
     }
     outputDir = (new Directory('.')).resolveSymbolicLinksSync();
   } else {
@@ -73,7 +74,7 @@ void main(List<String> args) {
   }
 
   var pubspecDir = _findDirWithFile(outputDir, 'pubspec.yaml');
-  
+
   if (pubspecDir == null) {
     print('Could not find pubspec.yaml when walking up from $outputDir');
     exitCode = 1;
@@ -81,8 +82,7 @@ void main(List<String> args) {
   }
 
   var length = path.split(pubspecDir).length;
-  var distanceToPackageRoot =
-      path.split(outputDir).length - length;
+  var distanceToPackageRoot = path.split(outputDir).length - length;
 
   // See dartbug.com/20076 for the algorithm used here.
   if (distanceToPackageRoot > 0) {
@@ -92,16 +92,16 @@ void main(List<String> args) {
       distanceToPackageRoot--;
     }
   }
-  
+
   var superElement = options['extends'];
-  
-  if ((superElement == null ) || 
+
+  if ((superElement == null) ||
       _isDOMElement(superElement) ||
       _isPolymerElement(superElement)) {
     try {
-      _createBoilerPlate(element, options['extends'], outputDir, 
-          distanceToPackageRoot);
-    } on Exception catch(e, t) {
+      _createBoilerPlate(
+          element, options['extends'], outputDir, distanceToPackageRoot);
+    } on Exception catch (e, t) {
       print('Error creating files in $outputDir');
       print('$e $t');
       exitCode = 1;
@@ -118,7 +118,7 @@ void main(List<String> args) {
     exitCode = 1;
     return;
   }
- 
+
   return;
 }
 
@@ -143,13 +143,13 @@ String _toCamelCase(String s) {
 }
 
 void _createBoilerPlate(String element, String superClass, String directory,
-                        int distanceToPackageRoot) {
+    int distanceToPackageRoot) {
   var segments = element.split('-');
   var capitalizedName = segments.map((e) => _toCamelCase(e)).join('');
-  var underscoreName = element.replaceAll('-', '_'); 
+  var underscoreName = element.replaceAll('-', '_');
   var pathToPackages = '../' * distanceToPackageRoot;
-  
-  bool superClassIsPolymer = 
+
+  bool superClassIsPolymer =
       (superClass == null ? false : _isPolymerElement(superClass));
 
   var classDeclaration = '';
@@ -157,7 +157,7 @@ void _createBoilerPlate(String element, String superClass, String directory,
   var polymerCreatedString = '';
   var extendsElementString = '';
   var shadowString = '';
-  
+
   if (superClass == null) {
     classDeclaration = '\nclass $capitalizedName extends PolymerElement {';
   } else if (superClassIsPolymer) {
@@ -166,13 +166,12 @@ void _createBoilerPlate(String element, String superClass, String directory,
         superClass.split('-').map((e) => _toCamelCase(e)).join('');
     classDeclaration = 'class $capitalizedName extends $camelSuperClass {';
     extendsElementString = ' extends="$superClass"';
-    shadowString = 
-        '\n    <!-- Render extended element\'s Shadow DOM here -->\n'
+    shadowString = '\n    <!-- Render extended element\'s Shadow DOM here -->\n'
         '    <shadow>\n    </shadow>';
   } else {
     // The element being extended is a DOM Class.
     importDartHtml = "import 'dart:html';\n";
-    classDeclaration = 
+    classDeclaration =
         'class $capitalizedName extends ${HTML_ELEMENT_NAMES[superClass]} '
         'with Polymer, Observable {';
     polymerCreatedString = '\n    polymerCreated();';
@@ -243,7 +242,7 @@ $classDeclaration
 
   String dartFile = path.join(directory, underscoreName + '.dart');
   new File(dartFile).writeAsStringSync(dart);
-  
+
   print('Successfully created:');
   print('  ' + path.absolute(path.join(directory, underscoreName + '.dart')));
   print('  ' + path.absolute(path.join(directory, underscoreName + '.html')));

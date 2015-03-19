@@ -43,7 +43,6 @@ class XButtonElement extends ButtonElement with Polymer, Observable {
   }
 }
 
-
 main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 

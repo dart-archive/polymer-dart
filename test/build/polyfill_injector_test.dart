@@ -19,9 +19,8 @@ void main() {
 }
 
 void runTests({bool js: true}) {
-  var phases = [
-    [new PolyfillInjector(new TransformOptions(directlyIncludeJS: js))]
-  ];
+  var phases =
+      [[new PolyfillInjector(new TransformOptions(directlyIncludeJS: js))]];
 
   var ext = js ? '.js' : '';
   var type = js ? '' : 'type="application/dart" ';

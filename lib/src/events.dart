@@ -41,7 +41,6 @@ class PolymerExpressions extends BindingDelegate with PolymerEventBindings {
   static final getExpression =
       polymer_expressions.PolymerExpressions.getExpression;
   static final getBinding = polymer_expressions.PolymerExpressions.getBinding;
-
 }
 
 /// A mixin for a [BindingDelegate] to add Polymer event support.
@@ -108,7 +107,6 @@ abstract class PolymerEventBindings {
   }
 }
 
-
 class _EventBindable extends Bindable {
   final String _path;
   final Node _node;
@@ -130,7 +128,6 @@ class _EventBindable extends Bindable {
         'removeEventListener', [_node, _eventType, _handler]);
   }
 }
-
 
 /// Attribute prefix used for declarative event handlers.
 const _EVENT_PREFIX = 'on-';

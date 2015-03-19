@@ -36,7 +36,7 @@ Object deserializeValue(String value, Object currentValue, Type type) {
 
     // TODO(jmesserly): deserialized JSON is not assignable to most objects in
     // Dart. We should attempt to convert it appropriately.
-  } catch(e) {
+  } catch (e) {
     // The object isn't valid JSON, return the raw value
     return value;
   }

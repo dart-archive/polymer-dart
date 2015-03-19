@@ -69,8 +69,8 @@ main() => initPolymer().then((zone) => zone.run(() {
     expect(injectDiv.innerHtml, html);
 
     // Don't sanitize if we give it a dummy sanitizer
-    xFoo.injectBoundHtml(
-        html, element: injectDiv, treeSanitizer: nullSanitizer);
+    xFoo.injectBoundHtml(html,
+        element: injectDiv, treeSanitizer: nullSanitizer);
     expect(injectDiv.innerHtml, html);
   });
 }));

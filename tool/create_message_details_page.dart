@@ -81,8 +81,8 @@ _getMessagesFrom(Symbol libName, Map seen, List templates) {
 }
 
 _generateMessage(MessageTemplate template, bool forSite, StringBuffer sb) {
-  var details = template.details == null
-      ? 'No details available' : template.details;
+  var details =
+      template.details == null ? 'No details available' : template.details;
   if (forSite) details = '{% raw %}$details{% endraw %}';
   var id = template.id;
   var hashTag = '${id.package}_${id.id}';
@@ -90,9 +90,10 @@ _generateMessage(MessageTemplate template, bool forSite, StringBuffer sb) {
   var body = '\n$details\n\n----\n\n';
   // We add the anchor inside the <h3> title, otherwise the link doesn't work.
   if (forSite) {
-    sb..write(title)
-        ..write('\n{: #$hashTag}\n')
-        ..write(body);
+    sb
+      ..write(title)
+      ..write('\n{: #$hashTag}\n')
+      ..write(body);
   } else {
     var html = markdownToHtml('$title$body').replaceFirst('<hr', '</div><hr');
     sb.write('\n\n<div id="$hashTag">$html');
@@ -101,12 +102,15 @@ _generateMessage(MessageTemplate template, bool forSite, StringBuffer sb) {
 
 _parseOptions(args) {
   var parser = new ArgParser(allowTrailingOptions: true)
-      ..addOption('out', abbr: 'o',
-          defaultsTo: 'lib/src/build/generated/messages.html',
-          help: 'the output file path')
-      ..addFlag('site', abbr: 's', negatable: false,
-          help: 'generate contents for the dartlang.org site')
-      ..addFlag('help', abbr: 'h', negatable: false);
+    ..addOption('out',
+        abbr: 'o',
+        defaultsTo: 'lib/src/build/generated/messages.html',
+        help: 'the output file path')
+    ..addFlag('site',
+        abbr: 's',
+        negatable: false,
+        help: 'generate contents for the dartlang.org site')
+    ..addFlag('help', abbr: 'h', negatable: false);
 
   var options = parser.parse(args);
   if (options['help']) {

@@ -58,8 +58,8 @@ main() => initPolymer().then((zone) => zone.run(() {
   setUp(() => Polymer.onReady);
 
   test('published properties', () {
-    published(tag) => (new Element.tag(tag) as PolymerElement)
-        .element.publishedProperties;
+    published(tag) =>
+        (new Element.tag(tag) as PolymerElement).element.publishedProperties;
 
     expect(published('x-foo'), ['Foo', 'baz']);
     expect(published('x-bar'), ['Foo', 'baz', 'Bar']);

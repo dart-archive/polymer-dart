@@ -26,4 +26,3 @@ main() => initPolymer().then((zone) => zone.run(() {
     });
   });
 }));
-

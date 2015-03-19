@@ -173,12 +173,16 @@ List<List<Transformer>> createDeployPhases(TransformOptions options,
   if (options.lint.enabled) phases.add([new Linter(options)]);
 
   phases.addAll([
-    [new web_components.ImportInlinerTransformer(
-        options.entryPoints, ['[[', '{{'])],
+    [
+      new web_components.ImportInlinerTransformer(
+          options.entryPoints, ['[[', '{{'])
+    ],
     [new HtmlFinalizer(options)],
-    [new ObservableTransformer(
-        releaseMode: options.releaseMode,
-        injectBuildLogsInOutput: options.injectBuildLogsInOutput)],
+    [
+      new ObservableTransformer(
+          releaseMode: options.releaseMode,
+          injectBuildLogsInOutput: options.injectBuildLogsInOutput)
+    ],
     // TODO(jakemac): Move to web_components.
     [new PolyfillInjector(options)],
     [new BuildFilter(options)],

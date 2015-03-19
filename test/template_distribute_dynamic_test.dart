@@ -25,20 +25,17 @@ class XTest extends PolymerElement {
   }
 
   _runTest(_) {
-    list = [
-      {'name': 'foo'},
-      {'name': 'bar'}
-    ];
+    list = [{'name': 'foo'}, {'name': 'bar'}];
     return new Future(() {
       // tickle SD polyfill
       offsetHeight;
       var children = this.$['echo'].children;
-      expect(children[0].localName, 'template', reason:
-          'shadowDOM dynamic distribution via template');
-      expect(children[1].text, 'foo', reason:
-          'shadowDOM dynamic distribution via template');
-      expect(children[2].text, 'bar', reason:
-          'shadowDOM dynamic distribution via template');
+      expect(children[0].localName, 'template',
+          reason: 'shadowDOM dynamic distribution via template');
+      expect(children[1].text, 'foo',
+          reason: 'shadowDOM dynamic distribution via template');
+      expect(children[2].text, 'bar',
+          reason: 'shadowDOM dynamic distribution via template');
       expect(children.length, 3, reason: 'expected number of children');
     });
   }

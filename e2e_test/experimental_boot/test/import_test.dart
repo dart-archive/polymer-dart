@@ -20,12 +20,14 @@ main() {
   setUp(() => Polymer.onReady);
 
   test('canonicalization with experimental bootstrap', () {
-    expect(a, 1, reason:
-      'deploy picks the "package:" url as the canonical url for script tags.');
+    expect(a, 1,
+        reason: 'deploy picks the "package:" url as the canonical url for '
+        'script tags.');
 
     // We shouldn't be using 'packages/' above, so that's ok.
-    expect(b, 0, reason:
-        'we pick the "package:" url as the canonical url for script tags.');
+    expect(b, 0,
+        reason: 'we pick the "package:" url as the canonical url for script '
+        'tags.');
     expect(c, 2, reason: 'c was always imported with "package:" urls.');
     expect(d1.d, 2, reason: 'both a and b are loaded using package: urls');
     expect(d2.d, 0, reason: 'both a and b are loaded using package: urls');

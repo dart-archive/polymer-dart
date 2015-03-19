@@ -20,7 +20,7 @@ class MyChildElement extends PolymerElement {
   // Make this a no-op, so we can verify the initial
   // reflectPropertyToAttribute works.
   @override
-  openPropertyObserver() { }
+  openPropertyObserver() {}
 }
 
 @CustomTag('my-element')
@@ -36,8 +36,8 @@ main() => initPolymer().then((zone) => zone.run(() {
   setUp(() => Polymer.onReady);
 
   test('attribute reflected to property name', () {
-    var child = querySelector('my-element')
-        .shadowRoot.querySelector('my-child-element');
+    var child = querySelector('my-element').shadowRoot
+        .querySelector('my-child-element');
     expect(child.lowercase, 11);
     expect(child.camelCase, 11);
 

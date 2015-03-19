@@ -12,8 +12,10 @@ main() {
   initPolymer();
   useHtmlConfiguration();
 
-  extractLinks(nodes) => nodes.where((n) => n is Element)
-      .map((n) => n.query('a').href.split('/').last).toList();
+  extractLinks(nodes) => nodes
+      .where((n) => n is Element)
+      .map((n) => n.query('a').href.split('/').last)
+      .toList();
 
   setUp(() => Polymer.onReady);
 
@@ -26,9 +28,10 @@ main() {
 
     final contents = listComp.shadowRoot.querySelectorAll('content');
     expect(contents.length, 2, reason: 'news has 2 content tags');
-    expect(extractLinks(contents[0].getDistributedNodes()),
-        ['3', '5'], reason: 'breaking stories first');
-    expect(extractLinks(contents[1].getDistributedNodes()),
-        ['1', '2', '4', '4'], reason: 'other stories after breaking stories');
+    expect(extractLinks(contents[0].getDistributedNodes()), ['3', '5'],
+        reason: 'breaking stories first');
+    expect(
+        extractLinks(contents[1].getDistributedNodes()), ['1', '2', '4', '4'],
+        reason: 'other stories after breaking stories');
   });
 }

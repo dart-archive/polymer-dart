@@ -64,13 +64,15 @@ main() {
       setUp(() => Polymer.onReady);
 
       test('published properties', () {
-        published(tag) => (new Element.tag(tag) as PolymerElement)
-        .element.publishedProperties;
+        published(tag) => (new Element.tag(
+            tag) as PolymerElement).element.publishedProperties;
 
         expect(published('x-zot'), ['Foo', 'Bar', 'zot', 'm']);
-        expect(published('x-squid'), ['Foo', 'Bar', 'zot', 'm', 'baz', 'squid']);
+        expect(
+            published('x-squid'), ['Foo', 'Bar', 'zot', 'm', 'baz', 'squid']);
         expect(published('x-noscript'), ['Foo', 'Bar', 'zot', 'm']);
-        expect(published('x-squid'), ['Foo', 'Bar', 'zot', 'm', 'baz', 'squid']);
+        expect(
+            published('x-squid'), ['Foo', 'Bar', 'zot', 'm', 'baz', 'squid']);
       });
     });
   });

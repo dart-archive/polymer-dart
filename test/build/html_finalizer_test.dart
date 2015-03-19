@@ -21,9 +21,8 @@ void main() {
 }
 
 cspTests() {
-  final cspPhases = [
-    [new HtmlFinalizer(new TransformOptions(contentSecurityPolicy: true))]
-  ];
+  final cspPhases =
+      [[new HtmlFinalizer(new TransformOptions(contentSecurityPolicy: true))]];
   testPhases('extract Js scripts in CSP mode', cspPhases, {
     'a|web/test.html': '<!DOCTYPE html><html><head>'
         '<script type="text/javascript">/*first*/</script>'

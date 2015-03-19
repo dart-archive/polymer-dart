@@ -26,8 +26,8 @@ import 'package:args/args.dart';
 import 'package:code_transformers/tests.dart' show testingDartSdkDirectory;
 import 'package:path/path.dart' as path;
 
-import 'src/build/common.dart' show TransformOptions, LintOptions,
-    phasesForPolymer;
+import 'src/build/common.dart'
+    show TransformOptions, LintOptions, phasesForPolymer;
 import 'src/build/runner.dart';
 import 'transformer.dart';
 
@@ -55,8 +55,7 @@ main(List<String> arguments) {
         packagePhases: {'polymer': phasesForPolymer});
   } else {
     options = _createTestOptions(
-        test, outDir, args['js'], args['csp'], !args['debug'],
-        filters);
+        test, outDir, args['js'], args['csp'], !args['debug'], filters);
   }
   if (options == null) exit(1);
 
@@ -71,7 +70,6 @@ main(List<String> arguments) {
 BarbackOptions _createTestOptions(String testFile, String outDir,
     bool directlyIncludeJS, bool contentSecurityPolicy, bool releaseMode,
     List<String> filters) {
-
   var testDir = path.normalize(path.dirname(testFile));
 
   // A test must be allowed to import things in the package.
@@ -98,13 +96,14 @@ BarbackOptions _createTestOptions(String testFile, String outDir,
   var dirs = {};
   // Note: we include all packages in pkg/ to keep things simple. Ideally this
   // should be restricted to the transitive dependencies of this package.
-  _subDirs(pkgDir).forEach((p) { dirs[path.basename(p)] = p; });
+  _subDirs(pkgDir).forEach((p) {
+    dirs[path.basename(p)] = p;
+  });
   // Note: packageName may be a duplicate of 'polymer', but that's ok (they
   // should be the same value).
-  dirs[packageName]= pubspecDir;
+  dirs[packageName] = pubspecDir;
   return new BarbackOptions(phases, outDir,
-      currentPackage: packageName,
-      packageDirs: dirs,
+      currentPackage: packageName, packageDirs: dirs,
       // TODO(sigmund): include here also smoke transformer when it's on by
       // default.
       packagePhases: {'polymer': phasesForPolymer},
@@ -132,9 +131,11 @@ String _findDirWithDir(String dir, String subdir) {
   return dir;
 }
 
-List<String> _subDirs(String dir) =>
-    new Directory(dir).listSync(followLinks: false)
-        .where((d) => d is Directory).map((d) => d.path).toList();
+List<String> _subDirs(String dir) => new Directory(dir)
+    .listSync(followLinks: false)
+    .where((d) => d is Directory)
+    .map((d) => d.path)
+    .toList();
 
 void _reportErrorAndExit(e, trace) {
   print('Uncaught error: $e');
@@ -144,27 +145,28 @@ void _reportErrorAndExit(e, trace) {
 
 ArgResults _parseArgs(arguments) {
   var parser = new ArgParser()
-      ..addFlag('help', abbr: 'h', help: 'Displays this help message.',
-          defaultsTo: false, negatable: false)
-      ..addOption('out', abbr: 'o', help: 'Directory to generate files into.',
-          defaultsTo: 'out')
-      ..addOption('file-filter', help: 'Do not copy in files that match \n'
-           'these filters to the deployed folder, e.g., ".svn"',
-          defaultsTo: null)
-      ..addOption('test', help: 'Deploy the test at the given path.\n'
-          'Note: currently this will deploy all tests in its directory,\n'
-          'but it will eventually deploy only the specified test.')
-      ..addFlag('js', help:
-          'deploy replaces *.dart scripts with *.dart.js. This flag \n'
-          'leaves "packages/browser/dart.js" to do the replacement at runtime.',
-          defaultsTo: true)
-      ..addFlag('debug', help:
-          'run in debug mode. For example, use the debug polyfill \n'
-          'web_components/webcomponents.js instead of the minified one.\n',
-          defaultsTo: false)
-      ..addFlag('csp', help:
-          'extracts inlined JavaScript code to comply with \n'
-          'Content Security Policy restrictions.');
+    ..addFlag('help',
+        abbr: 'h',
+        help: 'Displays this help message.',
+        defaultsTo: false,
+        negatable: false)
+    ..addOption('out',
+        abbr: 'o', help: 'Directory to generate files into.', defaultsTo: 'out')
+    ..addOption('file-filter', help: 'Do not copy in files that match \n'
+        'these filters to the deployed folder, e.g., ".svn"', defaultsTo: null)
+    ..addOption('test', help: 'Deploy the test at the given path.\n'
+        'Note: currently this will deploy all tests in its directory,\n'
+        'but it will eventually deploy only the specified test.')
+    ..addFlag('js',
+        help: 'deploy replaces *.dart scripts with *.dart.js. This flag \n'
+        'leaves "packages/browser/dart.js" to do the replacement at runtime.',
+        defaultsTo: true)
+    ..addFlag('debug',
+        help: 'run in debug mode. For example, use the debug polyfill \n'
+        'web_components/webcomponents.js instead of the minified one.\n',
+        defaultsTo: false)
+    ..addFlag('csp', help: 'extracts inlined JavaScript code to comply with \n'
+        'Content Security Policy restrictions.');
   try {
     var results = parser.parse(arguments);
     if (results['help']) {

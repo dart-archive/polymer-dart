@@ -56,10 +56,14 @@ class AutoBindingElement extends TemplateElement with Polymer, Observable
   TemplateBindExtension _self;
 
   get model => _self.model;
-  set model(value) { _self.model = value; }
+  set model(value) {
+    _self.model = value;
+  }
 
   BindingDelegate get bindingDelegate => _self.bindingDelegate;
-  set bindingDelegate(BindingDelegate value) { _self.bindingDelegate = value; }
+  set bindingDelegate(BindingDelegate value) {
+    _self.bindingDelegate = value;
+  }
 
   void clear() => _self.clear();
 

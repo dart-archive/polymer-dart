@@ -92,7 +92,6 @@ import 'src/build/common.dart';
 
 import 'transformer.dart';
 
-
 /// Runs the polymer linter on any relevant file in your package, such as any
 /// .html file under 'lib/', 'asset/', and 'web/'. And, if requested, creates a
 /// directory suitable for deploying a Polymer application to a server.
@@ -121,12 +120,17 @@ Future build({List<String> entryPoints, CommandLineOptions options,
   if (entryPoints == null) entryPoints = _parseEntryPointsFromPubspec();
 
   return options.forceDeploy
-      ? deploy(entryPoints: entryPoints, options: options,
-            currentPackage: currentPackage, packageDirs: packageDirs)
-      : lint(entryPoints: entryPoints, options: options,
-            currentPackage: currentPackage, packageDirs: packageDirs);
+      ? deploy(
+          entryPoints: entryPoints,
+          options: options,
+          currentPackage: currentPackage,
+          packageDirs: packageDirs)
+      : lint(
+          entryPoints: entryPoints,
+          options: options,
+          currentPackage: currentPackage,
+          packageDirs: packageDirs);
 }
-
 
 /// Runs the polymer linter on any relevant file in your package,
 /// such as any .html file under 'lib/', 'asset/', and 'web/'.
@@ -154,7 +158,8 @@ Future lint({List<String> entryPoints, CommandLineOptions options,
   var linter = new Linter(linterOptions, skipMissingElementWarning: true);
 
   return runBarback(new BarbackOptions([[linter]], null,
-      currentPackage: currentPackage, packageDirs: packageDirs,
+      currentPackage: currentPackage,
+      packageDirs: packageDirs,
       machineFormat: options.machineFormat));
 }
 
@@ -192,16 +197,16 @@ Future deploy({List<String> entryPoints, CommandLineOptions options,
       releaseMode: options.releaseMode);
 
   var phases = new PolymerTransformerGroup(transformOptions).phases;
-  var barbackOptions = new BarbackOptions(
-      phases, options.outDir, currentPackage: currentPackage,
-      packageDirs: packageDirs, machineFormat: options.machineFormat,
+  var barbackOptions = new BarbackOptions(phases, options.outDir,
+      currentPackage: currentPackage,
+      packageDirs: packageDirs,
+      machineFormat: options.machineFormat,
       // TODO(sigmund): include here also smoke transformer when it's on by
       // default.
       packagePhases: {'polymer': phasesForPolymer});
   return runBarback(barbackOptions)
       .then((_) => print('Done! All files written to "${options.outDir}"'));
 }
-
 
 /// Options that may be used either in build.dart or by the linter and deploy
 /// tools.
@@ -240,8 +245,7 @@ class CommandLineOptions {
 
   CommandLineOptions(this.changedFiles, this.removedFiles, this.clean,
       this.full, this.machineFormat, this.forceDeploy, this.outDir,
-      this.directlyIncludeJS, this.contentSecurityPolicy,
-      this.releaseMode);
+      this.directlyIncludeJS, this.contentSecurityPolicy, this.releaseMode);
 }
 
 /// Parse command-line arguments and return a [CommandLineOptions] object. The
@@ -275,32 +279,31 @@ CommandLineOptions parseOptions([List<String> args]) {
     args = [];
   }
   var parser = new ArgParser()
-    ..addOption('changed', help: 'The file has changed since the last build.',
-        allowMultiple: true)
-    ..addOption('removed', help: 'The file was removed since the last build.',
-        allowMultiple: true)
-    ..addFlag('clean', negatable: false,
-        help: 'Remove any build artifacts (if any).')
+    ..addOption('changed',
+        help: 'The file has changed since the last build.', allowMultiple: true)
+    ..addOption('removed',
+        help: 'The file was removed since the last build.', allowMultiple: true)
+    ..addFlag('clean',
+        negatable: false, help: 'Remove any build artifacts (if any).')
     ..addFlag('full', negatable: false, help: 'perform a full build')
-    ..addFlag('machine', negatable: false,
+    ..addFlag('machine',
+        negatable: false,
         help: 'Produce warnings in a machine parseable format.')
-    ..addFlag('deploy', negatable: false,
-        help: 'Whether to force deploying.')
-    ..addOption('out', abbr: 'o', help: 'Directory to generate files into.',
-        defaultsTo: 'out')
-    ..addFlag('js', help:
-        'deploy replaces *.dart scripts with *.dart.js. This flag \n'
+    ..addFlag('deploy', negatable: false, help: 'Whether to force deploying.')
+    ..addOption('out',
+        abbr: 'o', help: 'Directory to generate files into.', defaultsTo: 'out')
+    ..addFlag('js',
+        help: 'deploy replaces *.dart scripts with *.dart.js. This flag \n'
         'leaves "packages/browser/dart.js" to do the replacement at runtime.',
         defaultsTo: true)
-    ..addFlag('csp', help:
-        'extracts inlined JavaScript code to comply with \n'
+    ..addFlag('csp', help: 'extracts inlined JavaScript code to comply with \n'
         'Content Security Policy restrictions.')
-    ..addFlag('debug', help:
-        'run in debug mode. For example, use the debug polyfill \n'
+    ..addFlag('debug',
+        help: 'run in debug mode. For example, use the debug polyfill \n'
         'web_components/webcomponents.js instead of the minified one.\n',
         defaultsTo: false)
-    ..addFlag('help', abbr: 'h',
-        negatable: false, help: 'Displays this help and exit.');
+    ..addFlag('help',
+        abbr: 'h', negatable: false, help: 'Displays this help and exit.');
 
   showUsage() {
     print('Usage: dart build.dart [options]');
@@ -328,8 +331,8 @@ CommandLineOptions parseOptions([List<String> args]) {
 
 List<String> _parseEntryPointsFromPubspec() {
   var entryPoints = [];
-  var pubspec = new File(path.join(
-      path.dirname(Platform.script.path), 'pubspec.yaml'));
+  var pubspec =
+      new File(path.join(path.dirname(Platform.script.path), 'pubspec.yaml'));
   if (!pubspec.existsSync()) {
     print('error: pubspec.yaml file not found.');
     return null;

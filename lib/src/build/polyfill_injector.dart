@@ -94,8 +94,8 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
 
       _addScript(urlSegment, [Node parent, int position = 0]) {
         if (parent == null) parent = document.head;
-        var pathToPackages = '../' *
-            (path.url.split(transform.primaryInput.id.path).length - 2);
+        var pathToPackages =
+            '../' * (path.url.split(transform.primaryInput.id.path).length - 2);
         parent.nodes.insert(position, parseFragment(
             '<script src="${pathToPackages}packages/$urlSegment"></script>'));
       }

@@ -10,6 +10,7 @@ import 'package:unittest/html_config.dart';
 import 'package:polymer/polymer.dart';
 
 import 'package:good_import/a.dart';
+
 main() {
   initPolymer();
   useHtmlConfiguration();

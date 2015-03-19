@@ -22,7 +22,6 @@ main() => initPolymer();
 
 @reflectable
 class XZug extends PolymerElement {
-
   XZug.created() : super.created();
 
   ready() {
@@ -30,7 +29,6 @@ class XZug extends PolymerElement {
       _testFired.complete(null);
     });
   }
-
 
   contentTestEventHandler(e, detail, sender) {
     _observedEvents.add(sender);
@@ -106,13 +104,21 @@ class XBar extends PolymerElement {
       var xZugDiv = xZug.shadowRoot.querySelector('#xZugDiv');
       var xZugContent = xZug.shadowRoot.querySelector('#xZugContent');
 
-      var expectedPath = [ xBarContent, xBarDiv, xFooContent,
-          xZugContent, xZugDiv, xZug, xFooDiv, xFoo, xBar];
+      var expectedPath = [
+        xBarContent,
+        xBarDiv,
+        xFooContent,
+        xZugContent,
+        xZugDiv,
+        xZug,
+        xFooDiv,
+        xFoo,
+        xBar
+      ];
       debugName(e) => '${e.localName}#${e.id}';
-      expect(_observedEvents, expectedPath, reason:
-        '<br>\nexpected: ${expectedPath.map(debugName).join(',')}'
-        '<br>\nactual: ${_observedEvents.map(debugName).join(',')}'
-        );
+      expect(_observedEvents, expectedPath,
+          reason: '<br>\nexpected: ${expectedPath.map(debugName).join(',')}'
+          '<br>\nactual: ${_observedEvents.map(debugName).join(',')}');
     });
   });
 }

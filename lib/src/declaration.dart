@@ -73,8 +73,8 @@ class PolymerDeclaration {
   // per element (why does the js implementation stores 1 per template node?)
   Expando<Set<String>> _templateDelegates;
 
-  String get extendee => superDeclaration != null ?
-      superDeclaration.name : null;
+  String get extendee =>
+      superDeclaration != null ? superDeclaration.name : null;
 
   /// The root URI for assets.
   Uri _rootUri;
@@ -97,8 +97,13 @@ class PolymerDeclaration {
   /// Dart Note: We have added `classes` to this list, which is the dart:html
   /// equivalent of `classList` but more likely to have conflicts.
   static Set<Symbol> _PROPERTY_NAME_BLACKLIST = new HashSet.from([
-      const Symbol('children'), const Symbol('id'), const Symbol('hidden'),
-      const Symbol('style'), const Symbol('title'), const Symbol('classes')]);
+    const Symbol('children'),
+    const Symbol('id'),
+    const Symbol('hidden'),
+    const Symbol('style'),
+    const Symbol('title'),
+    const Symbol('classes')
+  ]);
 
   bool _checkPropertyBlacklist(Symbol name) {
     if (_PROPERTY_NAME_BLACKLIST.contains(name)) {
@@ -276,8 +281,10 @@ class PolymerDeclaration {
   }
 
   void _getPublishedProperties(Type type) {
-    var options = const smoke.QueryOptions(includeInherited: true,
-        includeUpTo: HtmlElement, withAnnotations: const [PublishedProperty]);
+    var options = const smoke.QueryOptions(
+        includeInherited: true,
+        includeUpTo: HtmlElement,
+        withAnnotations: const [PublishedProperty]);
     for (var decl in smoke.query(type, options)) {
       if (decl.isFinal) continue;
       if (_checkPropertyBlacklist(decl.name)) continue;
@@ -288,13 +295,11 @@ class PolymerDeclaration {
       if (decl.annotations
           .where((a) => a is PublishedProperty)
           .any((a) => a.reflect)) {
-
         if (_reflect == null) _reflect = new Set();
         _reflect.add(smoke.symbolToName(decl.name));
       }
     }
   }
-
 
   void accumulateInstanceAttributes() {
     // inherit instance attributes
@@ -347,7 +352,9 @@ class PolymerDeclaration {
 
   String urlToPath(String url) {
     if (url == null) return '';
-    return (url.split('/')..removeLast()..add('')).join('/');
+    return (url.split('/')
+      ..removeLast()
+      ..add('')).join('/');
   }
 
   // Dart note: loadStyles, convertSheetsToStyles, copySheetAttribute and
@@ -380,17 +387,19 @@ class PolymerDeclaration {
   /// not become active.
   /// Note, ignores sheets with the attribute 'polymer-scope'.
   void installLocalSheets() {
-    var sheets = this.sheets.where(
-        (s) => !s.attributes.containsKey(_SCOPE_ATTR));
+    var sheets =
+        this.sheets.where((s) => !s.attributes.containsKey(_SCOPE_ATTR));
     var content = templateContent;
     if (content != null) {
       var cssText = new StringBuffer();
       for (var sheet in sheets) {
-        cssText..write(_cssTextFromSheet(sheet))..write('\n');
+        cssText
+          ..write(_cssTextFromSheet(sheet))
+          ..write('\n');
       }
       if (cssText.length > 0) {
         var style = element.ownerDocument.createElement('style')
-            ..text = '$cssText';
+          ..text = '$cssText';
 
         content.insertBefore(style, content.firstChild);
       }
@@ -425,11 +434,15 @@ class PolymerDeclaration {
     matcher(s) => s.matches(selector);
 
     for (var sheet in sheets.where(matcher)) {
-      cssText..write(_cssTextFromSheet(sheet))..write('\n\n');
+      cssText
+        ..write(_cssTextFromSheet(sheet))
+        ..write('\n\n');
     }
     // handle cached style elements
     for (var style in styles.where(matcher)) {
-      cssText..write(style.text)..write('\n\n');
+      cssText
+        ..write(style.text)
+        ..write('\n\n');
     }
     return cssText.toString();
   }
@@ -443,8 +456,8 @@ class PolymerDeclaration {
     if (cssText == '') return null;
 
     return new StyleElement()
-        ..text = cssText
-        ..attributes[_STYLE_SCOPE_ATTRIBUTE] = '$name-$scopeDescriptor';
+      ..text = cssText
+      ..attributes[_STYLE_SCOPE_ATTRIBUTE] = '$name-$scopeDescriptor';
   }
 
   /// Fetch a list of all *Changed methods so we can observe the associated
@@ -464,9 +477,13 @@ class PolymerDeclaration {
   /// Fetch a list of all methods annotated with [ObserveProperty] so we can
   /// observe the associated properties.
   void explodeObservers() {
-    var options = const smoke.QueryOptions(includeFields: false,
-        includeProperties: false, includeMethods: true, includeInherited: true,
-        includeUpTo: HtmlElement, withAnnotations: const [ObserveProperty]);
+    var options = const smoke.QueryOptions(
+        includeFields: false,
+        includeProperties: false,
+        includeMethods: true,
+        includeInherited: true,
+        includeUpTo: HtmlElement,
+        withAnnotations: const [ObserveProperty]);
     for (var decl in smoke.query(type, options)) {
       for (var meta in decl.annotations) {
         if (meta is! ObserveProperty) continue;
@@ -500,8 +517,10 @@ class PolymerDeclaration {
     // Dart Note: The js side makes computed properties read only, and does
     // special logic right here for them. For us they are automatically read
     // only unless you define a setter for them, so we left that out.
-    var options = const smoke.QueryOptions(includeInherited: true,
-        includeUpTo: HtmlElement, withAnnotations: const [ComputedProperty]);
+    var options = const smoke.QueryOptions(
+        includeInherited: true,
+        includeUpTo: HtmlElement,
+        withAnnotations: const [ComputedProperty]);
     var existing = {};
     for (var decl in smoke.query(type, options)) {
       var name = decl.name;
@@ -532,9 +551,9 @@ PolymerDeclaration _getDeclaration(String name) => _declarations[name];
 
 /// Using Polymer's web_components/src/ShadowCSS.js passing the style tag's
 /// content.
-void _shimShadowDomStyling(DocumentFragment template, String name,
-    String extendee) {
-  if (_ShadowCss == null ||!_hasShadowDomPolyfill) return;
+void _shimShadowDomStyling(
+    DocumentFragment template, String name, String extendee) {
+  if (_ShadowCss == null || !_hasShadowDomPolyfill) return;
 
   _ShadowCss.callMethod('shimStyling', [template, name, extendee]);
 }
@@ -568,9 +587,8 @@ String _cssTextFromSheet(LinkElement sheet) {
   // downloaded and cached by HTML Imports.
   try {
     return (new HttpRequest()
-        ..open('GET', href, async: false)
-        ..send())
-        .responseText;
+      ..open('GET', href, async: false)
+      ..send()).responseText;
   } on DomException catch (e, t) {
     _sheetLog.fine('failed to XHR stylesheet text href="$href" error: '
         '$e, trace: $t');
@@ -580,10 +598,12 @@ String _cssTextFromSheet(LinkElement sheet) {
 
 final Logger _sheetLog = new Logger('polymer.stylesheet');
 
-
 final smoke.QueryOptions _changedMethodQueryOptions = new smoke.QueryOptions(
-    includeFields: false, includeProperties: false, includeMethods: true,
-    includeInherited: true, includeUpTo: HtmlElement,
+    includeFields: false,
+    includeProperties: false,
+    includeMethods: true,
+    includeInherited: true,
+    includeUpTo: HtmlElement,
     matches: _isObserverMethod);
 
 bool _isObserverMethod(Symbol symbol) {
@@ -591,7 +611,6 @@ bool _isObserverMethod(Symbol symbol) {
   if (name == null) return false;
   return name.endsWith('Changed') && name != 'attributeChanged';
 }
-
 
 final _ATTRIBUTES_REGEX = new RegExp(r'\s|,');
 

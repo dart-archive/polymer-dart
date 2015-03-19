@@ -610,11 +610,9 @@ In addition, it is no longer required that you include this file directly, as
 running in dartium with a local server.
 ''');
 
-const NO_DART_SCRIPT = const MessageTemplate(
-    const MessageId('polymer', 47),
+const NO_DART_SCRIPT = const MessageTemplate(const MessageId('polymer', 47),
     'No dart script was found in the entry point: %-url-%.',
-    'Missing Dart script tag in entry point.',
-    '''
+    'Missing Dart script tag in entry point.', '''
 All entry points should have a dart script file. This can sometimes happen if
 you are using the default entry_points value in your polymer transformer
 configuration but have files which are not entry points in your `web` or `test`
@@ -623,10 +621,8 @@ points in your configuration will fix this.
 ''');
 
 const MISSING_POLYMER_DART = const MessageTemplate(
-    const MessageId('polymer', 48),
-    'polymer.dart not imported.',
-    'polymer.dart not imported.',
-    '''
+    const MessageId('polymer', 48), 'polymer.dart not imported.',
+    'polymer.dart not imported.', '''
 It is required that your application contains an import to
 `package:polymer/polymer.dart`.
 ''');

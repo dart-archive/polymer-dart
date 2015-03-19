@@ -43,5 +43,4 @@ main() => initPolymer().then((zone) => zone.run(() {
 
     expect(elementsReadied, 2, reason: 'imported elements upgraded');
   });
-
 }));

@@ -29,13 +29,12 @@ class DecorationTest extends PolymerElement {
 
 @CustomTag('decoration-test2')
 class DecorationTest2 extends DecorationTest {
-  List<List<int>> arrs = [ [1,2,3], [4,5,6] ];
+  List<List<int>> arrs = [[1, 2, 3], [4, 5, 6]];
 
   DecorationTest2.created() : super.created();
 
   test() {
-    expect($['tbody'].children.length, 3,
-        reason: 'attribute template stamped');
+    expect($['tbody'].children.length, 3, reason: 'attribute template stamped');
     expect($['tbody'].children[1].children.length, 4,
         reason: 'attribute sub-template stamped');
   }

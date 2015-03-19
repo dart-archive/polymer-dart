@@ -3,4 +3,5 @@
 // BSD-style license that can be found in the LICENSE file.
 
 library canonicalization.test.dev1_test;
+
 export 'dev_common.dart';

@@ -8,7 +8,6 @@ import 'package:unittest/unittest.dart';
 import 'package:unittest/html_config.dart';
 import 'package:polymer/polymer.dart';
 
-
 class XAttrPublish extends PolymerElement {
   XAttrPublish.created() : super.created();
 
@@ -37,7 +36,9 @@ class XBar extends XFoo {
 class XZot extends XBar {
   // Dart note: trying to make this roughly equivalent to the JS
   @PublishedProperty(reflect: false) int get zot => super.zot;
-  @PublishedProperty(reflect: false) set zot(int x) { super.zot = x; }
+  @PublishedProperty(reflect: false) set zot(int x) {
+    super.zot = x;
+  }
 
   XZot.created() : super.created() {
     zot = 2;
@@ -75,28 +76,33 @@ main() => initPolymer().then((zone) => zone.run(() {
 
   test('property to attribute reflection', () {
     var xbasic = querySelector('x-basic');
-    expect(xbasic.getAttribute('nog'), null, reason:
-        'property published with `attributes` has correct initial value');
+    expect(xbasic.getAttribute('nog'), null,
+        reason: 'property published with `attributes` has correct initial '
+        'value');
     xbasic.setAttribute('nog', 'hi');
-    expect(xbasic.getAttribute('nog'), 'hi', reason:
-        'deserialization of property published via `attributes`');
+    expect(xbasic.getAttribute('nog'), 'hi',
+        reason: 'deserialization of property published via `attributes`');
 
     var xattrpublish = querySelector('x-attr-publish');
-    expect(xattrpublish.nog, '', reason:
-        'property published with `attributes` has correct initial value');
+    expect(xattrpublish.nog, '',
+        reason: 'property published with `attributes` has correct initial '
+        'value');
     xattrpublish.setAttribute('nog', 'hi');
-    expect(xattrpublish.nog, 'hi', reason:
-        'deserialization of property published via `attributes`');
+    expect(xattrpublish.nog, 'hi',
+        reason: 'deserialization of property published via `attributes`');
 
     var xcompose = querySelector('x-compose');
     var xfoo = querySelector('x-foo');
-    expect(xfoo.foo, '', reason:
-        'property published with info object has correct initial value');
+    expect(xfoo.foo, '',
+        reason: 'property published with info object has correct initial '
+        'value');
     var xbar = querySelector('x-bar');
-    expect(xbar.zim, false, reason:
-        'property published with info object has correct initial value');
-    expect(xbar.foo, '', reason:
-        'property published with info object has correct initial value');
+    expect(xbar.zim, false,
+        reason: 'property published with info object has correct initial '
+        'value');
+    expect(xbar.foo, '',
+        reason: 'property published with info object has correct initial '
+        'value');
     var xzot = querySelector('x-zot');
     xfoo.foo = 5;
     xfoo.attributes['def1'] = '15';
@@ -137,8 +143,8 @@ main() => initPolymer().then((zone) => zone.run(() {
           reason: 'inherited published property is reflected');
       expect('${xbar.zot}', xbar.attributes['zot'],
           reason: 'attribute reflects property as number');
-      expect(xbar.attributes['zim'], '', reason:
-          'attribute reflects true valued boolean property as '
+      expect(xbar.attributes['zim'], '',
+          reason: 'attribute reflects true valued boolean property as '
           'having attribute');
       expect(xbar.str, xbar.attributes['str'],
           reason: 'attribute reflects property as published string');
@@ -151,23 +157,21 @@ main() => initPolymer().then((zone) => zone.run(() {
       xbar.attributes['obj'] = "{'hello': 'world'}";
       expect(xbar.foo, xbar.attributes['foo'],
           reason: 'property reflects attribute as string');
-      expect(xbar.zot, 54,
-          reason: 'property reflects attribute as number');
-      expect(xbar.zim, false,
-          reason: 'property reflects attribute as boolean');
+      expect(xbar.zot, 54, reason: 'property reflects attribute as number');
+      expect(xbar.zim, false, reason: 'property reflects attribute as boolean');
       expect(xbar.str, 'str!!',
           reason: 'property reflects attribute as published string');
       expect(xbar.obj, {'hello': 'world'},
           reason: 'property reflects attribute as object');
       xbar.zim = false;
     }).then((_) => onAttributeChange(xbar)).then((_) {
-      expect(xbar.attributes.containsKey('zim'), false, reason:
-          'attribute reflects false valued boolean property as NOT '
+      expect(xbar.attributes.containsKey('zim'), false,
+          reason: 'attribute reflects false valued boolean property as NOT '
           'having attribute');
       xbar.obj = 'hi';
     }).then((_) => onAttributeChange(xbar)).then((_) {
-      expect(xbar.attributes['obj'], 'hi', reason:
-          'reflect property based on current type');
+      expect(xbar.attributes['obj'], 'hi',
+          reason: 'reflect property based on current type');
 
       expect(xzot.str, 'str2');
       expect(xzot.zot, 2);

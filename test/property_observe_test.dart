@@ -57,7 +57,6 @@ class XTest extends PolymerElement {
     checkDone();
   }
 
-
   @ObserveProperty('a.b.c')
   validateSubPath(oldValue, newValue) {
     window.console.log('validateSubPath $oldValue $newValue');

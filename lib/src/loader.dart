@@ -25,8 +25,8 @@ Future<Zone> initPolymer() {
   if (_deployMode) {
     return startPolymer().then((_) => Zone.current);
   }
-  return dirtyCheckZone().run(
-      () => startPolymer().then((_) => dirtyCheckZone()));
+  return dirtyCheckZone()
+      .run(() => startPolymer().then((_) => dirtyCheckZone()));
 }
 
 bool _startPolymerCalled = false;
@@ -37,9 +37,7 @@ bool _startPolymerCalled = false;
 Future startPolymer() {
   // First wait for all html imports to finish, then run the rest of the
   // initializers.
-  return initialize
-      .run(typeFilter: [HtmlImport])
-      .then((_) {
+  return initialize.run(typeFilter: [HtmlImport]).then((_) {
     // Polymer js is now loaded, hook it before running @CustomTag annotations.
     if (_startPolymerCalled) throw 'Initialization was already done.';
     _startPolymerCalled = true;
@@ -81,9 +79,8 @@ void _hookJsPolymer() {
   // https://code.google.com/p/dart/issues/detail?id=17301
   var zone = Zone.current;
 
-  polymerJs.callMethod('whenPolymerReady', [
-    zone.bindCallback(() => Polymer._onReady.complete())
-  ]);
+  polymerJs.callMethod('whenPolymerReady',
+      [zone.bindCallback(() => Polymer._onReady.complete())]);
 
   JsFunction originalRegister = _polymerElementProto['register'];
   if (originalRegister == null) {

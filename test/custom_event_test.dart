@@ -12,7 +12,6 @@ import 'package:template_binding/template_binding.dart'
 import 'package:unittest/unittest.dart';
 import 'package:unittest/html_config.dart';
 
-
 @CustomTag('foo-bar')
 class FooBar extends PolymerElement {
   // A little too much boilerplate?
@@ -23,10 +22,8 @@ class FooBar extends PolymerElement {
 
   FooBar.created() : super.created();
 
-  Stream<CustomEvent> get onFooEvent =>
-      FooBar.fooEvent.forTarget(this);
-  Stream<CustomEvent> get onBarBazEvent =>
-      FooBar.barBazEvent.forTarget(this);
+  Stream<CustomEvent> get onFooEvent => FooBar.fooEvent.forTarget(this);
+  Stream<CustomEvent> get onBarBazEvent => FooBar.barBazEvent.forTarget(this);
 
   fireFoo(x) => dispatchEvent(new CustomEvent('foo', detail: x));
   fireBarBaz(x) => dispatchEvent(new CustomEvent('barbaz', detail: x));

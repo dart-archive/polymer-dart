@@ -12,7 +12,7 @@ import 'package:polymer/polymer.dart';
 // https://github.com/Polymer/polymer-dev/blob/0.3.4/test/html/computedProperties.html
 @CustomTag('x-foo')
 class XFoo extends PolymerElement {
-  XFoo.created(): super.created();
+  XFoo.created() : super.created();
 
   // Left like this to illustrate the old-style @published pattern next to the
   // new style below.

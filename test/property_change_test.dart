@@ -36,7 +36,9 @@ class XTest extends XBase {
 
   ready() {
     bar = 'bar';
-    new Future(() { zonk = 'zonk'; });
+    new Future(() {
+      zonk = 'zonk';
+    });
   }
 
   barChanged() {

@@ -45,7 +45,7 @@ part of polymer;
 /// provide the same guarantees, so this is discouraged. For example:
 ///
 ///       // Avoid this if possible. This will be available as an HTML
-///       // attribute too, but you might need to delay reading volume3 
+///       // attribute too, but you might need to delay reading volume3
 ///       // asynchronously to guarantee that you read the latest value
 ///       // set through bindings.
 ///       @published double volume3;
@@ -137,7 +137,6 @@ class PolymerElement extends HtmlElement with Polymer, Observable {
   }
 }
 
-
 /// The mixin class for Polymer elements. It provides convenience features on
 /// top of the custom elements web standard.
 ///
@@ -168,8 +167,8 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     // the Dart type because we will handle that in PolymerDeclaration.
     // See _hookJsPolymerDeclaration for how this is done.
     (js.context['Polymer'] as JsFunction).apply([name]);
-    (js.context['HTMLElement']['register'] as JsFunction).apply(
-        [name, js.context['HTMLElement']['prototype']]);
+    (js.context['HTMLElement']['register'] as JsFunction)
+        .apply([name, js.context['HTMLElement']['prototype']]);
   }
 
   /// Register a custom element that has no associated `<polymer-element>`.
@@ -223,8 +222,8 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   static Future importElements(Node elementOrFragment) {
     print(_DYNAMIC_IMPORT_WARNING);
     var completer = new Completer();
-    js.context['Polymer'].callMethod('importElements',
-        [elementOrFragment, () => completer.complete()]);
+    js.context['Polymer'].callMethod(
+        'importElements', [elementOrFragment, () => completer.complete()]);
     return completer.future;
   }
 
@@ -242,8 +241,8 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   static Future import(List urls) {
     print(_DYNAMIC_IMPORT_WARNING);
     var completer = new Completer();
-    js.context['Polymer'].callMethod('import',
-        [urls, () => completer.complete()]);
+    js.context['Polymer'].callMethod(
+        'import', [urls, () => completer.complete()]);
     return completer.future;
   }
 
@@ -300,7 +299,9 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   // store, because of elements such as:
   // https://github.com/Polymer/core-overlay/blob/eeb14853/core-overlay-layer.html#L78
   get eventController => _jsElem['eventController'];
-  set eventController(value) { _jsElem['eventController'] = value; }
+  set eventController(value) {
+    _jsElem['eventController'] = value;
+  }
 
   bool get hasBeenAttached => _hasBeenAttached;
   bool _hasBeenAttached = false;
@@ -369,7 +370,8 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
       // register them in order, we include here also the option of lazily
       // creating the property accessor on the first read.
       var binding = _getBindingForComputedProperty(name);
-      if (binding == null) { // normal property
+      if (binding == null) {
+        // normal property
         value = initialValue != null ? initialValue() : null;
       } else {
         value = binding.value;
@@ -744,9 +746,9 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
       // NOTE: reflecting binding information is typically required only for
       // tooling. It has a performance cost so it's opt-in in Node.bind.
       if (enableBindingsReflection && observer != null) {
-         // Dart note: this is not needed because of how _PolymerBinding works.
-         //observer.path = bindable.path_;
-         _recordBinding(name, observer);
+        // Dart note: this is not needed because of how _PolymerBinding works.
+        //observer.path = bindable.path_;
+        _recordBinding(name, observer);
       }
       var reflect = _element._reflect;
 
@@ -770,7 +772,9 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   bindFinished() => _makeElementReady();
 
   Map<String, Bindable> get bindings => nodeBindFallback(this).bindings;
-  set bindings(Map value) { nodeBindFallback(this).bindings = value; }
+  set bindings(Map value) {
+    nodeBindFallback(this).bindings = value;
+  }
 
   TemplateInstance get templateInstance =>
       nodeBindFallback(this).templateInstance;
@@ -804,8 +808,8 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   /// its memory to be reclaimed.
   void cancelUnbindAll() {
     if (_unbound == true) {
-      _unbindLog.warning(() =>
-          '[$_name] already unbound, cannot cancel unbindAll');
+      _unbindLog
+          .warning(() => '[$_name] already unbound, cannot cancel unbindAll');
       return;
     }
     _unbindLog.fine(() => '[$_name] cancelUnbindAll');
@@ -886,8 +890,9 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
         // e.g. 'foo bar': 'invalidate' expects the new and old values for
         // foo and bar. Currently we give only one of these and then
         // deliver all the arguments.
-        smoke.invoke(this, method,
-            [oldValue, newValue, newValues, oldValues, paths], adjust: true);
+        smoke.invoke(
+            this, method, [oldValue, newValue, newValues, oldValues, paths],
+            adjust: true);
       }
     });
   }
@@ -1119,10 +1124,12 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     // by default supports 1 thing being bound.
     events.forEach((type, methodName) {
       // Dart note: the getEventHandler method is on our PolymerExpressions.
-      _PolymerGestures.callMethod(
-          'addEventListener',
-          [this, type, Zone.current.bindUnaryCallback(
-              element.syntax.getEventHandler(this, this, methodName))]);
+      _PolymerGestures.callMethod('addEventListener', [
+        this,
+        type,
+        Zone.current.bindUnaryCallback(
+            element.syntax.getEventHandler(this, this, methodName))
+      ]);
     });
   }
 
@@ -1194,15 +1201,13 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
 
   /// Fire a [CustomEvent] targeting [onNode], or `this` if onNode is not
   /// supplied. Returns the new event.
-  CustomEvent fire(String type, {Object detail, Node onNode, bool canBubble,
-        bool cancelable}) {
+  CustomEvent fire(String type,
+      {Object detail, Node onNode, bool canBubble, bool cancelable}) {
     var node = onNode != null ? onNode : this;
-    var event = new CustomEvent(
-      type,
-      canBubble: canBubble != null ? canBubble : true,
-      cancelable: cancelable != null ? cancelable : true,
-      detail: detail
-    );
+    var event = new CustomEvent(type,
+        canBubble: canBubble != null ? canBubble : true,
+        cancelable: cancelable != null ? cancelable : true,
+        detail: detail);
     node.dispatchEvent(event);
     return event;
   }
@@ -1211,8 +1216,8 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   asyncFire(String type, {Object detail, Node toNode, bool canBubble}) {
     // TODO(jmesserly): I'm not sure this method adds much in Dart, it's easy to
     // add "() =>"
-    async((x) => fire(
-        type, detail: detail, onNode: toNode, canBubble: canBubble));
+    async((x) =>
+        fire(type, detail: detail, onNode: toNode, canBubble: canBubble));
   }
 
   /// Remove [className] from [old], add class to [anew], if they exist.
@@ -1252,7 +1257,9 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
       var cssText = new StringBuffer();
       if (style is Iterable) {
         for (var s in style) {
-          cssText..writeln(s.text)..writeln();
+          cssText
+            ..writeln(s.text)
+            ..writeln();
         }
       } else {
         cssText = (style as Node).text;
@@ -1270,8 +1277,7 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     if (_hasShadowDomPolyfill) {
       cssText = _shimCssText(cssText, scope is ShadowRoot ? scope.host : null);
     }
-    var style = element.cssTextToScopeStyle(cssText,
-        _STYLE_CONTROLLER_SCOPE);
+    var style = element.cssTextToScopeStyle(cssText, _STYLE_CONTROLLER_SCOPE);
     applyStyleToScope(style, scope);
     // cache that this style has been applied
     styleCacheForScope(scope).add('$_name$name');
@@ -1295,7 +1301,8 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   Set styleCacheForScope(Node scope) {
     var styles;
     if (_hasShadowDomPolyfill) {
-      var name = scope is ShadowRoot ? scope.host.localName
+      var name = scope is ShadowRoot
+          ? scope.host.localName
           : (scope as Element).localName;
       var styles = _polyfillScopeStyleCache[name];
       if (styles == null) _polyfillScopeStyleCache[name] = styles = new Set();
@@ -1374,15 +1381,10 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
 
   /// Inject HTML which contains markup bound to this element into
   /// a target element (replacing target element content).
-  DocumentFragment injectBoundHtml(
-      String html,
-      {
-        Element element,
-        NodeValidator validator,
-        NodeTreeSanitizer treeSanitizer
-      }) {
-    var template = new TemplateElement()..setInnerHtml(
-        html, validator: validator, treeSanitizer: treeSanitizer);
+  DocumentFragment injectBoundHtml(String html, {Element element,
+      NodeValidator validator, NodeTreeSanitizer treeSanitizer}) {
+    var template = new TemplateElement()
+      ..setInnerHtml(html, validator: validator, treeSanitizer: treeSanitizer);
     var fragment = this.instanceTemplate(template);
     if (element != null) {
       element.text = '';
@@ -1474,4 +1476,3 @@ final Logger _readyLog = new Logger('polymer.ready');
 final Expando _eventHandledTable = new Expando<Set<Node>>();
 
 final JsObject _PolymerGestures = js.context['PolymerGestures'];
-

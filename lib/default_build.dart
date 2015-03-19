@@ -9,4 +9,6 @@ library polymer.default_build;
 
 import 'builder.dart';
 
-main(args) { lint(options: parseOptions(args)); }
+main(args) {
+  lint(options: parseOptions(args));
+}

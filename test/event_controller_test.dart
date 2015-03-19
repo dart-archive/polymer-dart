@@ -23,9 +23,15 @@ class XDart extends PolymerElement {
 @CustomTag('x-controller')
 class XController extends PolymerElement {
   XController.created() : super.created();
-  clickButton() {++clickButtonCount;}
-  clickXDart() {++clickXDartCount;}
-  clickXJs() {++clickXJsCount;}
+  clickButton() {
+    ++clickButtonCount;
+  }
+  clickXDart() {
+    ++clickXDartCount;
+  }
+  clickXJs() {
+    ++clickXJsCount;
+  }
 }
 
 main() => initPolymer().then((zone) => zone.run(() {

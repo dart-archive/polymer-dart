@@ -37,10 +37,9 @@ bindModelTests() {
     div.remove();
   });
 
-  parseAndBindHTML(html, model) =>
-      templateBind(new Element.tag('template')
-        ..setInnerHtml(html, treeSanitizer: const NullTreeSanitizer()))
-        .createInstance(model);
+  parseAndBindHTML(html, model) => templateBind(new Element.tag('template')
+    ..setInnerHtml(html, treeSanitizer: const NullTreeSanitizer()))
+      .createInstance(model);
 
   test('bindModel', () {
     var fragment = parseAndBindHTML('<div id="a" foo="{{bar}}"></div>', div);

@@ -28,9 +28,7 @@ class DartElement3 extends PolymerElement {
   DartElement3.created() : super.created();
 
   domReady() {
-    quux = new JsObject.jsify({
-      'aDartMethod': (x) => 444 + x
-    });
+    quux = new JsObject.jsify({'aDartMethod': (x) => 444 + x});
   }
 }
 
@@ -50,23 +48,20 @@ main() => initPolymer().then((zone) => zone.run(() {
         reason: 'dart-element upgraded');
   });
 
-  test('js-element in body', () => testInterop(
-      querySelector('js-element')));
+  test('js-element in body', () => testInterop(querySelector('js-element')));
 
   test('js-element in dart-element', () => testInterop(
       querySelector('dart-element').shadowRoot.querySelector('js-element')));
 
   test('elements can be passed through Node.bind to JS', () {
-    var text = querySelector('dart-element2')
-    .shadowRoot.querySelector('js-element2')
-    .shadowRoot.text;
+    var text = querySelector('dart-element2').shadowRoot
+        .querySelector('js-element2').shadowRoot.text;
     expect(text, 'QUX:123');
   });
 
   test('objects with functions can be passed through Node.bind to JS', () {
-    var sr = querySelector('dart-element3')
-      .shadowRoot.querySelector('js-element3')
-      .shadowRoot;
+    var sr = querySelector('dart-element3').shadowRoot
+        .querySelector('js-element3').shadowRoot;
 
     return new Future(() {
       expect(sr.text, 'js-element3[qux]:765');
@@ -98,7 +93,7 @@ main() => initPolymer().then((zone) => zone.run(() {
       return _onTextChanged(jsElem.shadowRoot).then((_) {
         expect(jsElem.shadowRoot.text, 'FOOBAR:42');
       });
-    });     
+    });
   });
 }));
 

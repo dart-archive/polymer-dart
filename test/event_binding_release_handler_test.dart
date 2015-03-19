@@ -18,7 +18,9 @@ class XFoo extends PolymerElement {
 
   XFoo.created() : super.created();
 
-  increment() { ++count; }
+  increment() {
+    ++count;
+  }
 }
 
 main() {

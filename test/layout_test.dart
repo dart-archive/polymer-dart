@@ -15,15 +15,14 @@ main() => initPolymer().then((zone) => zone.run(() {
   useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
-  
+
   getTestElements(test) {
     var t = document.getElementById(test);
     return {
-        'h1': t.querySelector('[horizontal] > [flex]').getComputedStyle(),
-        'h2': t.querySelector('[horizontal] > [flex][sized]')
-            .getComputedStyle(),
-        'v1': t.querySelector('[vertical] > [flex]').getComputedStyle(),
-        'v2': t.querySelector('[vertical] > [flex][sized]').getComputedStyle()
+      'h1': t.querySelector('[horizontal] > [flex]').getComputedStyle(),
+      'h2': t.querySelector('[horizontal] > [flex][sized]').getComputedStyle(),
+      'v1': t.querySelector('[vertical] > [flex]').getComputedStyle(),
+      'v2': t.querySelector('[vertical] > [flex][sized]').getComputedStyle()
     };
   }
 
@@ -35,27 +34,27 @@ main() => initPolymer().then((zone) => zone.run(() {
         reason: 'unsized container: horizontal flex items have same width');
     expect(elements['v1'].height, '0px',
         reason: 'unsized container: vertical flex items have no intrinsic '
-                'height');
+        'height');
   });
-  
+
   test('flex auto layout attributes', () {
     var elements = getTestElements('test2');
-    expect(elements['h1'].width, isNot(elements['h2'].width), 
+    expect(elements['h1'].width, isNot(elements['h2'].width),
         reason: 'unsized container: horizontal flex auto items have intrinsic '
-                'width + flex amount');
+        'width + flex amount');
     expect(elements['v1'].height, isNot('0px'),
         reason: 'unsized container: vertical flex auto items have intrinsic '
-                'height');
+        'height');
   });
 
   test('flex auto-vertical layout attributes', () {
     var elements = getTestElements('test3');
-    expect(elements['h1'].width, elements['h2'].width, 
+    expect(elements['h1'].width, elements['h2'].width,
         reason: 'unsized container: horizontal flex auto-vertical items have '
-                'same width');
+        'same width');
     expect(elements['v1'].height, isNot('0px'),
         reason: 'unsized container: vertical flex auto-vertical items have '
-                'intrinsic height');
+        'intrinsic height');
   });
 
   // Sized container tests
@@ -72,26 +71,25 @@ main() => initPolymer().then((zone) => zone.run(() {
     var elements = getTestElements('test5');
     expect(elements['h1'].width, isNot(elements['h2'].width),
         reason: 'sized container: horizontal flex auto items have intrinsic '
-                'width + flex amount');
+        'width + flex amount');
     expect(elements['v1'].height, isNot('0px'),
         reason: 'sized container: vertical flex auto items have intrinsic '
-                'height');
+        'height');
     expect(elements['v1'].height, isNot(elements['v2'].height),
         reason: 'sized container: vertical flex auto items have intrinsic '
-                'width + flex amount');
+        'width + flex amount');
   });
 
   test('flex auto-vertical layout attributes', () {
     var elements = getTestElements('test3');
     expect(elements['h1'].width, elements['h2'].width,
         reason: 'unsized container: horizontal flex auto-vertical items have '
-                'same width');
+        'same width');
     expect(elements['v1'].height, isNot('0px'),
         reason: 'sized container: vertical flex auto-vertical items have '
-                'intrinsic height');
+        'intrinsic height');
     expect(elements['v1'].height, isNot(elements['v2'].height),
         reason: 'sized container: vertical flex auto-vertical items have '
-                'intrinsic width + flex amount');
+        'intrinsic width + flex amount');
   });
-
 }));

@@ -34,7 +34,7 @@ void main(List<String> args) {
       return;
     }
     entryPoint = options.rest[0];
-  } catch(e) {
+  } catch (e) {
     print('$e\n');
     printUsage();
     exitCode = 1;
@@ -71,7 +71,7 @@ void main(List<String> args) {
     }
     print('Successfully created:');
     print('  ' + path.join(pubspecDir, entryPoint));
-  } catch(e, t) {
+  } catch (e, t) {
     print('Exception: $e\n$t');
     print('Error creating files in $outputDir');
     exitCode = 1;
@@ -94,8 +94,7 @@ String _findDirWithFile(String dir, String filename) {
 // there was a monolithic polymer transformer in the pubspec, or if the entry
 // point for some reason already existed in the pubspec.
 bool _createBoilerPlate(String entryPoint, String pubspecDir) {
-
-String html = '''
+  String html = '''
 <!doctype html>
 <html>
   <head>
@@ -140,17 +139,18 @@ String html = '''
         if (existing == null && e['polymer'].containsKey('entry_points')) {
           if (path.split(entryPoint)[0] != 'web') {
             print('WARNING: Did not add entry_point $entryPoint to pubspec.yaml'
-              ' because of existing empty `entry_points` field in polymer'
-              ' transformer. This defaults to treating all files under `web/`'
-              ' as entry points, but you tried to add an entry point outside of'
-              ' the `web/` folder. You will need to explicitly list all entry'
-              ' points that you care about into your pubspec in order to'
-              ' include any outside of `web/`.');
+                ' because of existing empty `entry_points` field in polymer'
+                ' transformer. This defaults to treating all files under `web/`'
+                ' as entry points, but you tried to add an entry point outside'
+                ' of the `web/` folder. You will need to explicitly list all'
+                ' entrypoints that you care about into your pubspec in order to'
+                ' include any outside of `web/`.');
           }
           return false;
         }
-        entryPoints = (existing == null ? [] :
-            (existing is String ? [existing] : existing.toList()));
+        entryPoints = (existing == null
+            ? []
+            : (existing is String ? [existing] : existing.toList()));
 
         if (entryPoints.contains(entryPoint)) return false;
         entryPoints.add(entryPoint);

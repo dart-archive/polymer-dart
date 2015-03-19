@@ -76,22 +76,18 @@ unbindTests() {
   scheduleMicrotask(Observable.dirtyCheck);
 
   return delay(null).then((_) {
-    expect(_unbound(xTest), null, reason:
-        'element is bound when inserted');
-    expect(xTest.fooWasChanged, true, reason:
-        'element is actually bound');
+    expect(_unbound(xTest), null, reason: 'element is bound when inserted');
+    expect(xTest.fooWasChanged, true, reason: 'element is actually bound');
     // Dart note: we don't have a way to check for the global count of
     // observables/bindables, so we just check the count in the node.
     expect(_observerCount(xTest), greaterThan(0));
     xTest.remove();
   }).then(delay).then((_) {
-    expect(_unbound(xTest), true, reason:
-        'element is unbound when removed');
+    expect(_unbound(xTest), true, reason: 'element is unbound when removed');
     expect(_observerCount(xTest), 0);
     return new XTest();
   }).then(delay).then((node) {
-    expect(_unbound(node), null, reason:
-        'element is bound when not inserted');
+    expect(_unbound(node), null, reason: 'element is bound when not inserted');
     node.foo = 'bar';
     expect(_observerCount(node), greaterThan(0));
     scheduleMicrotask(Observable.dirtyCheck);
@@ -103,25 +99,25 @@ unbindTests() {
     n.cancelUnbindAll();
     return n;
   }).then(delay).then((node) {
-    expect(_unbound(node), null, reason:
-        'element is bound when cancelUnbindAll is called');
+    expect(_unbound(node), null,
+        reason: 'element is bound when cancelUnbindAll is called');
     expect(_observerCount(node), greaterThan(0));
     node.unbindAll();
-    expect(_unbound(node), true, reason:
-        'element is unbound when unbindAll is called');
+    expect(_unbound(node), true,
+        reason: 'element is unbound when unbindAll is called');
     expect(_observerCount(node), 0);
     var n = new XTest()..id = 'foobar!!!';
     document.body.append(n);
     return n;
   }).then(delay).then((node) {
-    expect(_unbound(node), null, reason:
-        'element is bound when manually inserted');
+    expect(_unbound(node), null,
+        reason: 'element is bound when manually inserted');
     expect(_observerCount(node), greaterThan(0));
     node.remove();
     return node;
   }).then(delay).then((node) {
-    expect(_unbound(node), true, reason:
-        'element is unbound when manually removed is called');
+    expect(_unbound(node), true,
+        reason: 'element is unbound when manually removed is called');
     expect(_observerCount(node), 0);
   });
 }

@@ -47,8 +47,8 @@ class Linter extends Transformer with PolymerTransformer {
         detailsUri: 'http://goo.gl/5HPeuP');
 
     return readPrimaryAsHtml(transform, logger).then((document) {
-      return _collectElements(document, id, transform, logger, seen).then(
-          (elements) {
+      return _collectElements(document, id, transform, logger, seen)
+          .then((elements) {
         new _LinterVisitor(id, logger, elements, isEntryPoint,
             skipMissingElementWarning || !isEntryPoint).run(document);
 
@@ -176,9 +176,8 @@ class _LinterVisitor extends TreeVisitor {
   Map<String, _ElementSummary> _elements;
   bool _skipMissingElementWarning;
 
-  _LinterVisitor(
-      this._sourceId, this._logger, this._elements, this._isEntryPoint,
-      this._skipMissingElementWarning) {
+  _LinterVisitor(this._sourceId, this._logger, this._elements,
+      this._isEntryPoint, this._skipMissingElementWarning) {
     // We normalize the map, so each element has a direct reference to any
     // element it extends from.
     for (var tag in _elements.values) {
@@ -284,7 +283,8 @@ class _LinterVisitor extends TreeVisitor {
           span: node.sourceSpan);
     }
 
-    if (!_skipMissingElementWarning && _elements[extendsTag] == null &&
+    if (!_skipMissingElementWarning &&
+        _elements[extendsTag] == null &&
         isCustomTagName(extendsTag)) {
       _logger.warning(CUSTOM_ELEMENT_NOT_FOUND.create({'tag': extendsTag}),
           span: node.sourceSpan);
