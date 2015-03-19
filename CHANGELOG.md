@@ -1,5 +1,8 @@
 #### 0.16.0+6
   * Update `args` constraint.
+  * Pass `bindingStartDelimiters` to the `ImportInlinerTransformer` so it can
+    handle bindings in urls appropriately,
+    [#35](https://github.com/dart-lang/polymer-dart/issues/35).
 
 #### 0.16.0+5
   * Update `web_components` constraint.

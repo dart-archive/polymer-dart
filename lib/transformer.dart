@@ -173,7 +173,8 @@ List<List<Transformer>> createDeployPhases(TransformOptions options,
   if (options.lint.enabled) phases.add([new Linter(options)]);
 
   phases.addAll([
-    [new web_components.ImportInlinerTransformer(options.entryPoints)],
+    [new web_components.ImportInlinerTransformer(
+        options.entryPoints, ['[[', '{{'])],
     [new HtmlFinalizer(options)],
     [new ObservableTransformer(
         releaseMode: options.releaseMode,
