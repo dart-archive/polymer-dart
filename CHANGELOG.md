@@ -1,3 +1,8 @@
+#### 0.16.0+7
+  * Switch to using `initWebComponents` internally which gives better guarantees
+    around development time ordering of initializers. This should fix most
+    issues related to element registration order.
+
 #### 0.16.0+6
   * Update `args` constraint.
   * Pass `bindingStartDelimiters` to the `ImportInlinerTransformer` so it can

@@ -44,7 +44,6 @@ import 'dart:html';
 import 'dart:js' as js show context;
 import 'dart:js' hide context;
 
-import 'package:initialize/initialize.dart' as initialize show run;
 import 'package:initialize/initialize.dart' hide run;
 import 'package:logging/logging.dart';
 import 'package:observe/observe.dart';

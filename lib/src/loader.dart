@@ -37,12 +37,12 @@ bool _startPolymerCalled = false;
 Future startPolymer() {
   // First wait for all html imports to finish, then run the rest of the
   // initializers.
-  return initialize.run(typeFilter: [HtmlImport]).then((_) {
+  return initWebComponents(initAll: false).then((_) {
     // Polymer js is now loaded, hook it before running @CustomTag annotations.
     if (_startPolymerCalled) throw 'Initialization was already done.';
     _startPolymerCalled = true;
     _hookJsPolymer();
-  }).then((_) => initialize.run()).then((_) {
+  }).then((_) => initWebComponents()).then((_) {
     Polymer.registerSync('auto-binding-dart', AutoBindingElement,
         extendsTag: 'template');
 
