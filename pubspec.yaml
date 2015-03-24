@@ -83,7 +83,3 @@ transformers:
 
 environment:
   sdk: '>=1.4.0 <2.0.0'
-
-dependency_overrides:
-  web_components:
-    git: https://github.com/dart-lang/web-components.git
