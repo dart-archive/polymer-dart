@@ -86,4 +86,4 @@ environment:
 
 dependency_overrides:
   web_components:
-    git: git@github.com:dart-lang/web-components.git
+    git: https://github.com/dart-lang/web-components.git
