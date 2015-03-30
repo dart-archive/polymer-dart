@@ -81,21 +81,73 @@ void main() {
           '''.replaceAll('          ', ''),
   }, []);
 
-  // TODO(jakemac): Why do these files have to be in a different package than
-  // the test above? If you replace b| with a| then this test will hang.
-  testPhases('single inline script', phases, {
-    'b|web/test.html': '<!DOCTYPE html><html><head>'
+  testPhases('single script in subfolder', phases, {
+    'a|web/test.html': '<!DOCTYPE html><html><head>'
         '<link rel="import" href="packages/polymer/polymer.html">'
-        '<script type="application/dart">'
-        '${_sampleInput("B", "bar")}</script>',
+        '<script type="application/dart" src="foo/a.dart"></script>',
+    'a|web/foo/a.dart': _sampleInput('A', 'foo'),
   }, {
-    'b|web/test.html': '<!DOCTYPE html><html><head>'
+    'a|web/test.html': '<!DOCTYPE html><html><head>'
         '$COMPATIBILITY_JS_TAGS'
         '</head><body><div hidden="">'
         '<script src="test.html.polymer.bootstrap.dart.js" async=""></script>'
         '</div>'
         '</body></html>',
-    'b|web/test.html.polymer.bootstrap.dart': '''$MAIN_HEADER
+    'a|web/test.html.polymer.bootstrap.dart': '''$MAIN_HEADER
+        import 'test.web_components.bootstrap.dart' as i0;
+        ${DEFAULT_IMPORTS.join('\n')}
+        import 'package:polymer/polymer.dart' as smoke_0;
+        import 'foo/a.dart' as smoke_1;
+
+        void main() {
+          useGeneratedCode(new StaticConfiguration(
+              checkedMode: false,
+              parents: {
+                smoke_1.XA: smoke_0.PolymerElement,
+              },
+              declarations: {
+                smoke_1.XA: {},
+                smoke_0.PolymerElement: {},
+              }));
+          configureForDeployment();
+          i0.main();
+        }
+        '''.replaceAll('\n        ', '\n'),
+    'a|web/test.web_components.bootstrap.dart': '''
+        import 'package:initialize/src/static_loader.dart';
+        import 'package:initialize/initialize.dart';
+        import 'test.bootstrap.dart' as i0;
+        import 'foo/a.dart' as i1;
+        import 'package:polymer/polymer.dart' as i2;
+
+        main() {
+          initializers.addAll([new InitEntry(const i2.CustomTag('x-A'), i1.XA),]);
+
+          i0.main();
+        }
+        '''.replaceAll('        ', ''),
+    'a|web/test.bootstrap.dart': '''
+        library a.web.test_bootstrap_dart;
+
+        import 'foo/a.dart' as i0;
+
+        void main() { i0.main(); }
+        '''.replaceAll('        ', ''),
+  }, []);
+
+  testPhases('single inline script', phases, {
+    'a|web/test.html': '<!DOCTYPE html><html><head>'
+        '<link rel="import" href="packages/polymer/polymer.html">'
+        '<script type="application/dart">'
+        '${_sampleInput("B", "bar")}</script>',
+  }, {
+    'a|web/test.html': '<!DOCTYPE html><html><head>'
+        '$COMPATIBILITY_JS_TAGS'
+        '</head><body><div hidden="">'
+        '<script src="test.html.polymer.bootstrap.dart.js" async=""></script>'
+        '</div>'
+        '</body></html>',
+    'a|web/test.html.polymer.bootstrap.dart': '''$MAIN_HEADER
           import 'test.web_components.bootstrap.dart' as i0;
           ${DEFAULT_IMPORTS.join('\n')}
           import 'package:polymer/polymer.dart' as smoke_0;
@@ -115,7 +167,7 @@ void main() {
             i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
-    'b|web/test.web_components.bootstrap.dart': '''
+    'a|web/test.web_components.bootstrap.dart': '''
           import 'package:initialize/src/static_loader.dart';
           import 'package:initialize/initialize.dart';
           import 'test.bootstrap.dart' as i0;
@@ -128,14 +180,14 @@ void main() {
             i0.main();
           }
           '''.replaceAll('          ', ''),
-    'b|web/test.bootstrap.dart': '''
-          library b.web.test_bootstrap_dart;
+    'a|web/test.bootstrap.dart': '''
+          library a.web.test_bootstrap_dart;
 
           import 'test.html.0.dart' as i0;
 
           void main() { i0.main(); }
           '''.replaceAll('          ', ''),
-    'b|web/test.html.0.dart': _sampleOutput("B", "bar"),
+    'a|web/test.html.0.dart': _sampleOutput("B", "bar"),
   }, []);
 
   testPhases('with imports', phases, {
