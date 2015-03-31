@@ -368,7 +368,7 @@ codegenTests(phases) {
   });
 
   computedDeclaration(name, expr) =>
-      '#$name: const Declaration(#$name, dynamic, kind: PROPERTY,'
+      '#$name: const Declaration(#$name, Object, kind: PROPERTY,'
       ' isFinal: true, annotations: const [const smoke_0.ComputedProperty'
       '(\'$expr\')])';
 
