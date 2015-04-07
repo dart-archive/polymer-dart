@@ -223,11 +223,13 @@ class PolymerSmokeGenerator {
   ///    * invoke methods in event handlers.
   _processClass(ClassElement cls, Recorder recorder) {
     if (!_hasPolymerMixin(cls)) return;
+    if (cls.node is! ClassDeclaration) return;
+    var node = cls.node as ClassDeclaration;
 
     // Check whether the class has a @CustomTag annotation. Typically we expect
     // a single @CustomTag, but it's possible to have several.
     var tagNames = [];
-    for (var meta in cls.node.metadata) {
+    for (var meta in node.metadata) {
       var tagName = _extractTagName(meta, cls);
       if (tagName != null) tagNames.add(tagName);
     }
@@ -235,7 +237,7 @@ class PolymerSmokeGenerator {
     if (cls.isPrivate && tagNames.isNotEmpty) {
       var name = tagNames.first;
       logger.error(PRIVATE_CUSTOM_TAG.create({'name': name, 'class': cls.name}),
-          span: _spanForNode(cls, cls.node.name));
+          span: _spanForNode(cls, node.name));
       return;
     }
 
