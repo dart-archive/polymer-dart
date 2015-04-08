@@ -65,6 +65,7 @@ export 'auto_binding.dart';
 
 part 'src/declaration.dart';
 part 'src/events.dart';
+part 'src/initializers.dart';
 part 'src/instance.dart';
 part 'src/job.dart';
 part 'src/loader.dart';

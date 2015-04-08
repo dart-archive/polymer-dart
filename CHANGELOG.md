@@ -1,3 +1,16 @@
+#### 0.16.1
+  * Added `@whenPolymerReady` annotation for functions. This will call the
+    function once `Polymer.onReady` completes, reducing the boilerplate in entry
+    points to the following:
+    
+        import 'package:polymer/polymer.dart';
+        export 'package:polymer/init.dart';
+        
+        @whenPolymerReady
+        void onReady() {
+          /// Custom setup code here.
+        }
+
 #### 0.16.0+7
   * Switch to using `initWebComponents` internally which gives better guarantees
     around development time ordering of initializers. This should fix most

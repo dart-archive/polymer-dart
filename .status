@@ -125,6 +125,7 @@ test/template_attr_template_test: Skip #uses dart:html
 test/template_distribute_dynamic_test: Skip #uses dart:html
 test/two_way_bind_test: Skip #uses dart:html
 test/unbind_test: Skip # uses dart:html
+test/when_polymer_ready_test: Skip # uses dart:html
 build/test/*: Skip     # tests that don't need to be ran after pub-build
 
 [ $ie ]
