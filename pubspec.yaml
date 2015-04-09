@@ -1,5 +1,5 @@
 name: polymer
-version: 0.16.0+7
+version: 0.16.1
 author: Polymer.dart Authors <web-ui-dev@dartlang.org>
 description: >
   Polymer.dart is a new type of library for the web, built on top of Web
@@ -80,6 +80,7 @@ transformers:
       - test/two_way_bind_test.html
       - test/unbind_test.html
       - test/web_components_less_test.html
+      - test/when_polymer_ready_test.html
 
 environment:
   sdk: '>=1.4.0 <2.0.0'

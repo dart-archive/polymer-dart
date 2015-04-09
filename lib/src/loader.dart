@@ -4,14 +4,6 @@
 
 part of polymer;
 
-/// Annotation used to automatically register polymer elements.
-class CustomTag implements Initializer<Type> {
-  final String tagName;
-  const CustomTag(this.tagName);
-
-  initialize(Type t) => Polymer.register(tagName, t);
-}
-
 /// Initializes a polymer application as follows:
 ///   * if running in development mode, set up a dirty-checking zone that polls
 ///     for observable changes
