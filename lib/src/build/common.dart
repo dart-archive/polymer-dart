@@ -13,8 +13,8 @@ import 'package:analyzer/src/generated/parser.dart';
 import 'package:analyzer/src/generated/scanner.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';
-import 'package:html5lib/dom.dart' show Document;
-import 'package:html5lib/parser.dart' show HtmlParser;
+import 'package:html/dom.dart' show Document;
+import 'package:html/parser.dart' show HtmlParser;
 import 'package:observe/transformer.dart' show ObservableTransformer;
 import 'package:path/path.dart' as path;
 

@@ -7,9 +7,9 @@ library polymer.src.build.polymer_smoke_generator;
 
 import 'dart:async';
 
-import 'package:html5lib/dom.dart' show Document, Element, Text;
-import 'package:html5lib/dom_parsing.dart';
-import 'package:html5lib/parser.dart' show parseFragment;
+import 'package:html/dom.dart' show Document, Element, Text;
+import 'package:html/dom_parsing.dart';
+import 'package:html/parser.dart' show parseFragment;
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart' hide Element;
 import 'package:analyzer/src/generated/element.dart' as analyzer show Element;

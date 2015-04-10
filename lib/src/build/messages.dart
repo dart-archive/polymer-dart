@@ -459,10 +459,10 @@ write:
 ''');
 
 const HTML5_WARNING = const MessageTemplate(const MessageId('polymer', 40),
-    '(from html5lib) %-message-%',
+    '(from html) %-message-%',
     'A warning was found while parsing the HTML document', '''
 The polymer transformer uses a parser that implements the HTML5 spec
-(`html5lib`). This message reports a
+(`html`). This message reports a
 warning that the parser detected.
 ''');
 

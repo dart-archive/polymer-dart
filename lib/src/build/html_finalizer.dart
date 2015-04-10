@@ -15,9 +15,9 @@ import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:path/path.dart' as path;
-import 'package:html5lib/dom.dart'
+import 'package:html/dom.dart'
     show Document, DocumentFragment, Element, Node;
-import 'package:html5lib/dom_parsing.dart' show TreeVisitor;
+import 'package:html/dom_parsing.dart' show TreeVisitor;
 import 'package:source_span/source_span.dart';
 
 import 'common.dart';
