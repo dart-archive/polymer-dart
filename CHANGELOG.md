@@ -1,3 +1,6 @@
+#### 0.16.1+2
+  * Update pubspec from `html5lib` to `html`.
+
 #### 0.16.1+1
   * Switch `html5lib` package dependency to `html`.
 
