@@ -1,3 +1,6 @@
+#### 0.16.1+1
+  * Switch `html5lib` package dependency to `html`.
+
 #### 0.16.1
   * Added `@whenPolymerReady` annotation for functions. This will call the
     function once `Polymer.onReady` completes, reducing the boilerplate in entry

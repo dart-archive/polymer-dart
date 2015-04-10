@@ -8,9 +8,9 @@ library polymer.src.build.polyfill_injector;
 import 'dart:async';
 
 import 'package:barback/barback.dart';
-import 'package:html5lib/dom.dart'
+import 'package:html/dom.dart'
     show Document, DocumentFragment, Element, Node;
-import 'package:html5lib/parser.dart' show parseFragment;
+import 'package:html/parser.dart' show parseFragment;
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:path/path.dart' as path;
 import 'common.dart';

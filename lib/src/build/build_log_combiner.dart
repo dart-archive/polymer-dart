@@ -9,7 +9,6 @@ import 'dart:async';
 
 import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';
-import 'package:html5lib/parser.dart' show parseFragment;
 
 import 'common.dart';
 

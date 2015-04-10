@@ -215,7 +215,7 @@ void main() {
 
   group('doctype warning', () {
     _testLinter('in web', {'a|web/test.html': '<html></html>',}, [
-      'warning: (from html5lib) Unexpected start tag (html). '
+      'warning: (from html) Unexpected start tag (html). '
           'Expected DOCTYPE. (web/test.html 0 0)',
       'warning: ${MISSING_INIT_POLYMER.snippet}',
     ]);
