@@ -1,3 +1,6 @@
+#### 0.16.1+3
+  * Update polymer js version to 0.5.5.
+
 #### 0.16.1+2
   * Update pubspec from `html5lib` to `html`.
 
