@@ -195,10 +195,7 @@ class PolymerDeclaration {
   }
 
   // from declaration/path.js
-  void resolveElementPaths(Node node) {
-    if (_Polymer == null) return;
-    _Polymer['urlResolver'].callMethod('resolveDom', [node]);
-  }
+  void resolveElementPaths(Node node) => PolymerJs.resolveElementPaths(node);
 
   // Dart note: renamed from "addResolvePathApi".
   void initResolvePath() {
@@ -615,4 +612,3 @@ bool _isObserverMethod(Symbol symbol) {
 final _ATTRIBUTES_REGEX = new RegExp(r'\s|,');
 
 final JsObject _WebComponents = js.context['WebComponents'];
-final JsObject _Polymer = js.context['Polymer'];

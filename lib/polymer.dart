@@ -50,6 +50,7 @@ import 'package:observe/observe.dart';
 import 'package:observe/src/dirty_check.dart' show dirtyCheckZone;
 import 'package:polymer_expressions/polymer_expressions.dart'
     as polymer_expressions;
+import 'package:polymer_interop/polymer_interop.dart';
 import 'package:smoke/smoke.dart' as smoke;
 import 'package:template_binding/template_binding.dart';
 import 'package:web_components/web_components.dart';

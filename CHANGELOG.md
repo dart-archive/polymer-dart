@@ -1,3 +1,8 @@
+#### 0.16.1+4
+  * Use `polymer_interop` for everything polymer js related. Projects which only
+  provide/use wrappers around js elements should be able to switch to using that
+  package instead of this one.
+
 #### 0.16.1+3
   * Update polymer js version to 0.5.5.
 

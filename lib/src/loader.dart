@@ -58,21 +58,17 @@ void configureForDeployment() {
 /// * if it has a Dart class, run PolymerDeclaration's register.
 /// * otherwise it is a JS prototype, run polymer-element's normal register.
 void _hookJsPolymer() {
-  var polymerJs = js.context['Polymer'];
-  if (polymerJs == null) {
-    throw new StateError('polymer.js must be loaded before polymer.dart, please'
-        ' add <link rel="import" href="packages/polymer/polymer.html"> to your'
-        ' <head> before any Dart scripts. Alternatively you can get a different'
-        ' version of polymer.js by following the instructions at'
-        ' http://www.polymer-project.org.');
+  if (!PolymerJs.checkExists()) {
+    throw new StateError('An error occurred initializing polymer, (could not'
+        'find polymer js). Please file a bug at '
+        'https://github.com/dart-lang/polymer-dart/issues/new.');
   }
 
   // TODO(jmesserly): dart:js appears to not callback in the correct zone:
   // https://code.google.com/p/dart/issues/detail?id=17301
   var zone = Zone.current;
 
-  polymerJs.callMethod('whenPolymerReady',
-      [zone.bindCallback(() => Polymer._onReady.complete())]);
+  PolymerJs.whenPolymerReady(() => Polymer._onReady.complete());
 
   JsFunction originalRegister = _polymerElementProto['register'];
   if (originalRegister == null) {

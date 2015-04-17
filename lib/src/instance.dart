@@ -166,7 +166,7 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     // Dart note: here we notify JS of the element registration. We don't pass
     // the Dart type because we will handle that in PolymerDeclaration.
     // See _hookJsPolymerDeclaration for how this is done.
-    (js.context['Polymer'] as JsFunction).apply([name]);
+    PolymerJs.constructor.apply([name]);
     (js.context['HTMLElement']['register'] as JsFunction)
         .apply([name, js.context['HTMLElement']['prototype']]);
   }
@@ -221,10 +221,7 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   // because we want to share the loader with polymer.js for interop purposes.
   static Future importElements(Node elementOrFragment) {
     print(_DYNAMIC_IMPORT_WARNING);
-    var completer = new Completer();
-    js.context['Polymer'].callMethod(
-        'importElements', [elementOrFragment, () => completer.complete()]);
-    return completer.future;
+    return PolymerJs.importElements(elementOrFragment);
   }
 
   /// Loads an HTMLImport for each url specified in the `urls` array. Notifies
@@ -240,10 +237,7 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   // because we want to share the loader with polymer.js for interop purposes.
   static Future import(List urls) {
     print(_DYNAMIC_IMPORT_WARNING);
-    var completer = new Completer();
-    js.context['Polymer'].callMethod(
-        'import', [urls, () => completer.complete()]);
-    return completer.future;
+    return PolymerJs.import(urls);
   }
 
   /// Deprecated: Use `import` instead.
@@ -266,13 +260,11 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   /// Returns a list of elements that have had polymer-elements created but
   /// are not yet ready to register. The list is an array of element
   /// definitions.
-  static List<Element> get waitingFor =>
-      _Polymer.callMethod('waitingFor', [null]);
+  static List<Element> get waitingFor => PolymerJs.waitingFor;
 
   /// Forces polymer to register any pending elements. Can be used to abort
   /// waiting for elements that are partially defined.
-  static forceReady([int timeout]) =>
-      _Polymer.callMethod('forceReady', [null, timeout]);
+  static forceReady([int timeout]) => PolymerJs.forceReady(timeout);
 
   /// The most derived `<polymer-element>` declaration for this element.
   PolymerDeclaration get element => _element;
@@ -1124,12 +1116,10 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     // by default supports 1 thing being bound.
     events.forEach((type, methodName) {
       // Dart note: the getEventHandler method is on our PolymerExpressions.
-      _PolymerGestures.callMethod('addEventListener', [
-        this,
-        type,
-        Zone.current.bindUnaryCallback(
-            element.syntax.getEventHandler(this, this, methodName))
-      ]);
+      PolymerGesturesJs.addEventListener(
+          this, type,
+          Zone.current.bindUnaryCallback(
+              element.syntax.getEventHandler(this, this, methodName)));
     });
   }
 
@@ -1176,7 +1166,7 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     // when polyfilling Object.observe, ensure changes
     // propagate before executing the async method
     scheduleMicrotask(Observable.dirtyCheck);
-    _Polymer.callMethod('flush'); // for polymer-js interop
+    PolymerJs.flush(); // for polymer-js interop
     return new Timer(timeout, method);
   }
 
@@ -1192,7 +1182,7 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
     // when polyfilling Object.observe, ensure changes
     // propagate before executing the async method
     scheduleMicrotask(Observable.dirtyCheck);
-    _Polymer.callMethod('flush'); // for polymer-js interop
+    PolymerJs.flush(); // for polymer-js interop
     return window.requestAnimationFrame(method);
   }
 
@@ -1474,5 +1464,3 @@ final Logger _watchLog = new Logger('polymer.watch');
 final Logger _readyLog = new Logger('polymer.ready');
 
 final Expando _eventHandledTable = new Expando<Set<Node>>();
-
-final JsObject _PolymerGestures = js.context['PolymerGestures'];

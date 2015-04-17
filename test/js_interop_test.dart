@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:js';
 import 'package:polymer/polymer.dart';
+import 'package:polymer_interop/polymer_interop.dart';
 import 'package:unittest/html_config.dart';
 import 'package:unittest/unittest.dart';
 
@@ -135,10 +136,9 @@ testInterop(jsElem) {
 /// Calls Polymer.flush() to flush Polymer.js pending operations, e.g.
 /// dirty checking for data-bindings.
 Future flush() {
-  var Polymer = context['Polymer'];
-  Polymer.callMethod('flush');
+  PolymerJs.flush();
 
   var completer = new Completer();
-  Polymer.callMethod('endOfMicrotask', [() => completer.complete()]);
+  PolymerJs.endOfMicrotask(() => completer.complete());
   return completer.future;
 }

@@ -98,8 +98,7 @@ abstract class PolymerEventBindings {
       // TODO(jakemac): Remove this indirection if/when JsFunction gets a
       // simpler constructor that doesn't pass this, http://dartbug.com/20545.
       var handler = new JsFunction.withThis((_, e) => eventHandler(e));
-      _PolymerGestures.callMethod(
-          'addEventListener', [node, eventType, handler]);
+      PolymerGesturesJs.addEventListener(node, eventType, handler);
 
       if (oneTime) return null;
       return new _EventBindable(path, node, eventType, handler);
@@ -124,8 +123,7 @@ class _EventBindable extends Bindable {
   open(callback) => value;
 
   void close() {
-    _PolymerGestures.callMethod(
-        'removeEventListener', [_node, _eventType, _handler]);
+    PolymerGesturesJs.removeEventListener(_node, _eventType, _handler);
   }
 }
 
