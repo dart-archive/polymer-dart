@@ -369,7 +369,7 @@ class PolymerSmokeGenerator {
     // Include smoke initialization.
     generator.writeImports(code);
     generator.writeTopLevelDeclarations(code);
-    code.writeln('\nvoid main() {');
+    code.writeln('\nmain() {');
     code.write('  useGeneratedCode(');
     generator.writeStaticConfiguration(code);
     code.writeln(');');
@@ -382,7 +382,7 @@ class PolymerSmokeGenerator {
     }
 
     code.writeln('  configureForDeployment();');
-    code.writeln('  i0.main();');
+    code.writeln('  return i0.main();');
 
     // End of main().
     code.writeln('}');

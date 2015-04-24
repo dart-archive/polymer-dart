@@ -45,7 +45,7 @@ void main() {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'a.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 parents: {
@@ -56,7 +56,7 @@ void main() {
                   smoke_0.PolymerElement: {},
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
     'a|web/test.web_components.bootstrap.dart': '''
@@ -69,7 +69,7 @@ void main() {
           main() {
             initializers.addAll([new InitEntry(const i2.CustomTag('x-A'), i1.XA),]);
 
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('          ', ''),
     'a|web/test.bootstrap.dart': '''
@@ -77,7 +77,7 @@ void main() {
 
           import 'a.dart' as i0;
 
-          void main() { i0.main(); }
+          main() => i0.main();
           '''.replaceAll('          ', ''),
   }, []);
 
@@ -99,7 +99,7 @@ void main() {
         import 'package:polymer/polymer.dart' as smoke_0;
         import 'foo/a.dart' as smoke_1;
 
-        void main() {
+        main() {
           useGeneratedCode(new StaticConfiguration(
               checkedMode: false,
               parents: {
@@ -110,7 +110,7 @@ void main() {
                 smoke_0.PolymerElement: {},
               }));
           configureForDeployment();
-          i0.main();
+          return i0.main();
         }
         '''.replaceAll('\n        ', '\n'),
     'a|web/test.web_components.bootstrap.dart': '''
@@ -123,7 +123,7 @@ void main() {
         main() {
           initializers.addAll([new InitEntry(const i2.CustomTag('x-A'), i1.XA),]);
 
-          i0.main();
+          return i0.main();
         }
         '''.replaceAll('        ', ''),
     'a|web/test.bootstrap.dart': '''
@@ -131,7 +131,7 @@ void main() {
 
         import 'foo/a.dart' as i0;
 
-        void main() { i0.main(); }
+        main() => i0.main();
         '''.replaceAll('        ', ''),
   }, []);
 
@@ -153,7 +153,7 @@ void main() {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'test.html.0.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 parents: {
@@ -164,7 +164,7 @@ void main() {
                   smoke_1.XB: {},
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
     'a|web/test.web_components.bootstrap.dart': '''
@@ -177,7 +177,7 @@ void main() {
           main() {
             initializers.addAll([new InitEntry(const i2.CustomTag('x-B'), i1.XB),]);
 
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('          ', ''),
     'a|web/test.bootstrap.dart': '''
@@ -185,7 +185,7 @@ void main() {
 
           import 'test.html.0.dart' as i0;
 
-          void main() { i0.main(); }
+          main() => i0.main();
           '''.replaceAll('          ', ''),
     'a|web/test.html.0.dart': _sampleOutput("B", "bar"),
   }, []);
@@ -220,7 +220,7 @@ void main() {
           import 'index.html.0.dart' as smoke_1;
           import 'b.dart' as smoke_2;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 parents: {
@@ -233,7 +233,7 @@ void main() {
                   smoke_0.PolymerElement: {},
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
     'a|web/index.web_components.bootstrap.dart': '''
@@ -250,7 +250,7 @@ void main() {
               new InitEntry(const i2.CustomTag('x-B'), i3.XB),
             ]);
 
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('          ', ''),
     'a|web/index.bootstrap.dart': '''
@@ -259,7 +259,7 @@ void main() {
           import 'index.html.0.dart' as i0;
           import 'b.dart' as i1;
 
-          void main() { i1.main(); }
+          main() => i1.main();
           '''.replaceAll('          ', ''),
     'a|web/index.html.0.dart': _sampleOutput("A", "foo"),
   }, []);
