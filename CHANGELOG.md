@@ -6,6 +6,7 @@
     all `@initMethod` and `@whenPolymerReady` functions have been executed. This
     is to support writing tests inside these methods using the new `test`
     package.
+  * Fix the bootstrap file to return the original result of main.
 
 #### 0.16.1+4
   * Use `polymer_interop` for everything polymer js related. Projects which only

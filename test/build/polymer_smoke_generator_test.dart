@@ -57,14 +57,14 @@ initializerTests(phases) {
           ${DEFAULT_IMPORTS.join('\n')}
           import 'package:polymer/polymer.dart' as smoke_0;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 declarations: {
                   smoke_0.PolymerElement: {},
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
     'a|web/a.dart': 'library a;\n'
@@ -88,7 +88,7 @@ initializerTests(phases) {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'a.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 parents: {
@@ -99,7 +99,7 @@ initializerTests(phases) {
                   smoke_0.PolymerElement: {},
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   });
@@ -139,7 +139,7 @@ initializerTests(phases) {
         import 'b.dart' as smoke_2;
         import 'a.dart' as smoke_3;
 
-        void main() {
+        main() {
           useGeneratedCode(new StaticConfiguration(
               checkedMode: false,
               parents: {
@@ -154,7 +154,7 @@ initializerTests(phases) {
                 smoke_0.PolymerElement: {},
               }));
           configureForDeployment();
-          i0.main();
+          return i0.main();
         }
         '''.replaceAll('\n        ', '\n'),
   });
@@ -181,7 +181,7 @@ initializerTests(phases) {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'a.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 parents: {
@@ -192,7 +192,7 @@ initializerTests(phases) {
                   smoke_0.PolymerElement: {},
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   });
@@ -228,7 +228,7 @@ initializerTests(phases) {
             import 'package:polymer/polymer.dart' as smoke_0;
             import 'a.dart' as smoke_1;
 
-            void main() {
+            main() {
               useGeneratedCode(new StaticConfiguration(
                   checkedMode: false,
                   parents: {
@@ -239,7 +239,7 @@ initializerTests(phases) {
                     smoke_0.PolymerElement: {},
                   }));
               configureForDeployment();
-              i0.main();
+              return i0.main();
             }
             '''.replaceAll('\n            ', '\n'),
   });
@@ -261,11 +261,11 @@ initializerTests(phases) {
           import 'a.dart' as i0;
           ${DEFAULT_IMPORTS.join('\n')}
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   }, ['warning: ${MISSING_POLYMER_DART.snippet}']);
@@ -310,7 +310,7 @@ codegenTests(phases) {
           ${DEFAULT_IMPORTS.join('\n')}
           import 'package:polymer/polymer.dart' as smoke_0;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 getters: {
@@ -362,7 +362,7 @@ codegenTests(phases) {
                   #within: r'within',
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   });
@@ -406,7 +406,7 @@ codegenTests(phases) {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'a.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 getters: {
@@ -477,7 +477,7 @@ codegenTests(phases) {
                   #tk: r'tk',
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   });
@@ -514,7 +514,7 @@ codegenTests(phases) {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'a.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 getters: {
@@ -546,7 +546,7 @@ codegenTests(phases) {
                   #prop3: r'prop3',
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   });
@@ -574,7 +574,7 @@ codegenTests(phases) {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'a.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 getters: {
@@ -600,7 +600,7 @@ codegenTests(phases) {
                   #prop2: r'prop2',
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   });
@@ -629,7 +629,7 @@ codegenTests(phases) {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'a.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 getters: {
@@ -651,7 +651,7 @@ codegenTests(phases) {
                   #xChanged: r'xChanged',
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   });
@@ -675,7 +675,7 @@ codegenTests(phases) {
           import 'package:polymer/polymer.dart' as smoke_0;
           import 'a.dart' as smoke_1;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 parents: {
@@ -696,7 +696,7 @@ codegenTests(phases) {
                   #registerCallback: r'registerCallback',
                 }));
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
   });
@@ -731,7 +731,7 @@ void logElementInjectionTests() {
           ${DEFAULT_IMPORTS.join('\n')}
           import 'package:polymer/polymer.dart' as smoke_0;
 
-          void main() {
+          main() {
             useGeneratedCode(new StaticConfiguration(
                 checkedMode: false,
                 declarations: {
@@ -739,7 +739,7 @@ void logElementInjectionTests() {
                 }));
             new LogInjector().injectLogsFromUrl('test.html._buildLogs');
             configureForDeployment();
-            i0.main();
+            return i0.main();
           }
           '''.replaceAll('\n          ', '\n'),
     'a|web/a.dart': 'library a;\n'
