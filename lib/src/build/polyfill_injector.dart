@@ -134,4 +134,4 @@ final _webComponentsJS =
     new RegExp(r'webcomponents.*\.js', caseSensitive: false);
 final _dartSupportJS = new RegExp(r'dart_support.js', caseSensitive: false);
 final _browserDartJS =
-    new RegExp(r'packages/browser/dart_support.js', caseSensitive: false);
+    new RegExp(r'packages/browser/dart.js', caseSensitive: false);
