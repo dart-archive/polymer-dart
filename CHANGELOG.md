@@ -1,6 +1,11 @@
 #### 0.16.2
   * Add support for the new `link[rel="x-dart-test"]` tags from the `test`
     package to the transformer.
+  * The `Future` returned from the default `main` method in
+    `package:polymer/init.dart` now guarantees that it will not complete until
+    all `@initMethod` and `@whenPolymerReady` functions have been executed. This
+    is to support writing tests inside these methods using the new `test`
+    package.
 
 #### 0.16.1+4
   * Use `polymer_interop` for everything polymer js related. Projects which only
