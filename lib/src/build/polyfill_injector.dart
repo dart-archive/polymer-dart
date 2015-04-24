@@ -13,6 +13,7 @@ import 'package:html/dom.dart'
 import 'package:html/parser.dart' show parseFragment;
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:path/path.dart' as path;
+import 'package:web_components/transformer.dart' show testAttribute;
 import 'common.dart';
 
 /// Ensures that any scripts and polyfills needed to run a polymer application
@@ -50,7 +51,7 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
             webComponentsJs = tag;
           } else if (_dartSupportJS.hasMatch(last)) {
             dartSupportFound = true;
-          } else if (last == 'dart.js') {
+          } else if (_browserDartJS.hasMatch(src)) {
             dartJs = tag;
           }
         }
@@ -78,6 +79,10 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
       if (options.directlyIncludeJS) {
         // Replace all other Dart script tags with JavaScript versions.
         for (var script in dartScripts) {
+          /// Don't modify scripts that were originally <link rel="x-test-dart">
+          /// tags.
+          if (script.attributes.containsKey(testAttribute)) continue;
+
           final src = script.attributes['src'];
           if (src.endsWith('.dart')) {
             script.attributes.remove('type');
@@ -128,3 +133,5 @@ final _platformJS = new RegExp(r'platform.*\.js', caseSensitive: false);
 final _webComponentsJS =
     new RegExp(r'webcomponents.*\.js', caseSensitive: false);
 final _dartSupportJS = new RegExp(r'dart_support.js', caseSensitive: false);
+final _browserDartJS =
+    new RegExp(r'packages/browser/dart_support.js', caseSensitive: false);

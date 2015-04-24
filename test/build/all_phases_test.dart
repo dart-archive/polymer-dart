@@ -263,6 +263,19 @@ void main() {
           '''.replaceAll('          ', ''),
     'a|web/index.html.0.dart': _sampleOutput("A", "foo"),
   }, []);
+
+  testPhases('test compatibility', phases, {
+    'a|test/test.html': '<!DOCTYPE html><html><head>'
+        '<link rel="x-dart-test" href="a.dart">'
+        '<script src="packages/test/dart.js"></script>',
+    'a|test/a.dart': _sampleInput('A', 'foo'),
+  }, {
+    'a|test/test.html': '<!DOCTYPE html><html><head>'
+        '$COMPATIBILITY_JS_TAGS'
+        '<link rel="x-dart-test" href="test.html.polymer.bootstrap.dart">'
+        '<script src="packages/test/dart.js"></script>'
+        '</head><body></body></html>',
+  }, []);
 }
 
 String _sampleInput(String className, String fieldName) => '''

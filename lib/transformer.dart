@@ -164,6 +164,9 @@ List<List<Transformer>> createDeployPhases(TransformOptions options,
   var phases = [];
 
   phases.addAll([
+    /// Must happen first, temporarily rewrites <link rel="x-dart-test"> tags to
+    /// <script type="application/dart" _was_test></script> tags.
+    [new web_components.RewriteXDartTestToScript(options.entryPoints)],
     [new web_components.ScriptCompactorTransformer(options.entryPoints)],
     [new PolymerBootstrapTransformer(options)],
   ]);
@@ -191,6 +194,11 @@ List<List<Transformer>> createDeployPhases(TransformOptions options,
   if (!options.releaseMode) {
     phases.add([new IndexPageBuilder(options)]);
   }
+  /// Must happen last, rewrites
+  /// <script type="application/dart" _was_test></script> tags back to
+  /// <link rel="x-dart-test"> tags.
+  phases.add(
+      [new web_components.RewriteScriptToXDartTest(options.entryPoints)]);
   return phases;
 }
 

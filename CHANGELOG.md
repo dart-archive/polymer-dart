@@ -1,3 +1,7 @@
+#### 0.16.2
+  * Add support for the new `link[rel="x-dart-test"]` tags from the `test`
+    package to the transformer.
+
 #### 0.16.1+4
   * Use `polymer_interop` for everything polymer js related. Projects which only
   provide/use wrappers around js elements should be able to switch to using that
