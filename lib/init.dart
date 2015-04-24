@@ -10,12 +10,17 @@
 /// elements are created, then, instead of creating your own `main`, you can
 /// simply include a script tag loading this library:
 ///
-///    <script type="application/dart">import "package:polymer/init.dart";
+///    <script type="application/dart">export "package:polymer/init.dart";
 ///    </script>
 ///
 /// This script tag should be placed after all HTML imports on your page.
 library polymer.init;
 
+import 'dart:async';
 import 'package:polymer/polymer.dart';
 
-main() => initPolymer();
+/// Returns a [Future<Zone>] that code should be executed in for dirty checking.
+/// The returned future will complete once polymer is ready and all @initMethod
+/// and @whenPolymerReady functions have been executed.
+Future<Zone> main() =>
+    initPolymer().then((zone) => Polymer.onReady.then((_) => zone));
