@@ -1,3 +1,6 @@
+#### 0.16.3
+  * Update analyzer to <=0.26.0.
+
 #### 0.16.2
   * Add support for the new `link[rel="x-dart-test"]` tags from the `test`
     package to the transformer.
