@@ -1,5 +1,5 @@
 name: polymer
-version: 0.16.3
+version: 0.16.3+1
 author: Polymer.dart Authors <web-ui-dev@dartlang.org>
 description: >
   Polymer.dart is a new type of library for the web, built on top of Web
@@ -28,7 +28,7 @@ dependencies:
   # Because polymer exports observe, it needs to keep its version constraint
   # tight to ensure that a constraint on polymer properly constraints all
   # features it provides.
-  observe: '>=0.13.0 <0.13.1'
+  observe: '>=0.13.1 <0.13.2'
 dev_dependencies:
   unittest: '>=0.10.0 <0.12.0'
   markdown: '>=0.7.0 <0.8.0'

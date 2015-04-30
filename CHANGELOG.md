@@ -1,5 +1,8 @@
+#### 0.16.3+1
+  * Update observe to 0.13.1.
+
 #### 0.16.3
-  * Update analyzer to <=0.26.0.
+  * Update analyzer to <0.26.0.
 
 #### 0.16.2
   * Add support for the new `link[rel="x-dart-test"]` tags from the `test`

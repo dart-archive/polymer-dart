@@ -11,6 +11,7 @@ packages
 *.js.map
 *.sw?
 .idea/
+*.iml
 
 # Include when developing application packages.
 pubspec.lock
