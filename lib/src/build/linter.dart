@@ -73,8 +73,8 @@ class Linter extends Transformer with PolymerTransformer {
         .then((ids) => Future.forEach(ids, (id) =>
             _readAndCollectElements(id, transform, logger, seen, elements)))
         .then((_) {
-      if (sourceId.package == 'polymer' &&
-          sourceId.path == 'lib/src/js/polymer/polymer.html' &&
+      if (sourceId.package == 'polymer_interop' &&
+          sourceId.path == 'lib/src/js/polymer.html' &&
           elements['polymer-element'] == null) {
         elements['polymer-element'] =
             new _ElementSummary('polymer-element', null, null);
