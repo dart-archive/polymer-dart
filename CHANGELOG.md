@@ -1,5 +1,6 @@
 #### 0.16.3+2
   * Fix invalid warning about missing polymer.html import from the linter.
+  * Update logging package to `<0.12.0`.
 
 #### 0.16.3+1
   * Update observe to 0.13.1.

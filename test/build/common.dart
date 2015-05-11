@@ -218,11 +218,13 @@ const POLYMER_MOCKS = const {
         const _InitMethod();
       }
       const _InitMethod initMethod = const _InitMethod();''',
-  'polymer|lib/src/js/polymer/polymer.html': '<!DOCTYPE html><html>',
   'polymer|lib/polymer.html': '<!DOCTYPE html><html>'
-      '<link rel="import" href="src/js/polymer/polymer.html">',
+      '<link rel="import" href="../../packages/polymer_interop/polymer.html">',
   'polymer|lib/polymer_experimental.html': '<!DOCTYPE html><html>'
       '<link rel="import" href="polymer.html">',
+  'polymer_interop|lib/polymer.html': '<!DOCTYPE html><html>'
+      '<link rel="import" href="src/js/polymer.html">',
+  'polymer_interop|lib/src/js/polymer.html': '<!DOCTYPE html>',
   'polymer|lib/polymer.dart': 'library polymer;\n'
       'import "dart:html";\n'
       'import "package:initialize/initialize.dart";\n'
