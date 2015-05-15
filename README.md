@@ -96,6 +96,33 @@ transformers:
     csp: true
 ```
 
+Testing
+-------
+
+Polymer elements can be tested using either the original `unittest` or new `test` packages. In both cases the easiest way to create a test is by using the default main from `polymer/init.dart` and then defining all your tests inside of a method marked with an `@whenPolymerReady` annotation.
+
+```dart
+import 'package:polymer/polymer.dart';
+export 'package:polymer/init.dart';
+
+@whenPolymerReady
+void runTests() {
+  // Define your tests here.
+}
+```
+
+You will also need to define a custom html file for your test (see the README for the testing package you are using for more information on this).
+
+**Note**: If you are using the new `test` package, it is important that you add the `test` transformer after the polymer transformer, so it should look roughly like this:
+
+```yaml
+transformer:
+- polymer:
+    entry_points:
+      - test/my_test.html
+- test/pub_serve:
+    $include: test/**_test{.*,}.dart
+```
 
 Contacting Us
 -------------
