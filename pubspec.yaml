@@ -1,5 +1,5 @@
 name: polymer
-version: 0.16.3+2
+version: 0.17.0-dev
 author: Polymer.dart Authors <web-ui-dev@dartlang.org>
 description: >
   Polymer.dart is a new type of library for the web, built on top of Web
@@ -30,57 +30,8 @@ dependencies:
   # features it provides.
   observe: '>=0.13.1 <0.13.2'
 dev_dependencies:
-  unittest: '>=0.10.0 <0.12.0'
+  test: '>=0.12.0 <0.13.0'
   markdown: '>=0.7.0 <0.8.0'
-transformers:
-- code_transformers/src/delete_file:
-    $include:
-      - lib/src/build/log_injector.css
-- observe:
-    files: lib/src/instance.dart
-    $include: lib/src/instance.dart
-
-- polymer:
-    entry_points:
-      - test/attr_deserialize_test.html
-      - test/attr_mustache_test.html
-      - test/auto_binding_test.html
-      - test/bind_mdv_test.html
-      - test/bind_properties_test.html
-      - test/bind_test.html
-      - test/computed_properties_test.html
-      - test/custom_event_test.html
-      - test/entered_view_test.html
-      - test/event_binding_release_handler_test.html
-      - test/event_controller_test.html
-      - test/event_handlers_test.html
-      - test/event_path_declarative_test.html
-      - test/event_path_test.html
-      - test/events_test.html
-      - test/force_ready_test.html
-      - test/import_test.html
-      - test/inject_bound_html_test.html
-      - test/instance_attrs_test.html
-      - test/js_custom_event_test.html
-      - test/js_interop_test.html
-      - test/layout_test.html
-      - test/nested_binding_test.html
-      - test/noscript_test.html
-      - test/prop_attr_bind_reflection_test.html
-      - test/prop_attr_reflection_test.html
-      - test/property_change_test.html
-      - test/property_observe_test.html
-      - test/publish_attributes_test.html
-      - test/publish_inherited_properties_test.html
-      - test/register_test.html
-      - test/sort_registration_test.html
-      - test/take_attributes_test.html
-      - test/template_attr_template_test.html
-      - test/template_distribute_dynamic_test.html
-      - test/two_way_bind_test.html
-      - test/unbind_test.html
-      - test/web_components_less_test.html
-      - test/when_polymer_ready_test.html
 
 environment:
   sdk: '>=1.4.0 <2.0.0'

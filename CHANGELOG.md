@@ -1,3 +1,6 @@
+#### 0.17.0-dev
+  * In progress port of polymer js 0.9. This is a ground up rewrite, and does not yet have transformer support.
+
 #### 0.16.3+2
   * Fix invalid warning about missing polymer.html import from the linter.
   * Update logging package to `<0.12.0`.
