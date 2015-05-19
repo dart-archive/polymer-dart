@@ -1,5 +1,7 @@
 #### 0.17.0-dev
-  * In progress port of polymer js 0.9. This is a ground up rewrite, and does not yet have transformer support.
+  * In progress port of polymer js 0.9.
+  * This is a ground up rewrite, and does not yet have transformer support.
+  * Only PolymerMicroElements exist so far.
 
 #### 0.16.3+2
   * Fix invalid warning about missing polymer.html import from the linter.
