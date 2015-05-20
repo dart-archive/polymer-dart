@@ -15,7 +15,7 @@ export 'src/micro/properties.dart';
 class PolymerMicroElement extends HtmlElement with Attributes, Properties {
   PolymerMicroElement.created() : super.created();
 
-  polymerCreated() {
-    installHostAttributes();
-  }
+//  polymerCreated() {
+//    installHostAttributes();
+//  }
 }

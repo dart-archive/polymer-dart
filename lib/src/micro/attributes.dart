@@ -3,131 +3,122 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.src.micro.attributes;
 
-import 'dart:convert' show JSON;
 import 'dart:html';
-import 'package:polymer_interop/polymer_interop.dart';
-import 'package:smoke/smoke.dart' as smoke;
+import 'dart:js';
 import 'properties.dart';
 
+final _polymerBase = context['Polymer']['Base'];
+
 abstract class Attributes implements Element, Properties {
-  Map<String, dynamic> hostAttributes;
-  bool _serializing = false;
-
-  void marshalAttributes() => _takeAttributes();
-
-  void installHostAttributes() {
-    if (hostAttributes != null) _applyAttributes();
+  JsObject _jsThis;
+  JsObject get jsThis {
+    if (_jsThis == null) _jsThis = new JsObject.fromBrowserObject(this);
+    return _jsThis;
   }
 
-  /* apply attributes to node but avoid overriding existing values */
-  void _applyAttributes() {
-    for (var n in hostAttributes.keys) {
-      // NOTE: never allow 'class' to be set in hostAttributes
-      // since shimming classes would make it work
-      // inconsisently under native SD
-      if (!attributes.containsKey(n) && n != 'class') {
-        serializeValueToAttribute(hostAttributes[n], n);
-      }
+  JsObject _jsProxy;
+  JsObject get jsProxy {
+    if (_jsProxy == null) {
+      _jsProxy = new JsObject.jsify({
+        '_applyAttributes': (node, attributes) {
+          (_polymerBase['_applyAttributes'] as JsFunction).apply(
+              [jsThis, attributes], thisArg: jsProxy);
+        },
+        'hasAttribute': (attribute) {
+          return attributes.containsKey(attribute);
+        },
+        'serializeValueToAttribute': (value, attribute, _) {
+          return (_polymerBase['serializeValueToAttribute'] as JsFunction)
+              .apply([value, attribute, jsThis], thisArg: jsProxy);
+        },
+        'serialize': (value) {
+          return (_polymerBase['serialize'] as JsFunction).apply(
+              [value], thisArg: jsProxy);
+        },
+      });
     }
+    return _jsProxy;
   }
 
-  void _takeAttributes() => _takeAttributesToModel();
-
-  void _takeAttributesToModel() {
-    for (var name in attributes.keys) {
-      setAttributeToProperty(name);
-    }
+  void installHostAttributes(Map<String, dynamic> hostAttributes) {
+    (_polymerBase['_installHostAttributes'] as JsFunction).apply(
+        [new JsObject.jsify(hostAttributes)], thisArg: jsProxy);
   }
 
-  void setAttributeToProperty(attrName) {
-    // Don't deserialize back to property if currently reflecting
-    if (!_serializing) {
-      // TODO(jakemac): Deal with PropertyEffects.
-      var propName = PolymerJs.dashToCamelCase(attrName);
-      var info  = getPropertyInfo(propName);
-      if (info != null) {
-        var val = attributes[attrName];
-        smoke.write(this, info.name, deserialize(val, info.type));
-      }
-    }
-  }
-
-  void reflectPropertyToAttribute(String name) {
-    _serializing = true;
-    var info = getPropertyInfo(name);
-    if (info != null) {
-      serializeValueToAttribute(
-          smoke.read(this, info.name), PolymerJs.camelToDashCase(name));
-    }
-    this._serializing = false;
-  }
-
-  void serializeValueToAttribute(value, String attribute, [Node node]) {
-      var str = serialize(value);
-      if (node == null) node = this;
-      if (str == null) {
-        attributes.remove(attribute);
-      } else {
-        attributes[attribute] = str;
-      }
-  }
-
-  dynamic deserialize(String value, Type type) {
-    var newValue;
-    switch (type) {
-      case int:
-        newValue = int.parse(value);
-        break;
-      case double:
-        newValue = double.parse(value);
-        break;
-      case num:
-        newValue = num.parse(value);
-        break;
-      case bool:
-        newValue = value != null;
-        break;
-      case Map:
-        try {
-          newValue = JSON.decode(value);
-        } catch(x) {
-          // allow non-JSON literals like Strings and Numbers
-        }
-        break;
-      case List:
-        try {
-          newValue = JSON.decode(value);
-        } catch(x) {
-          newValue = null;
-          window.console.warn(
-              'Polymer::Attributes: couldn`t decode List as JSON: $value');
-        }
-        break;
-      case DateTime:
-        newValue = DateTime.parse(value);
-        break;
-      case String:
-        newValue = value;
-        break;
-      default:
-        _serializationWarning(value);
-        break;
-    }
-    return newValue;
-  }
-
-  String serialize(dynamic value) {
-    if (value is bool) return value ? '' : null;
-    if (value is DateTime) return value.toString();
-    if (value is List || value is Map) return JSON.encode(value);
-    if (value is String) return value;
-    if (value is num) return value.toString();
-    _serializationWarning(value);
-    return null;
-  }
-
-  void _serializationWarning(value) {
-    window.console.warn('Unable to serialize/deserialize value: $value. \n'
-        'Only num, bool, DateTime, List, Map, and String are supported.');
-  }
+//  void marshalAttributes() => _takeAttributes();
+//
+//  void _takeAttributes() => _takeAttributesToModel();
+//
+//  void _takeAttributesToModel() {
+//    for (var name in attributes.keys) {
+//      setAttributeToProperty(name);
+//    }
+//  }
+//
+//  void setAttributeToProperty(attrName) {
+//    // Don't deserialize back to property if currently reflecting
+//    if (!_serializing) {
+//      // TODO(jakemac): Deal with PropertyEffects.
+//      var propName = PolymerJs.dashToCamelCase(attrName);
+//      var info  = getPropertyInfo(propName);
+//      if (info != null) {
+//        var val = attributes[attrName];
+//        smoke.write(this, info.name, deserialize(val, info.type));
+//      }
+//    }
+//  }
+//
+//  void reflectPropertyToAttribute(String name) {
+//    _serializing = true;
+//    var info = getPropertyInfo(name);
+//    if (info != null) {
+//      serializeValueToAttribute(
+//          smoke.read(this, info.name), PolymerJs.camelToDashCase(name));
+//    }
+//    this._serializing = false;
+//  }
+//
+//  dynamic deserialize(String value, Type type) {
+//    var newValue;
+//    switch (type) {
+//      case int:
+//        newValue = int.parse(value);
+//        break;
+//      case double:
+//        newValue = double.parse(value);
+//        break;
+//      case num:
+//        newValue = num.parse(value);
+//        break;
+//      case bool:
+//        newValue = value != null;
+//        break;
+//      case Map:
+//        try {
+//          newValue = JSON.decode(value);
+//        } catch(x) {
+//          // allow non-JSON literals like Strings and Numbers
+//        }
+//        break;
+//      case List:
+//        try {
+//          newValue = JSON.decode(value);
+//        } catch(x) {
+//          newValue = null;
+//          window.console.warn(
+//              'Polymer::Attributes: couldn`t decode List as JSON: $value');
+//        }
+//        break;
+//      case DateTime:
+//        newValue = DateTime.parse(value);
+//        break;
+//      case String:
+//        newValue = value;
+//        break;
+//      default:
+//        _serializationWarning(value);
+//        break;
+//    }
+//    return newValue;
+//  }
 }
