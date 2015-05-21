@@ -7,15 +7,14 @@ library polymer;
 import 'dart:html';
 
 import 'package:web_components/web_components.dart' show HtmlImport;
+import 'src/common/polymer_js_proxy.dart';
+export 'src/common/polymer_js_proxy.dart';
 import 'src/micro/attributes.dart';
 export 'src/micro/attributes.dart';
 import 'src/micro/properties.dart';
 export 'src/micro/properties.dart';
 
-class PolymerMicroElement extends HtmlElement with Attributes, Properties {
+//class PolymerMicroElement extends HtmlElement with PolymerJsProtoProxy, Attributes, Properties {
+class PolymerMicroElement extends HtmlElement with PolymerJsDomProxy, Attributes, Properties {
   PolymerMicroElement.created() : super.created();
-
-//  polymerCreated() {
-//    installHostAttributes();
-//  }
 }

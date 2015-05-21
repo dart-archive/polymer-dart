@@ -4,9 +4,15 @@
 library polymer.src.micro.properties;
 
 import 'dart:html';
+import 'dart:js';
 import 'package:smoke/smoke.dart' as smoke;
+//import '../common/polymer_js_proxy.dart';
 
-abstract class Properties implements Element {
+abstract class Properties implements /*PolymerJsDomProxy, */Element {
+//  JsObject getPropertyInfo(String property) =>
+//      (jsThis['getPropertyInfo'] as JsFunction).apply(
+//          [property], thisArg: jsThis);
+
   PropertyInfo getPropertyInfo(String propName) {
     var property = smoke.nameToSymbol(propName);
     if (property != null) {
@@ -36,6 +42,34 @@ class PropertyInfo {
 
   operator ==(PropertyInfo other) {
     return other.type == type && other.name == name;
+  }
+
+  JsObject toJsObject() {
+    return new JsObject.jsify({
+      'type': _jsType(),
+      'defined': true,
+    });
+  }
+
+  JsObject _jsType() {
+    switch (type) {
+      case int:
+      case double:
+      case num:
+        return context['Number'];
+      case bool:
+        return context['Boolean'];
+      case Map:
+        return context['Object'];
+      case List:
+        return context['Array'];
+      case DateTime:
+        return context['DateTime'];
+      case String:
+        return context['String'];
+      default:
+        throw 'Unrecognized type!';
+    }
   }
 }
 
