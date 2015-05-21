@@ -1,3 +1,6 @@
+#### 0.16.3+3
+  * Inject the polyfills after any `<base>` tags in the head.
+
 #### 0.16.3+2
   * Fix invalid warning about missing polymer.html import from the linter.
   * Update logging package to `<0.12.0`.
