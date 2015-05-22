@@ -6,52 +6,40 @@ library polymer.src.micro.properties;
 import 'dart:html';
 import 'dart:js';
 import 'package:smoke/smoke.dart' as smoke;
-//import '../common/polymer_js_proxy.dart';
 
-abstract class Properties implements /*PolymerJsDomProxy, */Element {
-//  JsObject getPropertyInfo(String property) =>
-//      (jsThis['getPropertyInfo'] as JsFunction).apply(
-//          [property], thisArg: jsThis);
+abstract class Properties implements Element {
 
   PropertyInfo getPropertyInfo(String propName) {
     var property = smoke.nameToSymbol(propName);
     if (property != null) {
       var decl = smoke.getDeclaration(runtimeType, property);
-      if (decl == null || decl.isMethod || decl.isFinal) {
-        _missingPropertyWarning(propName);
-      } else {
+      if (decl != null) {
         // TODO(jakemac): Cache these (or codegen ahead of time).
         return new PropertyInfo(property, decl.type);
       }
-    } else {
-      _missingPropertyWarning(propName);
     }
     return null;
-  }
-
-  void _missingPropertyWarning(String attrName) {
-    window.console.warn(
-        'property for attribute $attrName of ${toString()} not found.');
   }
 }
 
 class PropertyInfo {
-  Type type;
-  Symbol name;
+  final Type type;
+  final Symbol name;
   PropertyInfo(this.name, this.type);
 
   operator ==(PropertyInfo other) {
     return other.type == type && other.name == name;
   }
 
-  JsObject toJsObject() {
+  static JsObject toJsObject(PropertyInfo info) {
+    if (info == null) return new JsObject.jsify({'defined': false});
     return new JsObject.jsify({
-      'type': _jsType(),
+      'type': _jsType(info.type),
       'defined': true,
     });
   }
 
-  JsObject _jsType() {
+  static JsObject _jsType(Type type) {
     switch (type) {
       case int:
       case double:
@@ -68,7 +56,7 @@ class PropertyInfo {
       case String:
         return context['String'];
       default:
-        throw 'Unrecognized type!';
+        window.console.warn('Unable to convert `$type` to a javascript type.');
     }
   }
 }

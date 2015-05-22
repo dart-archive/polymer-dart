@@ -1,0 +1,24 @@
+<script>
+  Polymer.Dart = {};
+  Polymer.Dart.Base = {
+    __setup__: function() {
+      Polymer.Base.extend(Polymer.Dart.Base, Polymer.Base);
+    },
+    __proxy__: null,
+    getAttribute: function(name) {
+      return this.__proxy__.getAttribute(name);
+    },
+    hasAttribute: function(name) {
+      return this.__proxy__.hasAttribute(name);
+    },
+    setAttribute: function(name, value) {
+      return this.__proxy__.setAttribute(name, value);
+    },
+    removeAttribute: function(name) {
+      return this.__proxy__.removeAttribute(name);
+    },
+    get attributes () {
+      return this.__proxy__.attributes;
+    }
+  };
+</script>

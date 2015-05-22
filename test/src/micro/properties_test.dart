@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 import 'package:initialize/initialize.dart' show initMethod;
 import 'package:polymer/polymer_micro.dart';
 import 'package:web_components/web_components.dart' show CustomElement;
-export 'package:web_components/init.dart';
+export 'package:polymer/init.dart';
 
 @initMethod
 ready() {

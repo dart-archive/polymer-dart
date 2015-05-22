@@ -10,7 +10,9 @@ import '../common/polymer_js_proxy.dart';
 
 final _polymerBase = context['Polymer']['Base'];
 
-abstract class Attributes implements PolymerProxy, Properties {
+abstract class Attributes implements PolymerJsProxy, Properties {
+  Map<String, dynamic> hostAttributes = {};
+
   void installHostAttributes(Map<String, dynamic> hostAttributes) =>
       (jsThis['_installHostAttributes'] as JsFunction).apply(
           [new JsObject.jsify(hostAttributes)], thisArg: jsThis);

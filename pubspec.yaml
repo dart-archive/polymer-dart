@@ -31,10 +31,12 @@ dependencies:
   observe: '>=0.13.1 <0.13.2'
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'
+  unittest: '>=0.11.0 <0.12.0'
   markdown: '>=0.7.0 <0.8.0'
 
 dependency_overrides:
   polymer_interop:
+#    path: ../polymer-interop
     git:
       url: https://github.com/dart-lang/polymer_interop.git
       ref: 0.2.0-dev

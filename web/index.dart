@@ -5,7 +5,7 @@ import 'dart:js';
 import 'package:initialize/initialize.dart';
 import 'package:polymer/polymer_micro.dart';
 import 'package:web_components/web_components.dart';
-export 'package:web_components/init.dart';
+export 'package:polymer/init.dart';
 
 @initMethod
 ready() {
@@ -19,6 +19,7 @@ class MyElement extends PolymerMicroElement {
   String baz;
 
   MyElement.created() : super.created() {
+
     // Extra proxies for this element!
     context['Object'].callMethod('defineProperty', [
       jsThis,
@@ -29,9 +30,13 @@ class MyElement extends PolymerMicroElement {
       }),
     ]);
 
+    hostAttributes['foo'] = 'bar';
+
     marshalAttributes();
-    installHostAttributes({
-      'foo': 'bar',
-    });
+    polymerCreated();
+//    marshalAttributes();
+//    installHostAttributes({
+//      'foo': 'bar',
+//    });
   }
 }
