@@ -1,9 +1,9 @@
 <script>
   Polymer.Dart = {};
-  Polymer.Dart.Base = {
-    __setup__: function() {
-      Polymer.Base.extend(Polymer.Dart.Base, Polymer.Base);
-    },
+  // TODO(jakemac): Don't pass anything to this constructor until
+  // http://dartbug.com/23514 gets fixed, its to slow.
+  Polymer.Dart.Base = function() {};
+  Polymer.Dart.Base.prototype = {
     __proxy__: null,
     getAttribute: function(name) {
       return this.__proxy__.getAttribute(name);
@@ -20,5 +20,9 @@
     get attributes () {
       return this.__proxy__.attributes;
     }
+  };
+
+  Polymer.Dart.Base.__setup__ = function() {
+    Polymer.Base.extend(Polymer.Dart.Base.prototype, Polymer.Base);
   };
 </script>

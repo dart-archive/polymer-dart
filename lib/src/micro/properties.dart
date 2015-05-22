@@ -40,20 +40,20 @@ class PropertyInfo {
   }
 
   static JsObject _jsType(Type type) {
-    switch (type) {
-      case int:
-      case double:
-      case num:
+    switch ('$type') {
+      case 'int':
+      case 'double':
+      case 'num':
         return context['Number'];
-      case bool:
+      case 'bool':
         return context['Boolean'];
-      case Map:
+      case 'Map':
         return context['Object'];
-      case List:
+      case 'List':
         return context['Array'];
-      case DateTime:
+      case 'DateTime':
         return context['DateTime'];
-      case String:
+      case 'String':
         return context['String'];
       default:
         window.console.warn('Unable to convert `$type` to a javascript type.');
