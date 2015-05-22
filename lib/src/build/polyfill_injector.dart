@@ -97,8 +97,17 @@ class PolyfillInjector extends Transformer with PolymerTransformer {
             parseFragment('<script src="packages/browser/dart.js"></script>'));
       }
 
-      _addScript(urlSegment, [Node parent, int position = 0]) {
+      _addScript(urlSegment, [Element parent, int position]) {
         if (parent == null) parent = document.head;
+        // Default to either the top of `parent` or right after the <base> tag.
+        if (position == null) {
+          var base = parent.querySelector('base');
+          if (base != null) {
+            position = parent.nodes.indexOf(base) + 1;
+          } else {
+            position = 0;
+          }
+        }
         var pathToPackages =
             '../' * (path.url.split(transform.primaryInput.id.path).length - 2);
         parent.nodes.insert(position, parseFragment(

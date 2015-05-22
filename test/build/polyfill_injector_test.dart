@@ -98,6 +98,22 @@ void runTests({bool js: true}) {
         '</body></html>',
   });
 
+  testPhases('polyfills after base tags', phases, {
+    'a|web/test.html': '<!DOCTYPE html><html><head>'
+        '<base href="/">'
+        '</head><body>'
+        '<script type="application/dart" src="a.dart"></script>'
+        '$dartJsTag'
+  }, {
+    'a|web/test.html': '<!DOCTYPE html><html><head>'
+        '<base href="/">'
+        '$COMPATIBILITY_JS_TAGS'
+        '</head><body>'
+        '<script ${type}src="a.dart$ext"$async></script>'
+        '$dartJsTag'
+        '</body></html>',
+  });
+
   testPhases('platform.js -> webcomponents.js', phases, {
     'a|web/test.html': '<!DOCTYPE html><html><head>'
         '$PLATFORM_JS_TAG'
