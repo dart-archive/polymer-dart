@@ -11,17 +11,17 @@ import 'dart:js';
 import 'package:web_components/web_components.dart' show HtmlImport;
 import 'src/common/polymer_js_proxy.dart';
 export 'src/common/polymer_js_proxy.dart';
-import 'src/micro/attributes.dart';
-export 'src/micro/attributes.dart';
+export 'src/common/polymer_element.dart';
 import 'src/micro/properties.dart';
 export 'src/micro/properties.dart';
 export 'init.dart' show initPolymer;
 
-class PolymerMicroElement extends HtmlElement with PolymerJsProxy, Attributes, Properties {
-  PolymerMicroElement.created() : super.created();
+class PolymerMicroElement extends HtmlElement with PolymerJsProxy {
+  PolymerMicroElement.created() : super.created() {
+    polymerCreated();
+  }
 
-  void polymerCreated() {
-    jsThis['hostAttributes'] = new JsObject.jsify(hostAttributes);
+  polymerCreated() {
     jsThis.callMethod('createdCallback');
   }
 

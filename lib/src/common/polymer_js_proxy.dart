@@ -6,23 +6,42 @@ library polymer.src.common.polymer_js_proxy;
 import 'dart:html';
 import 'dart:js';
 
-import '../micro/attributes.dart';
 import '../micro/properties.dart';
 
-final JsFunction _polymerBaseConstructor = context['Polymer']['Dart']['Base'];
+JsObject get _polymerBase => context['Polymer']['Base'];
+JsObject get _polymerDartBasePrototype =>
+    context['Polymer']['Dart']['Base']['prototype'];
 
-// Basic api for polymer js proxies. Will add things as needed.
-abstract class PolymerJsProxy implements Properties {
+final _customJsConstructorsByType = <Type, JsFunction>{};
+
+/// Basic api for re-using the polymer js prototypes.
+abstract class PolymerJsProxy {
   JsObject _jsThis;
   JsObject get jsThis {
     if (_jsThis == null) {
-      _jsThis = new JsObject(_polymerBaseConstructor);
+      _jsThis = new JsObject(_customJsConstructorsByType[this.runtimeType]);
       _jsThis['__proxy__'] = new JsObject.fromBrowserObject(this);
-
-      // Properties proxies
-      _jsThis['getPropertyInfo'] = (property) =>
-          PropertyInfo.toJsObject(getPropertyInfo(property));
     }
     return _jsThis;
   }
+}
+
+/// Creates a [JsFunction] constructor and prototype for a dart [Type].
+void createJsConstructorFor(Type type, Map<String, dynamic> hostAttributes) {
+  var constructor = new JsFunction.withThis((_) {});
+  var prototype = context['Object'].callMethod(
+      'create', [_polymerDartBasePrototype]);
+  addPropertyProxies(type, prototype);
+  _polymerBase.callMethod(
+      'extend', [
+        prototype,
+        new JsObject.jsify({
+          'hostAttributes': hostAttributes,
+          'getPropertyInfo':
+              (property) => getPropertyInfoForType(type, property),
+        }),
+      ]);
+
+  constructor['prototype'] = prototype;
+  _customJsConstructorsByType[type] = constructor;
 }
