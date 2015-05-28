@@ -8,9 +8,8 @@ import 'dart:js';
 
 import '../micro/properties.dart';
 
-JsObject get _polymerBase => context['Polymer']['Base'];
-JsObject get _polymerDartBasePrototype =>
-    context['Polymer']['Dart']['Base']['prototype'];
+final JsObject _polymerDart = context['Polymer']['Dart'];
+final JsObject _polymerDartBasePrototype = _polymerDart['Base']['prototype'];
 
 final _customJsConstructorsByType = <Type, JsFunction>{};
 
@@ -20,28 +19,26 @@ abstract class PolymerJsProxy {
   JsObject get jsThis {
     if (_jsThis == null) {
       _jsThis = new JsObject(_customJsConstructorsByType[this.runtimeType]);
-      _jsThis['__proxy__'] = new JsObject.fromBrowserObject(this);
+      _jsThis['__proxy__'] = _jsThis['__data__']['__proxy__'] =
+          new JsObject.fromBrowserObject(this);
     }
     return _jsThis;
   }
+
+  void set(String path, value) => jsThis.callMethod('set', [path, value]);
 }
 
 /// Creates a [JsFunction] constructor and prototype for a dart [Type].
-void createJsConstructorFor(Type type, Map<String, dynamic> hostAttributes) {
-  var constructor = new JsFunction.withThis((_) {});
-  var prototype = context['Object'].callMethod(
+JsFunction createJsConstructorFor(
+    Type type, String tagName, Map<String, dynamic> hostAttributes) {
+  JsFunction constructor = _polymerDart.callMethod('functionFactory', []);
+  JsObject prototype = context['Object'].callMethod(
       'create', [_polymerDartBasePrototype]);
-  addPropertyProxies(type, prototype);
-  _polymerBase.callMethod(
-      'extend', [
-        prototype,
-        new JsObject.jsify({
-          'hostAttributes': hostAttributes,
-          'getPropertyInfo':
-              (property) => getPropertyInfoForType(type, property),
-        }),
-      ]);
+//  setupProperties(type, prototype);
+  prototype['hostAttributes'] = new JsObject.jsify(hostAttributes);
+  prototype['is'] = tagName;
 
   constructor['prototype'] = prototype;
   _customJsConstructorsByType[type] = constructor;
+  return constructor;
 }

@@ -19,10 +19,52 @@
     },
     get attributes () {
       return this.__proxy__.attributes;
+    },
+    get childNodes() {
+      return this.__proxy__.childNodes;
+    },
+    appendChild: function(node) {
+      return this.__proxy__.appendChild(node);
+    },
+    get innerHTML() {
+      return this.__proxy__.innerHTML;
+    },
+    set innerHTML(html) {
+      return this.__proxy__.innerHTML = html;
+    },
+    get textContent() {
+      return this.__proxy__.textContent;
+    },
+    set textContent(text) {
+      return this.__proxy__.textContent = text;
+    },
+    addEventListener: function(event, callback) {
+      return this.__proxy__.addEventListener(event, callback);
+    },
+    get localName() {
+      return this.__proxy__.localName;
+    },
+    get nodeType() {
+      return this.__proxy__.nodeType;
+    },
+    get nextSibling() {
+      return this.__proxy__.nextSibling;
     }
   };
-
   Polymer.Dart.Base.__setup__ = function() {
     Polymer.Base.extend(Polymer.Dart.Base.prototype, Polymer.Base);
   };
+  Polymer.Dart.functionFactory = function() { return function() {}; };
+
+//  /// Don't create getters/setters for dart elements.
+//  Polymer.Bind._originalCreateAccessors = Polymer.Bind._createAccessors;
+//  Polymer.Bind._createAccessors = function(model, property, effects) {
+//    if (typeof(model.__proxy__) !== 'undefined') return;
+//    this._originalCreateAccessors(model, property, effects);
+//  }
+  Polymer.Bind._originalPrepareInstance = Polymer.Bind.prepareInstance;
+  Polymer.Bind.prepareInstance = function(inst) {
+    if (typeof(inst.__proxy__) !== 'undefined') return;
+    this._originalPrepareInstance(inst);
+  }
 </script>
