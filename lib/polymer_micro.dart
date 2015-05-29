@@ -12,6 +12,7 @@ import 'package:web_components/web_components.dart' show HtmlImport;
 import 'src/common/polymer_js_proxy.dart';
 export 'src/common/polymer_js_proxy.dart';
 export 'src/common/polymer_element.dart';
+export 'src/common/js_object_model.dart';
 import 'src/micro/properties.dart';
 export 'src/micro/properties.dart';
 export 'init.dart' show initPolymer;
@@ -31,4 +32,9 @@ class PolymerMicroElement extends HtmlElement with PolymerJsProxy {
 
   void attributeChanged(String name, _, __) =>
       jsThis.callMethod('attributeChangedCallback', [name]);
+
+
+//  void set(String path, value) => jsThis.callMethod('set', [path, value]);
+//  void notifyPath(String path, value) =>
+//      jsThis.callMethod('notifyPath', [path, value]);
 }

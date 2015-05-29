@@ -5,9 +5,22 @@
 @HtmlImport('src/js/polymer_base_dart.html')
 library polymer.lib.polymer_mini;
 
+import 'package:polymer_interop/polymer_interop.dart' as polymer_interop;
+export 'package:polymer_interop/polymer_interop.dart' show PolymerDom;
 import 'package:web_components/web_components.dart' show HtmlImport;
 import 'polymer_micro.dart';
 export 'polymer_micro.dart';
+
+class Polymer extends polymer_interop.Polymer {
+  @override
+  static polymer_interop.PolymerDom dom(node) {
+    if (node is PolymerJsProxy) {
+      return new polymer_interop.PolymerDom(node.jsThis);
+    } else {
+      return new polymer_interop.PolymerDom(node);
+    }
+  }
+}
 
 class PolymerMiniElement extends PolymerMicroElement {
   PolymerMiniElement.created() : super.created();

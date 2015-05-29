@@ -6,6 +6,7 @@ library polymer.src.micro.properties;
 import 'dart:html';
 import 'dart:js';
 import 'package:smoke/smoke.dart' as smoke;
+import '../common/js_object_model.dart';
 
 /// Query options for finding properties on types.
 final _defaultQueryOptions = new smoke.QueryOptions(includeUpTo: HtmlElement);
@@ -18,19 +19,24 @@ void setupProperties(Type type, JsObject prototype) {
     var name = smoke.symbolToName(result.name);
     if (prototype[name] != null) continue;
     if (result.isField || result.isProperty) {
+      var descriptor = {
+        'get': new JsFunction.withThis((obj) {
+          var val = smoke.read(obj['__proxy__'], result.name);
+          if (val == null) return val;
+          return new JsObject.jsify(val);
+        }),
+        'configurable': false,
+      };
+      if (!result.isFinal) {
+        descriptor['set'] = new JsFunction.withThis((obj, value) {
+          smoke.write(obj['__proxy__'], result.name, value);
+        });
+      }
       // Add a proxy getter/setter for this property.
       context['Object'].callMethod('defineProperty', [
         prototype['__data__'],
         name,
-        new JsObject.jsify({
-          'get': new JsFunction.withThis((obj) {
-            return smoke.read(obj['__proxy__'], result.name);
-          }),
-          'set': new JsFunction.withThis((obj, value) {
-            smoke.write(obj['__proxy__'], result.name, value);
-          }),
-          'configurable': false,
-        }),
+        new JsObject.jsify(descriptor),
       ]);
       // Build a properties object for this property.
       properties[name] = _getPropertyInfoForType(type, name);
@@ -70,16 +76,15 @@ JsObject _jsType(Type type) {
       return context['Number'];
     case 'bool':
       return context['Boolean'];
-    case 'Map':
-    case 'JsObject':
-      return context['Object'];
     case 'List':
       return context['Array'];
     case 'DateTime':
       return context['DateTime'];
     case 'String':
       return context['String'];
+    case 'Map':
+    case 'JsObject':
     default:
-      window.console.warn('Unable to convert `$type` to a javascript type.');
+      return context['Object'];
   }
 }

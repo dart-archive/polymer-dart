@@ -18,11 +18,11 @@ class PolymerElement extends CustomElement {
 
   void initialize(Type t) {
     var constructor = createJsConstructorFor(t, tag, hostAttributes);
-    super.initialize(t);
-
+    constructor['prototype']['__data__'] = new JsObject(context['Object']);
     // Pretend like we just got registered!
     constructor['prototype'].callMethod('registerCallback');
-    constructor['prototype']['__data__'] = new JsObject.jsify({});
     setupProperties(t, constructor['prototype']);
+
+    super.initialize(t);
   }
 }

@@ -36,10 +36,10 @@ dev_dependencies:
 
 dependency_overrides:
   polymer_interop:
-#    path: ../polymer-interop
-    git:
-      url: https://github.com/dart-lang/polymer_interop.git
-      ref: 0.2.0-dev
+    path: ../polymer-interop
+#    git:
+#      url: https://github.com/dart-lang/polymer_interop.git
+#      ref: 0.2.0-dev
 
 environment:
   sdk: '>=1.4.0 <2.0.0'

@@ -25,7 +25,23 @@ abstract class PolymerJsProxy {
     return _jsThis;
   }
 
-  void set(String path, value) => jsThis.callMethod('set', [path, value]);
+  void set(String path, value) =>
+    jsThis.callMethod('set', [path, _jsValue(value)]);
+
+  // TODO(jakemac): This doesn't really work, because we set properties on the
+  // __data__ object to be getters and setters that read/write directly the
+  // dart value.
+  void notifyPath(String path, value) =>
+    jsThis.callMethod('notifyPath', [path, _jsValue(value)]);
+
+  // TODO(jakemac): investigate wrapping this object in something that
+  // implements map, see
+  // https://chromiumcodereview.appspot.com/23291005/patch/25001/26002 for an
+  // example of this.
+  JsObject get $ => jsThis[r'$'];
+
+  dynamic _jsValue(value) =>
+      (value is Iterable || value is Map) ? new JsObject.jsify(value) : value;
 }
 
 /// Creates a [JsFunction] constructor and prototype for a dart [Type].
@@ -35,7 +51,9 @@ JsFunction createJsConstructorFor(
   JsObject prototype = context['Object'].callMethod(
       'create', [_polymerDartBasePrototype]);
 //  setupProperties(type, prototype);
-  prototype['hostAttributes'] = new JsObject.jsify(hostAttributes);
+  if (hostAttributes != null) {
+    prototype['hostAttributes'] = new JsObject.jsify(hostAttributes);
+  }
   prototype['is'] = tagName;
 
   constructor['prototype'] = prototype;
