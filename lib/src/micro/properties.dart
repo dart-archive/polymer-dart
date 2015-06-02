@@ -8,34 +8,28 @@ import 'dart:js';
 import 'package:smoke/smoke.dart' as smoke;
 import '../common/js_object_model.dart';
 import '../common/property.dart';
-
-/// Add proxies for the fields/properties from [Type] to the `prototype`.
-void setupPrototype(Type type, JsObject prototype) {
-  setupProperties(type, prototype);
-  setupReady(type, prototype);
-}
+import '../common/polymer_js_mixin.dart';
 
 /// Query options for finding properties on types.
 final _propertyQueryOptions = new smoke.QueryOptions(
     includeUpTo: HtmlElement, withAnnotations: const [Property]);
 
-/// Initialize properties for a given dart type and js prototype.
-void setupProperties(Type type, JsObject prototype) {
-  List<smoke.Declaration> results = smoke.query(type, _propertyQueryOptions);
-  setupPropertyDescriptors(results, prototype['__data__']);
-  setupPropertiesObject(type, results, prototype);
-}
+/// Returns a list of [smoke.Declaration]s for all fields annotated as a
+/// [Property].
+List<smoke.Declaration> propertyDeclarationsFor(Type type) =>
+    smoke.query(type, _propertyQueryOptions);
 
-/// Sets up getters and setters on the `__data__` object to proxy back to the
+/// Sets up getters and setters on an object to proxy back to the
 /// dart class.
-void setupPropertyDescriptors(
-    List<smoke.Declaration> declarations, JsObject jsObject) {
+JsObject buildPropertyDescriptorsFor(Type type) {
+  var declarations = propertyDeclarationsFor(type);
+  var jsObject = new JsObject(context['Object']);
   for (var declaration in declarations) {
     var name = smoke.symbolToName(declaration.name);
     if (declaration.isField || declaration.isProperty) {
       var descriptor = {
         'get': new JsFunction.withThis((obj) {
-          if (obj is! HtmlElement) obj = obj['__proxy__'];
+          if (obj is! PolymerJsMixin) obj = obj['__dartClass__'];
           var val = smoke.read(obj, declaration.name);
           if (val is Map || val is Iterable) return new JsObject.jsify(val);
           return val;
@@ -44,7 +38,8 @@ void setupPropertyDescriptors(
       };
       if (!declaration.isFinal) {
         descriptor['set'] = new JsFunction.withThis((obj, value) {
-          smoke.write(obj['__proxy__'], declaration.name, value);
+          if (obj is! PolymerJsMixin) obj = obj['__dartClass__'];
+          smoke.write(obj, declaration.name, value);
         });
       }
       // Add a proxy getter/setter for this property.
@@ -55,11 +50,12 @@ void setupPropertyDescriptors(
       ]);
     };
   };
+  return jsObject;
 }
 
 // Set up the `properties` descriptor object.
-void setupPropertiesObject(
-    Type type, List<smoke.Declaration> declarations, JsObject jsObject) {
+JsObject buildPropertiesObject(Type type) {
+  var declarations = propertyDeclarationsFor(type);
   var properties = {};
   for (var declaration in declarations) {
     var name = smoke.symbolToName(declaration.name);
@@ -68,26 +64,25 @@ void setupPropertiesObject(
       properties[name] = _getPropertyInfoForType(type, declaration);
     }
   }
-  if (properties.isNotEmpty) {
-    jsObject['properties'] = new JsObject.jsify(properties);
-  }
+  return new JsObject.jsify(properties);
 }
 
 /// Query for the ready method.
-final _readyQueryOptions = new smoke.QueryOptions(
+final _lifecycleMethodOptions = new smoke.QueryOptions(
     includeUpTo: HtmlElement,
     includeMethods: true,
     includeProperties: false,
     includeFields: false,
-    matches: (name) => name == #ready);
+    matches: (name) => [#ready, #attached, #detached].contains(name));
 
 /// Set up a proxy for the `ready` method, if one exists on the dart class.
-setupReady(Type type, JsObject prototype) {
-  List<smoke.Declaration> results = smoke.query(type, _readyQueryOptions);
-  if (results.isEmpty) return;
-  prototype['ready'] = new JsFunction.withThis((obj) {
-    smoke.invoke(obj['__proxy__'], #ready, []);
-  });
+setupLifecycleMethods(Type type, JsObject prototype) {
+  List<smoke.Declaration> results = smoke.query(type, _lifecycleMethodOptions);
+  for (var result in results){
+    prototype[smoke.symbolToName(result.name)] = new JsFunction.withThis((obj) {
+      smoke.invoke(obj, result.name, []);
+    });
+  }
 }
 
 /// Object that represents a proeprty that was not found.

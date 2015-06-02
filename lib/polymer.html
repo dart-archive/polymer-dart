@@ -9,5 +9,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="polymer_mini.html">
 <link rel="import" href="../../packages/polymer_interop/polymer.html">
 <script>
-  // This empty script tag is necessary to work around dartbug.com/19650
+  if (Polymer.Bind) {
+    // Overwrite prepareInstance to a no-op for dart elements.
+    Polymer.Bind._originalPrepareInstance = Polymer.Bind.prepareInstance;
+    Polymer.Bind.prepareInstance = function (inst) {
+      if (typeof(inst.__data__) !== 'undefined') return;
+      this._originalPrepareInstance(inst);
+    }
+  }
 </script>

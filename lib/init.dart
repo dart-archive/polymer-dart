@@ -12,7 +12,7 @@ main() => initPolymer();
 
 Future initPolymer() async {
   await initWebComponents(typeFilter: [HtmlImport], initAll: false);
-  context['Polymer']['Dart']['Base'].callMethod('__setup__', []);
+//  context['Polymer']['Dart']['Base'].callMethod('__setup__', []);
   await initWebComponents(typeFilter: [PolymerElement], initAll: false);
   await initWebComponents();
 }

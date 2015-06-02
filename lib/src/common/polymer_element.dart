@@ -4,25 +4,37 @@
 library polymer.src.common.polymer_element;
 
 import 'dart:js';
+import 'dart:html';
 import 'package:initialize/initialize.dart' show Initializer;
-import 'package:web_components/web_components.dart' show CustomElement;
-import 'polymer_js_proxy.dart';
+import 'package:web_components/web_components.dart' show CustomElementProxy;
+import 'polymer_js_mixin.dart';
 import '../micro/properties.dart';
 
-class PolymerElement extends CustomElement {
+class PolymerElement extends CustomElementProxy {
   final Map<String, dynamic> hostAttributes;
 
   const PolymerElement(
-      String tag, {String extendsTag, this.hostAttributes})
-      : super(tag, extendsTag: extendsTag);
+      String tagName, {String extendsTag, this.hostAttributes})
+      : super(tagName, extendsTag: extendsTag);
 
-  void initialize(Type t) {
-    var constructor = createJsConstructorFor(t, tag, hostAttributes);
-    constructor['prototype']['__data__'] = new JsObject(context['Object']);
-    // Pretend like we just got registered!
-    setupPrototype(t, constructor['prototype']);
-    constructor['prototype'].callMethod('registerCallback');
+  void initialize(Type type) {
+    var polymerObject = _createPolymerObject(type, this);
+    var constructor = context.callMethod('Polymer', [polymerObject]);
+    var prototype = constructor['prototype'];
+    prototype['__isPolymerDart__'] = true;
+    prototype['__data__'] = buildPropertyDescriptorsFor(type);
+    setupLifecycleMethods(type, prototype);
 
-    super.initialize(t);
+    super.initialize(type);
   }
+}
+
+JsObject _createPolymerObject(Type type, PolymerElement element) {
+  var object = {
+    'is': element.tagName,
+    'extends': element.extendsTag,
+    'hostAttributes': element.hostAttributes,
+    'properties': buildPropertiesObject(type),
+  };
+  return new JsObject.jsify(object);
 }

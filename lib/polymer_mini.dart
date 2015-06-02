@@ -14,15 +14,10 @@ export 'polymer_micro.dart';
 class Polymer extends polymer_interop.Polymer {
   @override
   static polymer_interop.PolymerDom dom(node) {
-    if (node is PolymerJsProxy) {
-      return new polymer_interop.PolymerDom(node.jsThis);
-    } else {
-      return new polymer_interop.PolymerDom(node);
-    }
+    return new polymer_interop.PolymerDom(node);
   }
 }
 
 class PolymerMiniElement extends PolymerMicroElement {
-  PolymerMiniElement.created([bool callCreated = true])
-      : super.created(callCreated);
+  PolymerMiniElement.created() : super.created();
 }
