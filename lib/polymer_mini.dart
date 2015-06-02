@@ -23,5 +23,6 @@ class Polymer extends polymer_interop.Polymer {
 }
 
 class PolymerMiniElement extends PolymerMicroElement {
-  PolymerMiniElement.created() : super.created();
+  PolymerMiniElement.created([bool callCreated = true])
+      : super.created(callCreated);
 }

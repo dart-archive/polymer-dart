@@ -60,6 +60,20 @@
   Polymer.Dart.Base.__setup__ = function() {
     Polymer.Base.extend(Polymer.Dart.Base.prototype, Polymer.Base);
 
+    if (Polymer.Dart.Base.prototype._marshalAnnotatedNodes) {
+      Polymer.Dart.Base.prototype._oldMarshalAnnotatedNodes =
+          Polymer.Dart.Base.prototype._marshalAnnotatedNodes;
+      Polymer.Dart.Base.prototype._marshalAnnotatedNodes = function() {
+        this._oldMarshalAnnotatedNodes();
+        if (this._nodes) {
+          this._nodes = this._nodes.map(function(a) {
+            if (!a.__polymerProxy__) return a;
+            return a.__polymerProxy__;
+          }, this);
+        }
+      };
+    }
+
     if (Polymer.Bind) {
       // Overwrite prepareInstance to a no-op for dart elements.
       Polymer.Bind._originalPrepareInstance = Polymer.Bind.prepareInstance;

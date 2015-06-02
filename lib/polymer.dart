@@ -10,5 +10,6 @@ import 'polymer_mini.dart';
 export 'polymer_mini.dart';
 
 class PolymerStandardElement extends PolymerMiniElement {
-  PolymerStandardElement.created() : super.created();
+  PolymerStandardElement.created([bool callCreated = true])
+      : super.created(callCreated);
 }
