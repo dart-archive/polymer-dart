@@ -5,7 +5,6 @@ library polymer.src.common.polymer_js_proxy;
 
 import 'dart:html';
 import 'dart:js';
-import 'package:smoke/smoke.dart' as smoke;
 import 'property.dart';
 import '../micro/properties.dart';
 
@@ -15,9 +14,9 @@ abstract class PolymerJsMixin {
 
   JsObject get jsElement {
     if (_proxy == null) {
-//      print('setting up proxy for: $this');
       _proxy = new JsObject.fromBrowserObject(this);
-      _proxy['__dartClass__'] = this;
+      // TODO(jakemac): Add this back?
+      // _proxy['__dartClass__'] = this;
       _proxy['__data__']['__dartClass__'] = this;
     }
     return _proxy;

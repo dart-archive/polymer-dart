@@ -21,6 +21,11 @@ class PolymerElement extends CustomElementProxy {
     var polymerObject = _createPolymerObject(type, this);
     var constructor = context.callMethod('Polymer', [polymerObject]);
     var prototype = constructor['prototype'];
+    // TODO(jakemac): Remove this hack once we fix
+    // https://github.com/dart-lang/sdk/issues/23574
+    if (prototype is! JsObject) {
+      prototype = new JsObject.fromBrowserObject(prototype);
+    }
     prototype['__isPolymerDart__'] = true;
     prototype['__data__'] = buildPropertyDescriptorsFor(type);
     setupLifecycleMethods(type, prototype);

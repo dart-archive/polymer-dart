@@ -67,7 +67,7 @@ JsObject buildPropertiesObject(Type type) {
   return new JsObject.jsify(properties);
 }
 
-/// Query for the ready method.
+/// Query for the lifecycle methods.
 final _lifecycleMethodOptions = new smoke.QueryOptions(
     includeUpTo: HtmlElement,
     includeMethods: true,
@@ -75,7 +75,8 @@ final _lifecycleMethodOptions = new smoke.QueryOptions(
     includeFields: false,
     matches: (name) => [#ready, #attached, #detached].contains(name));
 
-/// Set up a proxy for the `ready` method, if one exists on the dart class.
+/// Set up a proxy for the `ready`, `attached`, and `detached` methods, if they
+/// exists on the dart class.
 setupLifecycleMethods(Type type, JsObject prototype) {
   List<smoke.Declaration> results = smoke.query(type, _lifecycleMethodOptions);
   for (var result in results){
