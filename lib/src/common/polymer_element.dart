@@ -19,7 +19,7 @@ class PolymerElement extends CustomElementProxy {
 
   void initialize(Type type) {
     var polymerObject = _createPolymerObject(type, this);
-    var constructor = context.callMethod('Polymer', [polymerObject]);
+    var constructor = context['Polymer'].callMethod('Class', [polymerObject]);
     var prototype = constructor['prototype'];
     // TODO(jakemac): Remove this hack once we fix
     // https://github.com/dart-lang/sdk/issues/23574
@@ -29,6 +29,16 @@ class PolymerElement extends CustomElementProxy {
     prototype['__isPolymerDart__'] = true;
     prototype['__data__'] = buildPropertyDescriptorsFor(type);
     setupLifecycleMethods(type, prototype);
+    setupEventHandlerMethods(type, prototype);
+
+    // Register the prototype via js interop!
+    new JsObject.fromBrowserObject(document).callMethod('registerElement', [
+      tagName,
+      new JsObject.jsify({
+        'prototype': prototype,
+        'extends': extendsTag,
+      })
+    ]);
 
     super.initialize(type);
   }

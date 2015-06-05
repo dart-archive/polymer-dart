@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // Overwrite prepareInstance to a no-op for dart elements.
     Polymer.Bind._originalPrepareInstance = Polymer.Bind.prepareInstance;
     Polymer.Bind.prepareInstance = function (inst) {
-      if (typeof(inst.__data__) !== 'undefined') return;
+      if (inst.__isPolymerDart__) return;
       this._originalPrepareInstance(inst);
     }
   }

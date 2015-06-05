@@ -7,8 +7,10 @@ import 'dart:html';
 import 'dart:js';
 import 'package:smoke/smoke.dart' as smoke;
 import '../common/js_object_model.dart';
+import '../common/js_proxy.dart';
 import '../common/property.dart';
 import '../common/polymer_js_mixin.dart';
+import '../common/event_handler.dart';
 
 /// Query options for finding properties on types.
 final _propertyQueryOptions = new smoke.QueryOptions(
@@ -29,16 +31,21 @@ JsObject buildPropertyDescriptorsFor(Type type) {
     if (declaration.isField || declaration.isProperty) {
       var descriptor = {
         'get': new JsFunction.withThis((obj) {
-          if (obj is! PolymerJsMixin) obj = obj['__dartClass__'];
-          var val = smoke.read(obj, declaration.name);
-          if (val is Map || val is Iterable) return new JsObject.jsify(val);
-          return val;
+          return obj['__cache__'][name];
+//          if (obj is! PolymerJsMixin && obj is! JsProxy) obj = obj['__dartClass__'];
+//          var val = smoke.read(obj, declaration.name);
+//          if (val is JsProxy) return val.jsProxy;
+//          if (val is Map || val is Iterable) return new JsObject.jsify(val);
+//          return val;
         }),
         'configurable': false,
       };
       if (!declaration.isFinal) {
         descriptor['set'] = new JsFunction.withThis((obj, value) {
-          if (obj is! PolymerJsMixin) obj = obj['__dartClass__'];
+          obj['__cache__'][name] = value;
+          if (obj is! PolymerJsMixin && obj is! JsProxy) obj = obj['__dartClass__'];
+          var valueClass = (value is JsObject)  ? value['__dartClass__'] : null;
+          if (valueClass != null) value = valueClass;
           smoke.write(obj, declaration.name, value);
         });
       }
@@ -86,6 +93,27 @@ setupLifecycleMethods(Type type, JsObject prototype) {
   }
 }
 
+/// Query for the lifecycle methods.
+final _eventHandlerMethodOptions = new smoke.QueryOptions(
+    includeUpTo: HtmlElement,
+    includeMethods: true,
+    includeProperties: false,
+    includeFields: false,
+    withAnnotations: const [EventHandler]);
+
+/// Set up a proxy for the `ready`, `attached`, and `detached` methods, if they
+/// exists on the dart class.
+setupEventHandlerMethods(Type type, JsObject prototype) {
+  List<smoke.Declaration> results =
+      smoke.query(type, _eventHandlerMethodOptions);
+  for (var result in results){
+    prototype[smoke.symbolToName(result.name)] =
+        new JsFunction.withThis((obj, event, details) {
+      smoke.invoke(obj, result.name, [event, details]);
+    });
+  }
+}
+
 /// Object that represents a proeprty that was not found.
 final _emptyPropertyInfo = new JsObject.jsify({'defined': false});
 
@@ -103,6 +131,7 @@ JsObject _getPropertyInfoForType(Type type, smoke.Declaration property) {
     'type': jsType,
     'defined': true,
     'notify': annotation.notify,
+    'observer': annotation.observer,
   };
 //  if (annotation.value != null) {
 //    properties['value'] = annotation.value;

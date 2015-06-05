@@ -7,7 +7,10 @@ class Property {
   /// Fire *-change events to support two way binding.
   final bool notify;
 
-  const Property({this.notify: false});
+  /// Name of a method to call when the property changes.
+  final String observer;
+
+  const Property({this.notify: false, this.observer});
 }
 
 const property = const Property();

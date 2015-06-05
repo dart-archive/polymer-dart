@@ -6,6 +6,7 @@ library polymer.src.common.polymer_js_proxy;
 import 'dart:html';
 import 'dart:js';
 import 'property.dart';
+import '../common/js_proxy.dart';
 import '../micro/properties.dart';
 
 /// Basic api for re-using the polymer js prototypes.
@@ -18,6 +19,7 @@ abstract class PolymerJsMixin {
       // TODO(jakemac): Add this back?
       // _proxy['__dartClass__'] = this;
       _proxy['__data__']['__dartClass__'] = this;
+      _proxy['__data__']['__cache__'] = new JsObject(context['Object']);
     }
     return _proxy;
   }
@@ -44,6 +46,15 @@ abstract class PolymerJsMixin {
   /// The shadow or shady root, depending on which system is in use.
   DocumentFragment get root => jsElement['root'];
 
-  dynamic _jsValue(value) =>
-      (value is Iterable || value is Map) ? new JsObject.jsify(value) : value;
+  /// Fire a custom event.
+  CustomEvent fire(String type, {Map detail, Map options}) =>
+      jsElement.callMethod('fire', [
+        type, _jsValue(detail), _jsValue(options)]);
+
+  dynamic _jsValue(value) {
+    if (value is JsProxy) return value.jsProxy;
+    if (value is Iterable || value is Map) return new JsObject.jsify(value);
+    return value;
+  }
+
 }
