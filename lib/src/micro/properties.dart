@@ -129,6 +129,7 @@ JsObject _getPropertyInfoForType(Type type, smoke.Declaration property) {
     'defined': true,
     'notify': annotation.notify,
     'observer': annotation.observer,
+    'reflectToAttribute': annotation.reflectToAttribute,
   };
 //  if (annotation.value != null) {
 //    properties['value'] = annotation.value;

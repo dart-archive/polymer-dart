@@ -10,7 +10,11 @@ class Property {
   /// Name of a method to call when the property changes.
   final String observer;
 
-  const Property({this.notify: false, this.observer});
+  /// Whether or not this property should be reflected back to the attribute.
+  final bool reflectToAttribute;
+
+  const Property(
+      {this.notify: false, this.observer, this.reflectToAttribute: false});
 }
 
 const property = const Property();
