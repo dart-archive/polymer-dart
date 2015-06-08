@@ -1,14 +1,22 @@
 // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-library polymer.lib.src.common.js_proxy_builder;
+library polymer.lib.src.common.js_proxy;
 
 import 'dart:js';
-import 'package:smoke/smoke.dart';
+import 'dart:html';
+import 'package:smoke/smoke.dart' as smoke;
 
-final Map<Type, JsFunction> _proxyConstructors = {};
+// Mixin this class to get js proxy support!
+abstract class JsProxy {
+  /// Lazily create proxy constructors!
+  static Map<Type, JsFunction> _jsProxyConstructors = {};
+  JsFunction get jsProxyConstructor {
+    var type = runtimeType;
+    return _jsProxyConstructors.putIfAbsent(
+        type, () => _buildJsConstructorForType(type));
+  }
 
-class JsProxy {
   JsObject _jsProxy;
   JsObject get jsProxy {
     if (_jsProxy == null) _jsProxy = _buildJsProxy(this);
@@ -17,41 +25,44 @@ class JsProxy {
 }
 
 // Wraps an instance of a dart class in a js proxy.
-JsObject _buildJsProxy(dynamic dartInstance) {
-  var type = dartInstance.runtimeType;
-  var constructor = _proxyConstructors.putIfAbsent(
-      type, () => _buildJsConstructorForType(type));
+JsObject _buildJsProxy(JsProxy instance) {
+  var constructor = instance.jsProxyConstructor;
   var proxy = new JsObject(constructor);
-  proxy['__dartClass__'] = dartInstance;
+  proxy['__dartClass__'] = instance;
   return proxy;
 }
 
+/// Query for all public fields/methods.
+final _queryOptions = new smoke.QueryOptions(includeMethods: true, includeUpTo: HtmlElement);
+
+/// Given a dart type, this creates a javascript constructor and prototype
+/// which can act as a proxy for it.
 JsFunction _buildJsConstructorForType(Type dartType) {
   var constructor = context['Polymer']['Dart'].callMethod('functionFactory');
   var prototype = new JsObject(context['Object']);
 
   // TODO(jakemac): consolidate this code with the code in properties.dart.
-  var declarations = query(dartType, _queryOptions);
+  var declarations = smoke.query(dartType, _queryOptions);
   for (var declaration in declarations) {
-    var name = symbolToName(declaration.name);
+    var name = smoke.symbolToName(declaration.name);
     if (declaration.isField || declaration.isProperty) {
       var descriptor = {
         'get': new JsFunction.withThis((JsObject jsObject) {
-          var val = read(jsObject['__dartClass__'], declaration.name);
-          if (val is JsProxy) return val.jsProxy;
-          if (val is Map || val is Iterable) return new JsObject.jsify(val);
-          return val;
+          var val = smoke.read(jsObject['__dartClass__'], declaration.name);
+          return jsValue(val);
         }),
         'configurable': false,
       };
       if (!declaration.isFinal) {
         descriptor['set'] = new JsFunction.withThis((JsObject jsObject, value) {
-          var valueClass = value['__dartClass__'];
-          if (valueClass != null) value = valueClass;
+          if (value is JsObject) {
+            var valueClass = value['__dartClass__'];
+            if (valueClass != null) value = valueClass;
+          }
           // TODO(jakemac): What about maps and lists on this side? JsArray
           // can probably be left alone since it implements list, but regular
           // JsObjects need to be wrapped in something that implements map.
-          write(jsObject['__dartClass__'], declaration.name, value);
+          smoke.write(jsObject['__dartClass__'], declaration.name, dartValue(value));
         });
       }
       // Add a proxy getter/setter for this property.
@@ -62,7 +73,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
       ]);
     } else if (declaration.isMethod) {
       prototype[name] = new JsFunction.withThis((JsObject jsObject) {
-        invoke(jsObject['__dartClass__'], declaration.name, []);
+        smoke.invoke(jsObject['__dartClass__'], declaration.name, []);
       });
     }
   }
@@ -71,5 +82,34 @@ JsFunction _buildJsConstructorForType(Type dartType) {
   return constructor;
 }
 
-/// Query for all public fields/methods.
-final _queryOptions = new QueryOptions(includeMethods: true);
+/// Converts a dart value to a js value, using proxies when possible.
+dynamic jsValue(value) {
+  if (value is JsProxy) {
+    return value.jsProxy;
+  } else if (value is Iterable) {
+    return new JsArray.from(value.map((item) => jsValue(item)));
+  } else if(value is Map) {
+    var newValue = new JsObject(context['Object']);
+    value.forEach((k, v) {
+      newValue[k] = jsValue(v);
+    });
+    return newValue;
+  }
+  return value;
+}
+
+
+/// Converts a js value to a dart value, unwrapping proxies as they are found.
+dynamic dartValue(value) {
+  if (value is JsArray) {
+    value = value.map((item) {
+      var itemProxy = (item is JsObject)  ? item['__dartClass__'] : null;
+      if (itemProxy != null) item = itemProxy;
+      return item;
+    }).toList();
+  } else {
+    var valueProxy = (value is JsObject)  ? value['__dartClass__'] : null;
+    if (valueProxy != null) value = valueProxy;
+  }
+  return value;
+}

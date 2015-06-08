@@ -21,44 +21,41 @@ final _propertyQueryOptions = new smoke.QueryOptions(
 List<smoke.Declaration> propertyDeclarationsFor(Type type) =>
     smoke.query(type, _propertyQueryOptions);
 
-/// Sets up getters and setters on an object to proxy back to the
-/// dart class.
-JsObject buildPropertyDescriptorsFor(Type type) {
-  var declarations = propertyDeclarationsFor(type);
-  var jsObject = new JsObject(context['Object']);
-  for (var declaration in declarations) {
-    var name = smoke.symbolToName(declaration.name);
-    if (declaration.isField || declaration.isProperty) {
-      var descriptor = {
-        'get': new JsFunction.withThis((obj) {
-          return obj['__cache__'][name];
-//          if (obj is! PolymerJsMixin && obj is! JsProxy) obj = obj['__dartClass__'];
-//          var val = smoke.read(obj, declaration.name);
-//          if (val is JsProxy) return val.jsProxy;
-//          if (val is Map || val is Iterable) return new JsObject.jsify(val);
-//          return val;
-        }),
-        'configurable': false,
-      };
-      if (!declaration.isFinal) {
-        descriptor['set'] = new JsFunction.withThis((obj, value) {
-          obj['__cache__'][name] = value;
-          if (obj is! PolymerJsMixin && obj is! JsProxy) obj = obj['__dartClass__'];
-          var valueClass = (value is JsObject)  ? value['__dartClass__'] : null;
-          if (valueClass != null) value = valueClass;
-          smoke.write(obj, declaration.name, value);
-        });
-      }
-      // Add a proxy getter/setter for this property.
-      context['Object'].callMethod('defineProperty', [
-        jsObject,
-        name,
-        new JsObject.jsify(descriptor),
-      ]);
-    };
-  };
-  return jsObject;
-}
+///// Sets up getters and setters on an object to proxy back to the
+///// dart class.
+//JsObject buildPropertyDescriptorsFor(Type type) {
+//  var declarations = propertyDeclarationsFor(type);
+//  var jsObject = new JsObject(context['Object']);
+//  for (var declaration in declarations) {
+//    var name = smoke.symbolToName(declaration.name);
+//    if (declaration.isField || declaration.isProperty) {
+//      var descriptor = {
+//        'get': new JsFunction.withThis((obj) {
+//          if (obj is! PolymerJsMixin && obj is! JsProxy) {
+//            obj = obj['__dartClass__'];
+//          }
+//          return jsValue(smoke.read(obj, declaration.name));
+//        }),
+//        'configurable': false,
+//      };
+//      if (!declaration.isFinal) {
+//        descriptor['set'] = new JsFunction.withThis((obj, value) {
+//          if (obj is! PolymerJsMixin && obj is! JsProxy) {
+//            obj = obj['__dartClass__'];
+//          }
+//          smoke.write(obj, declaration.name, dartValue(value));
+//        });
+//      }
+//      // Add a proxy getter/setter for this property.
+//      context['Object'].callMethod('defineProperty', [
+//        jsObject,
+//        name,
+//        new JsObject.jsify(descriptor),
+//      ]);
+//    };
+//  };
+//  return jsObject;
+//}
 
 // Set up the `properties` descriptor object.
 JsObject buildPropertiesObject(Type type) {

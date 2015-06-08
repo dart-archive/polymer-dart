@@ -27,7 +27,7 @@ class PolymerElement extends CustomElementProxy {
       prototype = new JsObject.fromBrowserObject(prototype);
     }
     prototype['__isPolymerDart__'] = true;
-    prototype['__data__'] = buildPropertyDescriptorsFor(type);
+//    prototype['__data__'] = buildPropertyDescriptorsFor(type);
     setupLifecycleMethods(type, prototype);
     setupEventHandlerMethods(type, prototype);
 

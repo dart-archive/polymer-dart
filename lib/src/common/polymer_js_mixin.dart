@@ -10,7 +10,7 @@ import '../common/js_proxy.dart';
 import '../micro/properties.dart';
 
 /// Basic api for re-using the polymer js prototypes.
-abstract class PolymerJsMixin {
+abstract class PolymerJsMixin implements JsProxy {
   JsObject _proxy;
 
   JsObject get jsElement {
@@ -18,8 +18,7 @@ abstract class PolymerJsMixin {
       _proxy = new JsObject.fromBrowserObject(this);
       // TODO(jakemac): Add this back?
       // _proxy['__dartClass__'] = this;
-      _proxy['__data__']['__dartClass__'] = this;
-      _proxy['__data__']['__cache__'] = new JsObject(context['Object']);
+      _proxy['__data__'] = jsProxy;
     }
     return _proxy;
   }
@@ -31,11 +30,11 @@ abstract class PolymerJsMixin {
 
   /// Sets a value on an attribute path, and notifies of changes.
   void set(String path, value) =>
-    jsElement.callMethod('set', [path, _jsValue(value)]);
+    jsElement.callMethod('set', [path, jsValue(value)]);
 
   /// Notify of a change to a property path.
   void notifyPath(String path, value) =>
-    jsElement.callMethod('notifyPath', [path, _jsValue(value)]);
+    jsElement.callMethod('notifyPath', [path, jsValue(value)]);
 
   // TODO(jakemac): investigate wrapping this object in something that
   // implements map, see
@@ -47,14 +46,9 @@ abstract class PolymerJsMixin {
   DocumentFragment get root => jsElement['root'];
 
   /// Fire a custom event.
-  CustomEvent fire(String type, {Map detail, Map options}) =>
+  /// TODO(jakemac): Jsify `detail` automatically? Usually this just gets sent
+  /// back to dart, so its kil of pointless.i
+  CustomEvent fire(String type, {detail, options}) =>
       jsElement.callMethod('fire', [
-        type, _jsValue(detail), _jsValue(options)]);
-
-  dynamic _jsValue(value) {
-    if (value is JsProxy) return value.jsProxy;
-    if (value is Iterable || value is Map) return new JsObject.jsify(value);
-    return value;
-  }
-
+        type, detail, jsValue(options)]);
 }
