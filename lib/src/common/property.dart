@@ -13,8 +13,15 @@ class Property {
   /// Whether or not this property should be reflected back to the attribute.
   final bool reflectToAttribute;
 
-  const Property(
-      {this.notify: false, this.observer, this.reflectToAttribute: false});
+  /// Provided for computed properties.
+  final String computed;
+
+  const Property({
+    this.notify: false,
+    this.observer,
+    this.reflectToAttribute: false,
+    this.computed
+  });
 }
 
 const property = const Property();

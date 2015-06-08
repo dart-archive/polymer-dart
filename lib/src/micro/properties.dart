@@ -98,15 +98,17 @@ final _eventHandlerMethodOptions = new smoke.QueryOptions(
     includeFields: false,
     withAnnotations: const [EventHandler]);
 
-/// Set up a proxy for the `ready`, `attached`, and `detached` methods, if they
-/// exists on the dart class.
+/// Set up a proxy for any method with an @eventHandler annotation.
 setupEventHandlerMethods(Type type, JsObject prototype) {
   List<smoke.Declaration> results =
       smoke.query(type, _eventHandlerMethodOptions);
   for (var result in results){
+    // TODO(jakemac): Support functions with more than 6 args? We should at
+    // least throw a better error in that case.
     prototype[smoke.symbolToName(result.name)] =
-        new JsFunction.withThis((obj, event, details) {
-      return smoke.invoke(obj, result.name, [event, details]);
+        new JsFunction.withThis((obj, [arg1, arg2, arg3, arg4, arg5, arg6]) {
+      return smoke.invoke(
+          obj, result.name, [arg1, arg2, arg3, arg4, arg5, arg6], adjust: true);
     });
   }
 }
@@ -130,6 +132,7 @@ JsObject _getPropertyInfoForType(Type type, smoke.Declaration property) {
     'notify': annotation.notify,
     'observer': annotation.observer,
     'reflectToAttribute': annotation.reflectToAttribute,
+    'computed': annotation.computed,
   };
 //  if (annotation.value != null) {
 //    properties['value'] = annotation.value;

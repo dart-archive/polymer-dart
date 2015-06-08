@@ -51,4 +51,8 @@ abstract class PolymerJsMixin implements JsProxy {
   CustomEvent fire(String type, {detail, options}) =>
       jsElement.callMethod('fire', [
         type, detail, jsValue(options)]);
+
+  /// Read properties from the js object, primarily useful for computed
+  /// properties.
+  dynamic readProperty(String propertyName) => _proxy[propertyName];
 }
