@@ -106,7 +106,7 @@ setupEventHandlerMethods(Type type, JsObject prototype) {
   for (var result in results){
     prototype[smoke.symbolToName(result.name)] =
         new JsFunction.withThis((obj, event, details) {
-      smoke.invoke(obj, result.name, [event, details]);
+      return smoke.invoke(obj, result.name, [event, details]);
     });
   }
 }
