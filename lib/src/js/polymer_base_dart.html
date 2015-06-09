@@ -22,6 +22,21 @@
     Polymer.Dart = {};
     // Used to get an empty constructor function which doesn't call into dart.
     Polymer.Dart.functionFactory = function() { return function() {}; };
+    // Generates a function which accesses a particular property on a dart
+    // class
+    Polymer.Dart.propertyAccessorFactory = function(property, dartGetter) {
+      return function() {
+        if (this.__cache__) return this.__cache__[property];
+        return dartGetter(this.__dartClass__);
+      };
+    };
+    // Generates a function which sets a particular property on a dart class.
+    Polymer.Dart.propertySetterFactory = function(property, dartSetter) {
+      return function(value) {
+        if (this.__cache__) this.__cache__[property] = value;
+        dartSetter(this.__dartClass__, value);
+      };
+    };
   })();
 
 //  Polymer.Dart = {};

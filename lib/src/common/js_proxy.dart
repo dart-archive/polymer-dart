@@ -40,11 +40,12 @@ JsObject _buildJsProxy(JsProxy instance) {
 
 /// Query for all public fields/methods.
 final _queryOptions = new smoke.QueryOptions(includeMethods: true, includeUpTo: HtmlElement);
+final JsObject _polymerDart = context['Polymer']['Dart'];
 
 /// Given a dart type, this creates a javascript constructor and prototype
 /// which can act as a proxy for it.
 JsFunction _buildJsConstructorForType(Type dartType) {
-  var constructor = context['Polymer']['Dart'].callMethod('functionFactory');
+  var constructor = _polymerDart.callMethod('functionFactory');
   var prototype = new JsObject(context['Object']);
 
   // TODO(jakemac): consolidate this code with the code in properties.dart.
@@ -53,31 +54,24 @@ JsFunction _buildJsConstructorForType(Type dartType) {
     var name = smoke.symbolToName(declaration.name);
     if (declaration.isField || declaration.isProperty) {
       var descriptor = {
-        'get': new JsFunction.withThis((JsObject jsObject) {
-          JsProxy dartInstance = jsObject['__dartClass__'];
-          if (dartInstance.useCache) {
-            return jsValue(jsObject['__cache__'][name]);
-          } else {
-            return jsValue(smoke.read(dartInstance, declaration.name));
-          }
-        }),
+        'get': _polymerDart.callMethod(
+            'propertyAccessorFactory', [
+              name,
+              (dartInstance) {
+                return jsValue(smoke.read(dartInstance, declaration.name));
+              }
+            ]),
         'configurable': false,
       };
       if (!declaration.isFinal) {
-        descriptor['set'] = new JsFunction.withThis((JsObject jsObject, value) {
-          JsProxy dartInstance = jsObject['__dartClass__'];
-          if (dartInstance.useCache) {
-            jsObject['__cache__'][name] = jsValue(value);
-          }
-          if (value is JsObject) {
-            var valueClass = value['__dartClass__'];
-            if (valueClass != null) value = valueClass;
-          }
-          // TODO(jakemac): What about maps and lists on this side? JsArray
-          // can probably be left alone since it implements list, but regular
-          // JsObjects need to be wrapped in something that implements map.
-          smoke.write(dartInstance, declaration.name, dartValue(value));
-        });
+        descriptor['set'] = _polymerDart.callMethod(
+          'propertySetterFactory', [
+            name,
+            (dartInstance, value) {
+              smoke.write(dartInstance, declaration.name, dartValue(value));
+            }
+          ]
+        );
       }
       // Add a proxy getter/setter for this property.
       context['Object'].callMethod('defineProperty', [
@@ -97,6 +91,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
 }
 
 /// Converts a dart value to a js value, using proxies when possible.
+/// TODO(jakemac): Use expando to cache js arrays that mirror dart lists.JSON
 dynamic jsValue(dartValue) {
   if (dartValue is JsObject) {
     return dartValue;
