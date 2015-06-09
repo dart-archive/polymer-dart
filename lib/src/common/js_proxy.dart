@@ -11,6 +11,8 @@ import 'package:smoke/smoke.dart' as smoke;
 abstract class JsProxy {
   /// Lazily create proxy constructors!
   static Map<Type, JsFunction> _jsProxyConstructors = {};
+  bool useCache = false;
+
   JsFunction get jsProxyConstructor {
     var type = runtimeType;
     return _jsProxyConstructors.putIfAbsent(
@@ -29,6 +31,10 @@ JsObject _buildJsProxy(JsProxy instance) {
   var constructor = instance.jsProxyConstructor;
   var proxy = new JsObject(constructor);
   proxy['__dartClass__'] = instance;
+  if (instance.useCache) {
+    proxy['__cache__'] = new JsObject(context['Object']);
+  }
+
   return proxy;
 }
 
@@ -48,13 +54,21 @@ JsFunction _buildJsConstructorForType(Type dartType) {
     if (declaration.isField || declaration.isProperty) {
       var descriptor = {
         'get': new JsFunction.withThis((JsObject jsObject) {
-          var val = smoke.read(jsObject['__dartClass__'], declaration.name);
-          return jsValue(val);
+          JsProxy dartInstance = jsObject['__dartClass__'];
+          if (dartInstance.useCache) {
+            return jsValue(jsObject['__cache__'][name]);
+          } else {
+            return jsValue(smoke.read(dartInstance, declaration.name));
+          }
         }),
         'configurable': false,
       };
       if (!declaration.isFinal) {
         descriptor['set'] = new JsFunction.withThis((JsObject jsObject, value) {
+          JsProxy dartInstance = jsObject['__dartClass__'];
+          if (dartInstance.useCache) {
+            jsObject['__cache__'][name] = jsValue(value);
+          }
           if (value is JsObject) {
             var valueClass = value['__dartClass__'];
             if (valueClass != null) value = valueClass;
@@ -62,7 +76,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
           // TODO(jakemac): What about maps and lists on this side? JsArray
           // can probably be left alone since it implements list, but regular
           // JsObjects need to be wrapped in something that implements map.
-          smoke.write(jsObject['__dartClass__'], declaration.name, dartValue(value));
+          smoke.write(dartInstance, declaration.name, dartValue(value));
         });
       }
       // Add a proxy getter/setter for this property.
@@ -102,14 +116,19 @@ dynamic jsValue(value) {
 /// Converts a js value to a dart value, unwrapping proxies as they are found.
 dynamic dartValue(value) {
   if (value is JsArray) {
-    value = value.map((item) {
-      var itemProxy = (item is JsObject)  ? item['__dartClass__'] : null;
-      if (itemProxy != null) item = itemProxy;
-      return item;
-    }).toList();
-  } else {
-    var valueProxy = (value is JsObject)  ? value['__dartClass__'] : null;
-    if (valueProxy != null) value = valueProxy;
+    value = value.map((item) => dartValue(item)).toList();
+  } else if (value is JsObject) {
+    var valueProxy = value['__dartClass__'];
+    if (valueProxy != null) {
+      value = valueProxy;
+    } else {
+      var newValue = {};
+      var keys = context['Object'].callMethod('keys', [value]);
+      for (var key in keys) {
+        newValue[key] = dartValue(value[key]);
+      }
+      value = newValue;
+    }
   }
   return value;
 }

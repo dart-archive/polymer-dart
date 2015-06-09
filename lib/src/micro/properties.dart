@@ -108,7 +108,14 @@ setupEventHandlerMethods(Type type, JsObject prototype) {
     prototype[smoke.symbolToName(result.name)] =
         new JsFunction.withThis((obj, [arg1, arg2, arg3, arg4, arg5, arg6]) {
       return smoke.invoke(
-          obj, result.name, [arg1, arg2, arg3, arg4, arg5, arg6], adjust: true);
+          obj, result.name, [
+            dartValue(arg1),
+            dartValue(arg2),
+            dartValue(arg3),
+            dartValue(arg4),
+            dartValue(arg5),
+            dartValue(arg6)
+          ], adjust: true);
     });
   }
 }
@@ -118,14 +125,11 @@ final _emptyPropertyInfo = new JsObject.jsify({'defined': false});
 
 /// Compute or return from cache information about `property` for `t`.
 JsObject _getPropertyInfoForType(Type type, smoke.Declaration property) {
-  var decl = smoke.getDeclaration(type, property.name);
-  if (decl == null) return _emptyPropertyInfo;
-
-  var jsType = _jsType(decl.type);
+  var jsType = _jsType(property.type);
   if (jsType == null) return _emptyPropertyInfo;
 
   var annotation =
-      decl.annotations.firstWhere((a) => a is Property) as Property;
+  property.annotations.firstWhere((a) => a is Property) as Property;
   var properties = {
     'type': jsType,
     'defined': true,
@@ -134,9 +138,6 @@ JsObject _getPropertyInfoForType(Type type, smoke.Declaration property) {
     'reflectToAttribute': annotation.reflectToAttribute,
     'computed': annotation.computed,
   };
-//  if (annotation.value != null) {
-//    properties['value'] = annotation.value;
-//  }
   if (property.isFinal) {
     properties['readOnly'] = true;
   }
@@ -144,6 +145,7 @@ JsObject _getPropertyInfoForType(Type type, smoke.Declaration property) {
 }
 
 /// Given a [Type] return the [JsObject] representation of that type.
+/// TODO(jakemac): Make this more robust, specifically around Lists.
 JsObject _jsType(Type type) {
   switch ('$type') {
     case 'int':
