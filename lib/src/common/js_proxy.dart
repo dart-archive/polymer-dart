@@ -97,38 +97,48 @@ JsFunction _buildJsConstructorForType(Type dartType) {
 }
 
 /// Converts a dart value to a js value, using proxies when possible.
-dynamic jsValue(value) {
-  if (value is JsProxy) {
-    return value.jsProxy;
-  } else if (value is Iterable) {
-    return new JsArray.from(value.map((item) => jsValue(item)));
-  } else if(value is Map) {
-    var newValue = new JsObject(context['Object']);
-    value.forEach((k, v) {
-      newValue[k] = jsValue(v);
+dynamic jsValue(dartValue) {
+  if (dartValue is JsObject) {
+    return dartValue;
+  } else if (dartValue is JsProxy) {
+    return dartValue.jsProxy;
+  } else if (dartValue is Iterable) {
+    var newList = new JsArray.from(dartValue.map((item) => jsValue(item)));
+    newList['__dartList__'] = dartValue;
+    return newList;
+  } else if(dartValue is Map) {
+    var newMap = new JsObject(context['Object']);
+    dartValue.forEach((k, v) {
+      newMap[k] = jsValue(v);
     });
-    return newValue;
+    newMap['__dartMap__'] = dartValue;
+    return newMap;
   }
-  return value;
+  return dartValue;
 }
 
 
 /// Converts a js value to a dart value, unwrapping proxies as they are found.
-dynamic dartValue(value) {
-  if (value is JsArray) {
-    value = value.map((item) => dartValue(item)).toList();
-  } else if (value is JsObject) {
-    var valueProxy = value['__dartClass__'];
-    if (valueProxy != null) {
-      value = valueProxy;
-    } else {
-      var newValue = {};
-      var keys = context['Object'].callMethod('keys', [value]);
-      for (var key in keys) {
-        newValue[key] = dartValue(value[key]);
-      }
-      value = newValue;
+dynamic dartValue(jsValue) {
+  if (jsValue is JsArray) {
+    var dartList = jsValue['__dartList__'];
+    if (dartList != null) return dartList;
+    dartList = jsValue.map((item) => dartValue(item)).toList();
+    jsValue['__dartList__'] = dartList;
+    return dartList;
+  } else if (jsValue is JsObject) {
+    var dartClass = jsValue['__dartClass__'];
+    if (dartClass != null) return dartClass;
+    dartClass = jsValue['__dartMap__'];
+    if (dartClass != null) return dartClass;
+
+    var dartMap = {};
+    var keys = context['Object'].callMethod('keys', [jsValue]);
+    for (var key in keys) {
+      dartMap[key] = dartValue(jsValue[key]);
     }
+    jsValue['__dartMap__'] = dartMap;
+    return dartMap;
   }
-  return value;
+  return jsValue;
 }

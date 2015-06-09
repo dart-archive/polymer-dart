@@ -27,10 +27,14 @@ abstract class PolymerJsMixin implements JsProxy {
     useCache = true;
     // Set up the proxy.
     jsElement.callMethod('originalPolymerCreatedCallback');
+    // TODO(jakemac): Do this more efficiently, probably using smoke?
     var properties = _proxy['properties'];
     var keys = context['Object'].callMethod('keys', [properties]);
     for (var key in keys) {
-      set(key, smoke.read(this, smoke.nameToSymbol(key)));
+      if (jsElement[key] != null) continue;
+      var value = smoke.read(this, smoke.nameToSymbol(key));
+      if (value == null) continue;
+      set(key, value);
     }
   }
 
@@ -89,7 +93,9 @@ abstract class PolymerJsMixin implements JsProxy {
 
   /// Removes the first occurrence of `value` from the list at `path`.
   /// Returns true if value was in the list, false otherwise.
-  bool remove(String path, value) {
+  /// **Note**: Renamed from `remove` because that conflicts with
+  /// HtmlElement.remove.
+  bool removeItem(String path, value) {
     List list = smoke.read(this, smoke.nameToSymbol(path));
     var index = list.indexOf(value);
     if (index == -1) return false;
