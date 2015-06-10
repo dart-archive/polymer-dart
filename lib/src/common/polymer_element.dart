@@ -50,6 +50,7 @@ JsObject _createPolymerObject(Type type, PolymerElement element) {
     'extends': element.extendsTag,
     'hostAttributes': element.hostAttributes,
     'properties': buildPropertiesObject(type),
+    'observers': buildObserversObject(type),
   };
   return new JsObject.jsify(object);
 }

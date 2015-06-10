@@ -105,14 +105,14 @@ dynamic jsValue(dartValue) {
     return dartValue.jsProxy;
   } else if (dartValue is Iterable) {
     var newList = new JsArray.from(dartValue.map((item) => jsValue(item)));
-    newList['__dartList__'] = dartValue;
+    newList['__dartClass__'] = dartValue;
     return newList;
   } else if(dartValue is Map) {
     var newMap = new JsObject(context['Object']);
     dartValue.forEach((k, v) {
       newMap[k] = jsValue(v);
     });
-    newMap['__dartMap__'] = dartValue;
+    newMap['__dartClass__'] = dartValue;
     return newMap;
   }
   return dartValue;
@@ -122,15 +122,15 @@ dynamic jsValue(dartValue) {
 /// Converts a js value to a dart value, unwrapping proxies as they are found.
 dynamic dartValue(jsValue) {
   if (jsValue is JsArray) {
-    var dartList = jsValue['__dartList__'];
+    var dartList = jsValue['__dartClass__'];
     if (dartList != null) return dartList;
     dartList = jsValue.map((item) => dartValue(item)).toList();
-    jsValue['__dartList__'] = dartList;
+    jsValue['__dartClass__'] = dartList;
     return dartList;
   } else if (jsValue is JsObject) {
     var dartClass = jsValue['__dartClass__'];
     if (dartClass != null) return dartClass;
-    dartClass = jsValue['__dartMap__'];
+    dartClass = jsValue['__dartClass__'];
     if (dartClass != null) return dartClass;
 
     var dartMap = {};
@@ -138,7 +138,7 @@ dynamic dartValue(jsValue) {
     for (var key in keys) {
       dartMap[key] = dartValue(jsValue[key]);
     }
-    jsValue['__dartMap__'] = dartMap;
+    jsValue['__dartClass__'] = dartMap;
     return dartMap;
   }
   return jsValue;

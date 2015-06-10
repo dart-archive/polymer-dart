@@ -11,6 +11,7 @@ import '../common/js_proxy.dart';
 import '../common/property.dart';
 import '../common/polymer_js_mixin.dart';
 import '../common/event_handler.dart';
+import '../common/observe.dart';
 
 /// Query options for finding properties on types.
 final _propertyQueryOptions = new smoke.QueryOptions(
@@ -38,6 +39,28 @@ JsObject buildPropertiesObject(Type type) {
   return new JsObject.jsify(properties);
 }
 
+/// Query for the @Observe annotated methods.
+final _observeMethodOptions = new smoke.QueryOptions(
+    includeUpTo: HtmlElement,
+    includeMethods: true,
+    includeProperties: false,
+    includeFields: false,
+    withAnnotations: const [Observe]);
+
+/// Set up the `observers` descriptor object, see
+/// https://www.polymer-project.org/1.0/docs/devguide/properties.html#multi-property-observers
+JsObject buildObserversObject(Type type) {
+  var declarations = smoke.query(type, _observeMethodOptions);
+  var observers = new JsArray();
+  for (var declaration in declarations) {
+    var name = smoke.symbolToName(declaration.name);
+    Observe observe = declaration.annotations.firstWhere((e) => e is Observe);
+    // Build a properties object for this property.
+    observers.add('$name(${observe.properties})');
+  }
+  return observers;
+}
+
 /// Query for the lifecycle methods.
 final _lifecycleMethodOptions = new smoke.QueryOptions(
     includeUpTo: HtmlElement,
@@ -57,7 +80,7 @@ setupLifecycleMethods(Type type, JsObject prototype) {
   }
 }
 
-/// Query for the lifecycle methods.
+/// Query for the [EventHandler] annotated methods.
 final _eventHandlerMethodOptions = new smoke.QueryOptions(
     includeUpTo: HtmlElement,
     includeMethods: true,

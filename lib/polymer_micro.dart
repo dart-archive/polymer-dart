@@ -15,6 +15,7 @@ export 'src/common/polymer_element.dart';
 export 'src/common/js_object_model.dart';
 import 'src/common/js_proxy.dart';
 export 'src/common/js_proxy.dart';
+export 'src/common/observe.dart';
 export 'src/common/property.dart';
 import 'src/micro/properties.dart';
 export 'src/micro/properties.dart';
