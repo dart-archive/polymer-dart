@@ -6,9 +6,7 @@ library polymer.src.common.polymer_js_proxy;
 import 'dart:html';
 import 'dart:js';
 import 'package:smoke/smoke.dart' as smoke;
-import 'property.dart';
 import '../common/js_proxy.dart';
-import '../micro/properties.dart';
 
 /// Basic api for re-using the polymer js prototypes.
 abstract class PolymerJsMixin implements JsProxy {
@@ -27,6 +25,7 @@ abstract class PolymerJsMixin implements JsProxy {
     useCache = true;
     // Set up the proxy.
     jsElement.callMethod('originalPolymerCreatedCallback');
+    // Set default values to the current value.
     // TODO(jakemac): Do this more efficiently, probably using smoke?
     var properties = _proxy['properties'];
     var keys = context['Object'].callMethod('keys', [properties]);

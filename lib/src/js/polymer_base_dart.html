@@ -37,6 +37,18 @@
         dartSetter(this.__dartClass__, value);
       };
     };
+    // Calls a dart function with our __dartClass__ proxy as the first argument,
+    // and all other arguments as the second argument.
+    Polymer.Dart.invokeDartFactory = function(dartFunction) {
+      return function() {
+        var thisArg = this.__dartClass__ ? this.__dartClass__ : this;
+        var args = [];
+        for (var i = 0; i < arguments.length; i++) {
+          args[i] = arguments[i];
+        }
+        return dartFunction(thisArg, args);
+      }
+    };
   })();
 
 //  Polymer.Dart = {};

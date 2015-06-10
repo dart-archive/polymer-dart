@@ -16,46 +16,13 @@ import '../common/event_handler.dart';
 final _propertyQueryOptions = new smoke.QueryOptions(
     includeUpTo: HtmlElement, withAnnotations: const [Property]);
 
+/// Custom js object containing some helper methods for dart.
+final JsObject _polymerDart = context['Polymer']['Dart'];
+
 /// Returns a list of [smoke.Declaration]s for all fields annotated as a
 /// [Property].
 List<smoke.Declaration> propertyDeclarationsFor(Type type) =>
     smoke.query(type, _propertyQueryOptions);
-
-///// Sets up getters and setters on an object to proxy back to the
-///// dart class.
-//JsObject buildPropertyDescriptorsFor(Type type) {
-//  var declarations = propertyDeclarationsFor(type);
-//  var jsObject = new JsObject(context['Object']);
-//  for (var declaration in declarations) {
-//    var name = smoke.symbolToName(declaration.name);
-//    if (declaration.isField || declaration.isProperty) {
-//      var descriptor = {
-//        'get': new JsFunction.withThis((obj) {
-//          if (obj is! PolymerJsMixin && obj is! JsProxy) {
-//            obj = obj['__dartClass__'];
-//          }
-//          return jsValue(smoke.read(obj, declaration.name));
-//        }),
-//        'configurable': false,
-//      };
-//      if (!declaration.isFinal) {
-//        descriptor['set'] = new JsFunction.withThis((obj, value) {
-//          if (obj is! PolymerJsMixin && obj is! JsProxy) {
-//            obj = obj['__dartClass__'];
-//          }
-//          smoke.write(obj, declaration.name, dartValue(value));
-//        });
-//      }
-//      // Add a proxy getter/setter for this property.
-//      context['Object'].callMethod('defineProperty', [
-//        jsObject,
-//        name,
-//        new JsObject.jsify(descriptor),
-//      ]);
-//    };
-//  };
-//  return jsObject;
-//}
 
 // Set up the `properties` descriptor object.
 JsObject buildPropertiesObject(Type type) {
@@ -105,18 +72,15 @@ setupEventHandlerMethods(Type type, JsObject prototype) {
   for (var result in results){
     // TODO(jakemac): Support functions with more than 6 args? We should at
     // least throw a better error in that case.
-    prototype[smoke.symbolToName(result.name)] =
-        new JsFunction.withThis((obj, [arg1, arg2, arg3, arg4, arg5, arg6]) {
-      return smoke.invoke(
-          obj, result.name, [
-            dartValue(arg1),
-            dartValue(arg2),
-            dartValue(arg3),
-            dartValue(arg4),
-            dartValue(arg5),
-            dartValue(arg6)
-          ], adjust: true);
-    });
+    prototype[smoke.symbolToName(result.name)] = _polymerDart.callMethod(
+        'invokeDartFactory',
+        [
+          (dartInstance, arguments) {
+            var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+            return smoke.invoke(
+                dartInstance, result.name, newArgs, adjust: true);
+          }
+        ]);
   }
 }
 

@@ -80,9 +80,15 @@ JsFunction _buildJsConstructorForType(Type dartType) {
         new JsObject.jsify(descriptor),
       ]);
     } else if (declaration.isMethod) {
-      prototype[name] = new JsFunction.withThis((JsObject jsObject) {
-        smoke.invoke(jsObject['__dartClass__'], declaration.name, []);
-      });
+      prototype[name] = _polymerDart.callMethod(
+          'invokeDartFactory',
+          [
+            (dartInstance, arguments) {
+              var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+              return smoke.invoke(
+                  dartInstance, declaration.name, newArgs, adjust: true);
+            }
+          ]);
     }
   }
 
