@@ -37,11 +37,14 @@
         dartSetter(this.__dartClass__, value);
       };
     };
-    // Calls a dart function with our __dartClass__ proxy as the first argument,
-    // and all other arguments as the second argument.
+    // Generates a function which invokes a dart function with this or the
+    // __dartClass__ proxy if it exists as the first argument, and all other
+    // arguments as the second argument.
     Polymer.Dart.invokeDartFactory = function(dartFunction) {
       return function() {
         var thisArg = this.__dartClass__ ? this.__dartClass__ : this;
+        // Must convert `arguments` to an actual array that the js side can
+        // recognize.
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
           args[i] = arguments[i];
@@ -50,99 +53,4 @@
       }
     };
   })();
-
-//  Polymer.Dart = {};
-//  // TODO(jakemac): Don't pass anything to this constructor until
-//  // http://dartbug.com/23514 gets fixed, its to slow.
-//  Polymer.Dart.Base = function() {};
-//  Polymer.Dart.Base.prototype = {
-//    __proxy__: null,
-//    getAttribute: function(name) {
-//      return this.__proxy__.getAttribute(name);
-//    },
-//    hasAttribute: function(name) {
-//      return this.__proxy__.hasAttribute(name);
-//    },
-//    setAttribute: function(name, value) {
-//      return this.__proxy__.setAttribute(name, value);
-//    },
-//    removeAttribute: function(name) {
-//      return this.__proxy__.removeAttribute(name);
-//    },
-//    get attributes () {
-//      return this.__proxy__.attributes;
-//    },
-//    get childNodes() {
-//      return this.__proxy__.childNodes;
-//    },
-//    appendChild: function(node) {
-//      return this.__proxy__.appendChild(node);
-//    },
-//    get innerHTML() {
-//      return this.__proxy__.innerHTML;
-//    },
-//    set innerHTML(html) {
-//      return this.__proxy__.innerHTML = html;
-//    },
-//    get textContent() {
-//      return this.__proxy__.textContent;
-//    },
-//    set textContent(text) {
-//      return this.__proxy__.textContent = text;
-//    },
-//    addEventListener: function(event, callback) {
-//      return this.__proxy__.addEventListener(event, callback);
-//    },
-//    dispatchEvent: function(event) {
-//      return this.__proxy__.dispatchEvent(event);
-//    },
-//    get localName() {
-//      return this.__proxy__.localName;
-//    },
-//    get nodeType() {
-//      return this.__proxy__.nodeType;
-//    },
-//    get nextSibling() {
-//      return this.__proxy__.nextSibling;
-//    },
-//    insertBefore: function(node, ref_node) {
-//      return this.__proxy__.insertBefore(node, ref_node);
-//    }
-//  };
-//  Polymer.Dart.Base.__setup__ = function() {
-//    Polymer.Base.extend(Polymer.Dart.Base.prototype, Polymer.Base);
-
-//    if (Polymer.Dart.Base.prototype._marshalAnnotatedNodes) {
-//      Polymer.Dart.Base.prototype._oldMarshalAnnotatedNodes =
-//          Polymer.Dart.Base.prototype._marshalAnnotatedNodes;
-//      Polymer.Dart.Base.prototype._marshalAnnotatedNodes = function() {
-//        this._oldMarshalAnnotatedNodes();
-//        if (this._nodes) {
-//          this._nodes = this._nodes.map(function(a) {
-//            if (!a.__polymerProxy__) return a;
-//            return a.__polymerProxy__;
-//          }, this);
-//        }
-//      };
-//    }
-
-//    if (Polymer.Bind) {
-//      // Overwrite prepareInstance to a no-op for dart elements.
-//      Polymer.Bind._originalPrepareInstance = Polymer.Bind.prepareInstance;
-//      Polymer.Bind.prepareInstance = function (inst) {
-//        if (typeof(inst.__proxy__) !== 'undefined') return;
-//        this._originalPrepareInstance(inst);
-//      }
-//    }
-//  };
-
-//  // Have to pass an actual element to the native insertBefore.
-//  Element.prototype._originalInsertBefore = Element.prototype.insertBefore;
-//  Element.prototype.insertBefore = function(node, ref_node) {
-//    if (typeof(this.__proxy__) !== 'undefined') {
-//      this.__proxy__._originalInsertBefore(node, ref_node);
-//    } else {
-//      this._originalInsertBefore(node, ref_node);
-//    }
-//  };
 </script>
