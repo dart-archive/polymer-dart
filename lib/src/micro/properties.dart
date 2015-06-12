@@ -6,11 +6,10 @@ library polymer.src.micro.properties;
 import 'dart:html';
 import 'dart:js';
 import 'package:smoke/smoke.dart' as smoke;
-import '../common/js_object_model.dart';
 import '../common/js_proxy.dart';
 import '../common/property.dart';
-import '../common/polymer_js_mixin.dart';
 import '../common/event_handler.dart';
+import '../common/listen.dart';
 import '../common/observe.dart';
 
 /// Query options for finding properties on types.
@@ -59,6 +58,28 @@ JsObject buildObserversObject(Type type) {
     observers.add('$name(${observe.properties})');
   }
   return observers;
+}
+
+/// Query for the @Listen annotated methods.
+final _listenMethodOptions = new smoke.QueryOptions(
+    includeUpTo: HtmlElement,
+    includeMethods: true,
+    includeProperties: false,
+    includeFields: false,
+    withAnnotations: const [Listen]);
+
+/// Set up the `listeners` descriptor object, see
+/// https://www.polymer-project.org/1.0/docs/devguide/events.html#event-listeners
+JsObject buildListenersObject(Type type) {
+  var declarations = smoke.query(type, _listenMethodOptions);
+  var listeners = new JsObject(context['Object']);
+  for (var declaration in declarations) {
+    var name = smoke.symbolToName(declaration.name);
+    for (Listen listen in declaration.annotations.where((e) => e is Listen)) {
+      listeners[listen.eventName] = name;
+    }
+  }
+  return listeners;
 }
 
 /// Query for the lifecycle methods.

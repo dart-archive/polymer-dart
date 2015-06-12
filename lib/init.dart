@@ -4,15 +4,13 @@
 library polymer.lib.init;
 
 import 'dart:async';
-import 'dart:js' show context;
 import 'package:web_components/web_components.dart';
-import 'src/common/polymer_element.dart';
+import 'src/common/polymer_register.dart';
 
 main() => initPolymer();
 
 Future initPolymer() async {
   await initWebComponents(typeFilter: [HtmlImport], initAll: false);
-//  context['Polymer']['Dart']['Base'].callMethod('__setup__', []);
-  await initWebComponents(typeFilter: [PolymerElement], initAll: false);
+  await initWebComponents(typeFilter: [PolymerRegister], initAll: false);
   await initWebComponents();
 }

@@ -48,7 +48,6 @@ JsFunction _buildJsConstructorForType(Type dartType) {
   var constructor = _polymerDart.callMethod('functionFactory');
   var prototype = new JsObject(context['Object']);
 
-  // TODO(jakemac): consolidate this code with the code in properties.dart.
   var declarations = smoke.query(dartType, _queryOptions);
   for (var declaration in declarations) {
     var name = smoke.symbolToName(declaration.name);
@@ -80,6 +79,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
         new JsObject.jsify(descriptor),
       ]);
     } else if (declaration.isMethod) {
+      // TODO(jakemac): consolidate this code with the code in properties.dart.
       prototype[name] = _polymerDart.callMethod(
           'invokeDartFactory',
           [
@@ -97,7 +97,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
 }
 
 /// Converts a dart value to a js value, using proxies when possible.
-/// TODO(jakemac): Use expando to cache js arrays that mirror dart lists.JSON
+/// TODO(jakemac): Use expando to cache js arrays that mirror dart lists.
 dynamic jsValue(dartValue) {
   if (dartValue is JsObject) {
     return dartValue;

@@ -6,9 +6,7 @@
 library polymer.lib.polymer;
 
 import 'package:web_components/web_components.dart' show HtmlImport;
-import 'polymer_mini.dart';
 export 'polymer_mini.dart';
-
-class PolymerStandardElement extends PolymerMiniElement {
-  PolymerStandardElement.created() : super.created();
-}
+export 'src/common/event_handler.dart';
+export 'src/common/listen.dart';
+export 'src/common/observe.dart';

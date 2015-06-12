@@ -9,7 +9,7 @@ import 'package:smoke/smoke.dart' as smoke;
 import '../common/js_proxy.dart';
 
 /// Basic api for re-using the polymer js prototypes.
-abstract class PolymerJsMixin implements JsProxy {
+abstract class PolymerMixin implements JsProxy {
   JsObject _proxy;
 
   JsObject get jsElement {
@@ -198,10 +198,9 @@ abstract class PolymerJsMixin implements JsProxy {
   DocumentFragment get root => jsElement['root'];
 
   /// Fire a custom event.
-  // TODO(jakemac): Call jsValue on the `detail` object?
   CustomEvent fire(String type, {detail, options}) =>
       jsElement.callMethod('fire', [
-        type, detail, jsValue(options)]);
+        type, jsValue(detail), jsValue(options)]);
 
   /// Read properties from the js object, primarily useful for computed
   /// properties.
