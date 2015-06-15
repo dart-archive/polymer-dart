@@ -4,13 +4,16 @@
 library polymer.lib.init;
 
 import 'dart:async';
+import 'package:initialize/initialize.dart' show Initializer;
 import 'package:web_components/web_components.dart';
 import 'src/common/polymer_register.dart';
 
 main() => initPolymer();
 
 Future initPolymer() async {
-  await initWebComponents(typeFilter: [HtmlImport], initAll: false);
-  await initWebComponents(typeFilter: [PolymerRegister], initAll: false);
-  await initWebComponents();
+  await initWebComponents(typeFilter: [
+    HtmlImport, CustomElement, CustomElementProxy, PolymerRegister]);
 }
+
+const _defaultProxyNames =
+  const <String>['array-selector', 'dom-if', 'dom-repeat'];
