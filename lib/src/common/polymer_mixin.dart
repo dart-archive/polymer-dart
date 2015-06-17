@@ -5,8 +5,10 @@ library polymer.src.common.polymer_js_proxy;
 
 import 'dart:html';
 import 'dart:js';
+import 'package:polymer_interop/polymer_interop.dart' show Polymer, PolymerDom;
 import 'package:smoke/smoke.dart' as smoke;
-import '../common/js_proxy.dart';
+import 'js_proxy.dart';
+
 
 /// Basic api for re-using the polymer js prototypes.
 abstract class PolymerMixin implements JsProxy {
@@ -21,11 +23,11 @@ abstract class PolymerMixin implements JsProxy {
   }
 
   void polymerCreated() {
-    // Use a cache for js proxy values!
+    // Use a cache for js proxy values.
     useCache = true;
-    // Set up the proxy.
     jsElement.callMethod('originalPolymerCreatedCallback');
-    // Set default values to the current value.
+
+    // Set up `default` property values.
     // TODO(jakemac): Do this more efficiently, probably using smoke?
     var properties = _proxy['properties'];
     var keys = context['Object'].callMethod('keys', [properties]);
@@ -194,15 +196,20 @@ abstract class PolymerMixin implements JsProxy {
   // example of this.
   JsObject get $ => jsElement[r'$'];
 
-  /// The shadow or shady root, depending on which system is in use.
-  DocumentFragment get root => jsElement['root'];
+  /// The shadow or shady root, depending on which system is in use. We
+  /// automatically wrap this in a Polymer.dom call as well since it is
+  /// not useful without that.
+  PolymerDom get root => Polymer.dom(jsElement['root']);
 
   /// Fire a custom event.
-  CustomEvent fire(String type, {detail, options}) =>
-      jsElement.callMethod('fire', [
-        type, jsValue(detail), jsValue(options)]);
-
-  /// Read properties from the js object, primarily useful for computed
-  /// properties.
-  dynamic readProperty(String propertyName) => _proxy[propertyName];
+  CustomEvent fire( String type, {
+      dynamic detail, bool canBubble: true, bool cancelable: true, Node node}) {
+    var options = {
+      'node': node,
+      'bubbles': canBubble,
+      'cancelable': cancelable,
+    };
+    return jsElement.callMethod(
+        'fire', [type, jsValue(detail), jsValue(options)]);
+  }
 }
