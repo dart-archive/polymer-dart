@@ -29,9 +29,9 @@ transformers:
 
 dependency_overrides:
   polymer_interop:
-    path: ../polymer-interop
-  web_components:
-    path: ../web-components
+    git:
+      ref: 0.2.0-dev
+      url: https://github.com/dart-lang/polymer_interop.git
 
 environment:
   sdk: '>=1.4.0 <2.0.0'
