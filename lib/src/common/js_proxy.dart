@@ -104,7 +104,8 @@ JsFunction _buildJsConstructorForType(Type dartType) {
 }
 
 /// Converts a dart value to a js value, using proxies when possible.
-/// TODO(jakemac): Use expando to cache js arrays that mirror dart lists.
+/// TODO(jakemac): Use expando to cache js arrays that mirror dart lists?
+/// TODO(jakemac): DateTime objects.
 dynamic jsValue(dartValue) {
   if (dartValue is JsObject) {
     return dartValue;
@@ -127,6 +128,7 @@ dynamic jsValue(dartValue) {
 
 
 /// Converts a js value to a dart value, unwrapping proxies as they are found.
+/// TODO(jakemac): Date objects.
 dynamic dartValue(jsValue) {
   if (jsValue is JsArray) {
     var dartList = jsValue['__dartClass__'];
@@ -137,8 +139,9 @@ dynamic dartValue(jsValue) {
   } else if (jsValue is JsObject) {
     var dartClass = jsValue['__dartClass__'];
     if (dartClass != null) return dartClass;
-    dartClass = jsValue['__dartClass__'];
-    if (dartClass != null) return dartClass;
+
+    // Don't try and deal with non-standard js objects.
+    if (jsValue['constructor'] != context['Object']) return jsValue;
 
     var dartMap = {};
     var keys = context['Object'].callMethod('keys', [jsValue]);

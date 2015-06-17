@@ -48,6 +48,7 @@ main() async {
   'host-bool': true,
   'host-map': const {'hello': 'world'},
   'host-list': const ['hello', 'world'],
+  // TODO(jakemac): Do we need to support this?
 //  'host-date-time': new DateTime(1987, 07, 18),
 })
 class AttributesTest extends PolymerElement {
