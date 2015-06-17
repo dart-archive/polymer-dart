@@ -11,9 +11,9 @@ import 'src/common/polymer_register.dart';
 main() => initPolymer();
 
 Future initPolymer() async {
-  await initWebComponents(typeFilter: [
-    HtmlImport, CustomElement, CustomElementProxy, PolymerRegister]);
+  await initWebComponents(
+      typeFilter: [
+        HtmlImport, CustomElement, CustomElementProxy, PolymerRegister
+      ],
+      initAll: true);
 }
-
-const _defaultProxyNames =
-  const <String>['array-selector', 'dom-if', 'dom-repeat'];

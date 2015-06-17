@@ -1,0 +1,37 @@
+<script>
+if (Polymer.Bind) {
+  // Overwrite prepareInstance to a no-op for dart elements.
+  Polymer.Bind._originalPrepareInstance = Polymer.Bind.prepareInstance;
+  Polymer.Bind.prepareInstance = function (inst) {
+    if (inst.__isPolymerDart__) return;
+    this._originalPrepareInstance(inst);
+  }
+
+  // We always need to create property accessors for dart elements, because we
+  // always have `effects` (updating the dart class).
+  // TODO(jakemac): Investigate making the updating of the dart class be an
+  // actual `effect` so that we don't have to do this hack.
+  Polymer.Bind.oldCreateBindings = Polymer.Bind.createBindings;
+  Polymer.Bind.createBindings = function(model) {
+    if (!model.__isPolymerDart__) {
+      this.oldCreateBindings(model);
+      return;
+    }
+
+    // map of properties to effects
+    var fx$ = model._propertyEffects || {};
+    var p$ = model.properties;
+    // for each property with effects
+    for (var n in p$) {
+      // array of effects
+      var fx = fx$[n];
+      // effects have priority
+      if (fx) {
+        fx.sort(this._sortPropertyEffects);
+      }
+      // create accessors
+      this._createAccessors(model, n, fx);
+    }
+  };
+}
+</script>

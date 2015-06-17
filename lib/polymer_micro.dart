@@ -14,7 +14,6 @@ export 'src/common/polymer_register.dart';
 import 'src/common/js_proxy.dart';
 export 'src/common/js_proxy.dart';
 export 'src/common/property.dart';
-export 'src/micro/properties.dart';
 export 'init.dart' show initPolymer;
 
 class PolymerElement extends HtmlElement with PolymerMixin, JsProxy {

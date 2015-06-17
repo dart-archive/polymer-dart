@@ -6,7 +6,7 @@ library polymer.src.common.polymer_register;
 import 'dart:js';
 import 'dart:html';
 import 'package:web_components/web_components.dart' show CustomElementProxy;
-import '../micro/properties.dart';
+import 'polymer_descriptor.dart';
 
 class PolymerRegister extends CustomElementProxy {
   final Map<String, dynamic> hostAttributes;
@@ -16,39 +16,9 @@ class PolymerRegister extends CustomElementProxy {
       : super(tagName, extendsTag: extendsTag);
 
   void initialize(Type type) {
-    var polymerObject = _createPolymerObject(type, this);
-    var constructor = context['Polymer'].callMethod('Class', [polymerObject]);
-    var prototype = constructor['prototype'];
-    // TODO(jakemac): Remove this hack once we fix
-    // https://github.com/dart-lang/sdk/issues/23574
-    if (prototype is! JsObject) {
-      prototype = new JsObject.fromBrowserObject(prototype);
-    }
-    prototype['__isPolymerDart__'] = true;
-    setupLifecycleMethods(type, prototype);
-    setupEventHandlerMethods(type, prototype);
-
-    // Register the prototype via js interop!
-    new JsObject.fromBrowserObject(document).callMethod('registerElement', [
-      tagName,
-      new JsObject.jsify({
-        'prototype': prototype,
-        'extends': extendsTag,
-      })
-    ]);
-
+    // Register the element via polymer js.
+    context.callMethod('Polymer', [createPolymerDescriptor(type, this)]);
+    // Register the dart type as a proxy.
     super.initialize(type);
   }
-}
-
-JsObject _createPolymerObject(Type type, PolymerRegister element) {
-  var object = {
-    'is': element.tagName,
-    'extends': element.extendsTag,
-    'hostAttributes': element.hostAttributes,
-    'properties': buildPropertiesObject(type),
-    'observers': buildObserversObject(type),
-    'listeners': buildListenersObject(type),
-  };
-  return new JsObject.jsify(object);
 }

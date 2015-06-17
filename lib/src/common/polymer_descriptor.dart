@@ -6,11 +6,30 @@ library polymer.src.micro.properties;
 import 'dart:html';
 import 'dart:js';
 import 'package:smoke/smoke.dart' as smoke;
-import '../common/js_proxy.dart';
-import '../common/property.dart';
-import '../common/event_handler.dart';
-import '../common/listen.dart';
-import '../common/observe.dart';
+import 'js_proxy.dart';
+import 'property.dart';
+import 'event_handler.dart';
+import 'listen.dart';
+import 'observe.dart';
+import 'polymer_register.dart';
+
+/// Creates a javascript object which can be passed to polymer js to register
+/// an element, given a dart [Type] and a [PolymerRegister] annotation.
+JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
+  var object = {
+    'is': annotation.tagName,
+    'extends': annotation.extendsTag,
+    'hostAttributes': annotation.hostAttributes,
+    'properties': buildPropertiesObject(type),
+    'observers': _buildObserversObject(type),
+    'listeners': _buildListenersObject(type),
+    '__isPolymerDart__': true,
+  };
+  _setupLifecycleMethods(type, object);
+  _setupEventHandlerMethods(type, object);
+
+  return new JsObject.jsify(object);
+}
 
 /// Query options for finding properties on types.
 final _propertyQueryOptions = new smoke.QueryOptions(
@@ -25,7 +44,7 @@ List<smoke.Declaration> propertyDeclarationsFor(Type type) =>
     smoke.query(type, _propertyQueryOptions);
 
 // Set up the `properties` descriptor object.
-JsObject buildPropertiesObject(Type type) {
+Map buildPropertiesObject(Type type) {
   var declarations = propertyDeclarationsFor(type);
   var properties = {};
   for (var declaration in declarations) {
@@ -35,7 +54,7 @@ JsObject buildPropertiesObject(Type type) {
       properties[name] = _getPropertyInfoForType(type, declaration);
     }
   }
-  return new JsObject.jsify(properties);
+  return properties;
 }
 
 /// Query for the @Observe annotated methods.
@@ -48,9 +67,9 @@ final _observeMethodOptions = new smoke.QueryOptions(
 
 /// Set up the `observers` descriptor object, see
 /// https://www.polymer-project.org/1.0/docs/devguide/properties.html#multi-property-observers
-JsObject buildObserversObject(Type type) {
+List _buildObserversObject(Type type) {
   var declarations = smoke.query(type, _observeMethodOptions);
-  var observers = new JsArray();
+  var observers = [];
   for (var declaration in declarations) {
     var name = smoke.symbolToName(declaration.name);
     Observe observe = declaration.annotations.firstWhere((e) => e is Observe);
@@ -70,9 +89,9 @@ final _listenMethodOptions = new smoke.QueryOptions(
 
 /// Set up the `listeners` descriptor object, see
 /// https://www.polymer-project.org/1.0/docs/devguide/events.html#event-listeners
-JsObject buildListenersObject(Type type) {
+Map _buildListenersObject(Type type) {
   var declarations = smoke.query(type, _listenMethodOptions);
-  var listeners = new JsObject(context['Object']);
+  var listeners = {};
   for (var declaration in declarations) {
     var name = smoke.symbolToName(declaration.name);
     for (Listen listen in declaration.annotations.where((e) => e is Listen)) {
@@ -92,12 +111,13 @@ final _lifecycleMethodOptions = new smoke.QueryOptions(
 
 /// Set up a proxy for the `ready`, `attached`, and `detached` methods, if they
 /// exists on the dart class.
-setupLifecycleMethods(Type type, JsObject prototype) {
+void _setupLifecycleMethods(Type type, Map descriptor) {
   List<smoke.Declaration> results = smoke.query(type, _lifecycleMethodOptions);
   for (var result in results){
-    prototype[smoke.symbolToName(result.name)] = new JsFunction.withThis((obj) {
-      smoke.invoke(obj, result.name, []);
-    });
+    descriptor[smoke.symbolToName(result.name)] =
+        new JsFunction.withThis((obj) {
+          smoke.invoke(obj, result.name, []);
+        });
   }
 }
 
@@ -110,13 +130,13 @@ final _eventHandlerMethodOptions = new smoke.QueryOptions(
     withAnnotations: const [EventHandler]);
 
 /// Set up a proxy for any method with an @eventHandler annotation.
-setupEventHandlerMethods(Type type, JsObject prototype) {
+void _setupEventHandlerMethods(Type type, Map descriptor) {
   List<smoke.Declaration> results =
       smoke.query(type, _eventHandlerMethodOptions);
   for (var result in results){
     // TODO(jakemac): Support functions with more than 6 args? We should at
     // least throw a better error in that case.
-    prototype[smoke.symbolToName(result.name)] = _polymerDart.callMethod(
+    descriptor[smoke.symbolToName(result.name)] = _polymerDart.callMethod(
         'invokeDartFactory',
         [
           (dartInstance, arguments) {
@@ -132,13 +152,13 @@ setupEventHandlerMethods(Type type, JsObject prototype) {
 final _emptyPropertyInfo = new JsObject.jsify({'defined': false});
 
 /// Compute or return from cache information about `property` for `t`.
-JsObject _getPropertyInfoForType(Type type, smoke.Declaration property) {
-  var jsType = _jsType(property.type);
+Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
+  var jsType = _jsType(declaration.type);
   if (jsType == null) return _emptyPropertyInfo;
 
-  var annotation =
-  property.annotations.firstWhere((a) => a is Property) as Property;
-  var properties = {
+  Property annotation =
+      declaration.annotations.firstWhere((a) => a is Property);
+  var property = {
     'type': jsType,
     'defined': true,
     'notify': annotation.notify,
@@ -146,16 +166,20 @@ JsObject _getPropertyInfoForType(Type type, smoke.Declaration property) {
     'reflectToAttribute': annotation.reflectToAttribute,
     'computed': annotation.computed,
   };
-  if (property.isFinal) {
-    properties['readOnly'] = true;
+  if (declaration.isFinal) {
+    property['readOnly'] = true;
   }
-  return new JsObject.jsify(properties);
+  return property;
 }
 
 /// Given a [Type] return the [JsObject] representation of that type.
 /// TODO(jakemac): Make this more robust, specifically around Lists.
 JsObject _jsType(Type type) {
-  switch ('$type') {
+  var typeString = '$type';
+  if (typeString.startsWith('JsArray<')) typeString = 'List';
+  if (typeString.startsWith('List<')) typeString = 'List';
+  if (typeString.startsWith('Map<')) typeString = 'Map';
+  switch (typeString) {
     case 'int':
     case 'double':
     case 'num':
@@ -163,9 +187,10 @@ JsObject _jsType(Type type) {
     case 'bool':
       return context['Boolean'];
     case 'List':
+    case 'JsArray':
       return context['Array'];
     case 'DateTime':
-      return context['DateTime'];
+      return context['Date'];
     case 'String':
       return context['String'];
     case 'Map':

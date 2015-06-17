@@ -11,8 +11,15 @@ import 'package:smoke/smoke.dart' as smoke;
 abstract class JsProxy {
   /// Lazily create proxy constructors!
   static Map<Type, JsFunction> _jsProxyConstructors = {};
+
+  /// Never reads from the dart object, instead reads properties from the
+  /// `__cache__` object. This is primarily useful for objects that you pass in
+  /// empty, and the javascript code will populate. It should be used carefully
+  /// since its easy to get the two objects out of sync.
   bool useCache = false;
 
+  /// The Javascript constructor that will be used to build proxy objects for
+  /// this class.
   JsFunction get jsProxyConstructor {
     var type = runtimeType;
     return _jsProxyConstructors.putIfAbsent(
@@ -26,7 +33,7 @@ abstract class JsProxy {
   }
 }
 
-// Wraps an instance of a dart class in a js proxy.
+/// Wraps an instance of a dart class in a js proxy.
 JsObject _buildJsProxy(JsProxy instance) {
   var constructor = instance.jsProxyConstructor;
   var proxy = new JsObject(constructor);
