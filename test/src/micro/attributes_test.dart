@@ -4,10 +4,10 @@
 library polymer.test.src.micro.attributes_test;
 
 import 'dart:html';
-import 'dart:js';
 import 'package:unittest/unittest.dart';
 import 'package:unittest/html_config.dart';
-import 'package:initialize/initialize.dart' show initMethod;
+// TODO(jakemac): `mixin` is only defined for polymer standard, but is used
+// by attribute features in micro? May just need to update polymer js.
 import 'package:polymer/polymer.dart';
 import 'package:smoke/mirrors.dart' as smoke;
 
@@ -52,7 +52,6 @@ main() async {
 //  'host-date-time': new DateTime(1987, 07, 18),
 })
 class AttributesTest extends PolymerElement {
-
   @property
   String myString;
 
@@ -72,7 +71,5 @@ class AttributesTest extends PolymerElement {
   @property
   DateTime myDateTime;
 
-  AttributesTest.created() : super.created() {
-    polymerCreated();
-  }
+  AttributesTest.created() : super.created();
 }

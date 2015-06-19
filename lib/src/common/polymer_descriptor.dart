@@ -107,17 +107,21 @@ final _lifecycleMethodOptions = new smoke.QueryOptions(
     includeMethods: true,
     includeProperties: false,
     includeFields: false,
-    matches: (name) => [#ready, #attached, #detached].contains(name));
+    matches: (name) => [#ready, #attached, #detached, #attributeChanged].contains(name));
 
-/// Set up a proxy for the `ready`, `attached`, and `detached` methods, if they
-/// exists on the dart class.
+/// Set up a proxy for the lifecyle methods, if they exists on the dart class.
 void _setupLifecycleMethods(Type type, Map descriptor) {
   List<smoke.Declaration> results = smoke.query(type, _lifecycleMethodOptions);
   for (var result in results){
-    descriptor[smoke.symbolToName(result.name)] =
-        new JsFunction.withThis((obj) {
-          smoke.invoke(obj, result.name, []);
-        });
+    descriptor[smoke.symbolToName(result.name)] = _polymerDart.callMethod(
+        'invokeDartFactory',
+        [
+          (dartInstance, arguments) {
+            var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+            return smoke.invoke(
+                dartInstance, result.name, newArgs, adjust: true);
+          }
+        ]);
   }
 }
 
@@ -165,6 +169,9 @@ Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
     'observer': annotation.observer,
     'reflectToAttribute': annotation.reflectToAttribute,
     'computed': annotation.computed,
+    'value': new JsFunction.withThis((dartInstance, [_]) {
+      return jsValue(smoke.read(dartInstance, declaration.name));
+    }),
   };
   if (declaration.isFinal) {
     property['readOnly'] = true;

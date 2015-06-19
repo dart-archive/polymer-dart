@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="application/dart" src="dom_distribution_test.dart"></script>
+  <script src="packages/browser/dart.js"></script>
+</head>
+<body>
+  <dom-module id="simple-element">
+    <template>
+      <div class="content">
+        <content></content>
+      </div>
+    </template>
+  </dom-module>
+  <simple-element><div id="hello">hello!</div></simple-element>
+
+  <dom-module id="select-element">
+    <template>
+      <div class="content">
+        <content select=".selected"></content>
+      </div>
+    </template>
+  </dom-module>
+  <select-element>
+    <div id="invisible">I am invisible!!!!</div>
+    <div class="selected" id="hello">hello!</div>
+  </select-element>
+
+</body>
+</html>

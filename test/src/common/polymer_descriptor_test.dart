@@ -115,10 +115,9 @@ class Test {
   }
 }
 
-
 void expectProperty(JsObject actual, {
     computed: null, defined: true, notify: false, observer: null,
-    reflectToAttribute: false, type: null}) {
+    reflectToAttribute: false, type: null, value: isNotNull}) {
   var expected = {
     'computed': computed,
     'defined': defined,
@@ -126,6 +125,7 @@ void expectProperty(JsObject actual, {
     'observer': observer,
     'reflectToAttribute': reflectToAttribute,
     'type': (type == null) ? context['Object'] : type,
+    'value': value,
   };
   expectEqual(actual, expected);
 }
@@ -133,6 +133,6 @@ void expectProperty(JsObject actual, {
 void expectEqual(JsObject actual, Map expected) {
   var keys = context['Object'].callMethod('keys', [actual]);
   for (var key in keys) {
-    expect(expected[key], actual[key]);
+    expect(actual[key], expected[key]);
   }
 }

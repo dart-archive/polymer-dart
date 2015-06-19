@@ -26,22 +26,11 @@ abstract class PolymerMixin implements JsProxy {
     // Use a cache for js proxy values.
     useCache = true;
     jsElement.callMethod('originalPolymerCreatedCallback');
-
-    // Set up `default` property values.
-    // TODO(jakemac): Do this more efficiently, probably using smoke?
-    var properties = _proxy['properties'];
-    var keys = context['Object'].callMethod('keys', [properties]);
-    for (var key in keys) {
-      if (jsElement[key] != null) continue;
-      var value = smoke.read(this, smoke.nameToSymbol(key));
-      if (value == null) continue;
-      set(key, value);
-    }
   }
 
   /// Sets a value on an attribute path, and notifies of changes.
   void set(String path, value) =>
-    jsElement.callMethod('set', [path, jsValue(value)]);
+      jsElement.callMethod('set', [path, jsValue(value)]);
 
   /// Notify of a change to a property path.
   void notifyPath(String path, value) =>
@@ -196,10 +185,8 @@ abstract class PolymerMixin implements JsProxy {
   // example of this.
   JsObject get $ => jsElement[r'$'];
 
-  /// The shadow or shady root, depending on which system is in use. We
-  /// automatically wrap this in a Polymer.dom call as well since it is
-  /// not useful without that.
-  PolymerDom get root => Polymer.dom(jsElement['root']);
+  /// The shadow or shady root, depending on which system is in use.
+  DocumentFragment get root => jsElement['root'];
 
   /// Fire a custom event.
   CustomEvent fire( String type, {
@@ -213,3 +200,5 @@ abstract class PolymerMixin implements JsProxy {
         'fire', [type, jsValue(detail), jsValue(options)]);
   }
 }
+
+class Foo extends Object with Polymer, Polymer, Polymer {}

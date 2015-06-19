@@ -47,9 +47,9 @@ main() async {
   });
 
   test('root', () {
-    expect(element.root, isNotNull);
-    expect(element.root.children.first, element.$['parent']);
-    expect(element.root.querySelector('#child'), element.$['child']);
+    expect(Polymer.dom(element.root), isNotNull);
+    expect(Polymer.dom(element.root).children.first, element.$['parent']);
+    expect(Polymer.dom(element.root).querySelector('#child'), element.$['child']);
   });
 
   group('List api: ', () {
