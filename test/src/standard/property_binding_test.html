@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="application/dart" src="property_binding_test.dart"></script>
+  <script src="packages/browser/dart.js"></script>
+</head>
+<body>
+  <dom-module id="parent-element">
+    <template>
+      <child-element id="child" model="{{model}}"></child-element>
+    </template>
+  </dom-module>
+  <dom-module id="child-element">
+    <template>
+      <grandchild-element id="grandchild" value="{{model.value}}">
+      </grandchild-element>
+    </template>
+  </dom-module>
+</body>
+</html>

@@ -37,7 +37,7 @@ abstract class JsProxy {
 JsObject _buildJsProxy(JsProxy instance) {
   var constructor = instance.jsProxyConstructor;
   var proxy = new JsObject(constructor);
-  proxy['__dartClass__'] = instance;
+  _addDartInstance(proxy, instance);
   if (instance.useCache) {
     proxy['__cache__'] = new JsObject(context['Object']);
   }
@@ -113,14 +113,14 @@ dynamic jsValue(dartValue) {
     return dartValue.jsProxy;
   } else if (dartValue is Iterable) {
     var newList = new JsArray.from(dartValue.map((item) => jsValue(item)));
-    newList['__dartClass__'] = dartValue;
+    _addDartInstance(newList, dartValue);
     return newList;
   } else if(dartValue is Map) {
     var newMap = new JsObject(context['Object']);
     dartValue.forEach((k, v) {
       newMap[k] = jsValue(v);
     });
-    newMap['__dartClass__'] = dartValue;
+    _addDartInstance(newMap, dartValue);
     return newMap;
   }
   return dartValue;
@@ -131,13 +131,13 @@ dynamic jsValue(dartValue) {
 /// TODO(jakemac): Date objects.
 dynamic dartValue(jsValue) {
   if (jsValue is JsArray) {
-    var dartList = jsValue['__dartClass__'];
+    var dartList = _getDartInstance(jsValue);
     if (dartList != null) return dartList;
     dartList = jsValue.map((item) => dartValue(item)).toList();
-    jsValue['__dartClass__'] = dartList;
+    _addDartInstance(jsValue, dartList);
     return dartList;
   } else if (jsValue is JsObject) {
-    var dartClass = jsValue['__dartClass__'];
+    var dartClass = _getDartInstance(jsValue);
     if (dartClass != null) return dartClass;
 
     // Don't try and deal with non-standard js objects.
@@ -148,8 +148,25 @@ dynamic dartValue(jsValue) {
     for (var key in keys) {
       dartMap[key] = dartValue(jsValue[key]);
     }
-    jsValue['__dartClass__'] = dartMap;
+    _addDartInstance(jsValue, dartMap);
     return dartMap;
   }
   return jsValue;
 }
+
+/// Adds a reference to the original dart instance to a js proxy object.
+void _addDartInstance(JsObject jsObject, dartInstance) {
+  context['Object'].callMethod('defineProperty', [
+    jsObject,
+    '__dartClass__',
+    new JsObject.jsify({
+      'configurable': false,
+      'enumerable': false,
+      'value': dartInstance,
+      'writeable': false,
+    }),
+  ]);
+}
+
+/// Gets a reference to the original dart instance from a js proxy object.
+JsObject _getDartInstance(JsObject jsObject) => jsObject['__dartClass__'];

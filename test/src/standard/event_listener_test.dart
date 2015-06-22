@@ -1,12 +1,12 @@
 // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-library polymer.test.src.mini.template_stamping_test;
+library polymer.test.src.standard.event_listener_test;
 
 import 'dart:html';
 import 'package:unittest/unittest.dart';
 import 'package:unittest/html_config.dart';
-import 'package:polymer/polymer_mini.dart';
+import 'package:polymer/polymer.dart';
 import 'package:smoke/mirrors.dart' as smoke;
 
 TestElement element;
@@ -20,13 +20,33 @@ main() async {
     element = document.createElement('test-element');
   });
 
-  test('templates can be stamped!', () {
-    expect(element.children.length, 1);
-    expect(element.children.first.text, 'test!');
+  test('listen to events with @Listen', () {
+    expect(element.sawCustomEvent, isFalse);
+    element.fire('custom-event');
+    expect(element.sawCustomEvent, isTrue);
+  });
+
+  test('template based event listeners', () {
+    expect(element.sawButtonEvent, isFalse);
+    element.$['myButton'].click();
+    expect(element.sawButtonEvent, isTrue);
   });
 }
 
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
+  bool sawCustomEvent = false;
+  bool sawButtonEvent = false;
+
   TestElement.created() : super.created();
+
+  @Listen('custom-event')
+  void onCustomEvent() {
+    sawCustomEvent = true;
+  }
+
+  @eventHandler
+  void buttonClicked() {
+    sawButtonEvent = true;
+  }
 }

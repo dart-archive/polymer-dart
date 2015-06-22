@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="application/dart" src="attribute_binding_test.dart"></script>
+  <script src="packages/browser/dart.js"></script>
+</head>
+<body>
+  <dom-module id="test-element">
+    <template>
+      <a id="myLink" href$="{{url}}">click here</a>
+    </template>
+  </dom-module>
+</body>
+</html>
