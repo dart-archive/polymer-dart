@@ -1,18 +1,17 @@
 // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
+@TestOn('browser')
 library polymer.test.src.common.polymer_register_test;
 
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:smoke/mirrors.dart' as smoke;
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'package:test/test.dart';
 
 main() async {
   smoke.useMirrors();
-  useHtmlConfiguration();
   await initPolymer();
 
   test('regular elements', () {

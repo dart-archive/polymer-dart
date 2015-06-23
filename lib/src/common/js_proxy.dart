@@ -169,4 +169,4 @@ void _addDartInstance(JsObject jsObject, dartInstance) {
 }
 
 /// Gets a reference to the original dart instance from a js proxy object.
-JsObject _getDartInstance(JsObject jsObject) => jsObject['__dartClass__'];
+dynamic _getDartInstance(JsObject jsObject) => jsObject['__dartClass__'];

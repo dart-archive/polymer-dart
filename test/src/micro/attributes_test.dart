@@ -1,11 +1,11 @@
 // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
+@TestOn('browser')
 library polymer.test.src.micro.attributes_test;
 
 import 'dart:html';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'package:test/test.dart';
 // TODO(jakemac): `mixin` is only defined for polymer standard, but is used
 // by attribute features in micro? May just need to update polymer js.
 import 'package:polymer/polymer.dart';
@@ -14,7 +14,6 @@ import 'package:smoke/mirrors.dart' as smoke;
 AttributesTest element;
 
 main() async {
-  useHtmlConfiguration();
   smoke.useMirrors();
   await initPolymer();
 
