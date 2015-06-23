@@ -156,16 +156,16 @@ dynamic dartValue(jsValue) {
 
 /// Adds a reference to the original dart instance to a js proxy object.
 void _addDartInstance(JsObject jsObject, dartInstance) {
-  context['Object'].callMethod('defineProperty', [
-    jsObject,
-    '__dartClass__',
-    new JsObject.jsify({
-      'configurable': false,
-      'enumerable': false,
-      'value': dartInstance,
-      'writeable': false,
-    }),
-  ]);
+  var details = new JsObject.jsify({
+    'configurable': false,
+    'enumerable': false,
+    'writeable': false,
+  });
+  // Don't want to jsify the instance, if its a map that will make turn it into
+  // a JsObject.
+  details['value'] = dartInstance;
+  context['Object'].callMethod(
+      'defineProperty', [jsObject, '__dartClass__', details]);
 }
 
 /// Gets a reference to the original dart instance from a js proxy object.
