@@ -95,27 +95,16 @@ main() async {
 
     test('object', () {
       var model = new MyModel();
-      var object = new JsObject.jsify({
-        '1': 1,
-        'model': jsValue(model),
-        'a': 'a',
-      });
+      var object =
+          new JsObject.jsify({'1': 1, 'model': jsValue(model), 'a': 'a',});
       var dartMap = dartValue(object) as Map;
-      expect(dartMap, {
-        '1': 1,
-        'model': model,
-        'a': 'a',
-      });
+      expect(dartMap, {'1': 1, 'model': model, 'a': 'a',});
       expect(object['__dartClass__'], dartMap);
     });
 
     test('proxy object', () {
       var model = new MyModel();
-      var map = {
-        '1': 1,
-        'model': model,
-        'a': 'a',
-      };
+      var map = {'1': 1, 'model': model, 'a': 'a',};
       var object = jsValue(map) as JsObject;
       expect(dartValue(object), map);
     });
@@ -124,6 +113,12 @@ main() async {
       var constructor = new JsFunction.withThis((_) {});
       var object = new JsObject(constructor);
       expect(dartValue(object), object);
+    });
+
+    test('Date objects', () {
+      var jsDate = new JsObject(context['Date'], [1000]);
+      var dartDate = dartValue(jsDate) as DateTime;
+      expect(dartDate.millisecondsSinceEpoch, 1000);
     });
   });
 
@@ -148,11 +143,7 @@ main() async {
 
     test('Maps', () {
       var model = new MyModel();
-      var map = {
-        '1': 1,
-        'model': model,
-        'a': 'a',
-      };
+      var map = {'1': 1, 'model': model, 'a': 'a',};
       var jsObject = jsValue(map) as JsObject;
       expectEqual(jsObject, {
         '1': 1,
@@ -165,6 +156,12 @@ main() async {
     test('Arbitrary class', () {
       var model = new EmptyModel();
       expect(jsValue(model), model);
+    });
+
+    test('DateTime objects', () {
+      var dartDate = new DateTime.fromMillisecondsSinceEpoch(1000);
+      var jsDate = jsValue(dartDate);
+      expect(jsDate.callMethod('getTime'), 1000);
     });
   });
 }
