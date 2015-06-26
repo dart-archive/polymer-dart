@@ -46,7 +46,8 @@ JsObject _buildJsProxy(JsProxy instance) {
 }
 
 /// Query for all public fields/methods.
-final _queryOptions = new smoke.QueryOptions(includeMethods: true, includeUpTo: HtmlElement);
+final _queryOptions =
+    new smoke.QueryOptions(includeMethods: true, includeUpTo: HtmlElement);
 final JsObject _polymerDart = context['Polymer']['Dart'];
 
 /// Given a dart type, this creates a javascript constructor and prototype
@@ -60,42 +61,34 @@ JsFunction _buildJsConstructorForType(Type dartType) {
     var name = smoke.symbolToName(declaration.name);
     if (declaration.isField || declaration.isProperty) {
       var descriptor = {
-        'get': _polymerDart.callMethod(
-            'propertyAccessorFactory', [
-              name,
-              (dartInstance) {
-                return jsValue(smoke.read(dartInstance, declaration.name));
-              }
-            ]),
+        'get': _polymerDart.callMethod('propertyAccessorFactory', [
+          name,
+          (dartInstance) {
+            return jsValue(smoke.read(dartInstance, declaration.name));
+          }
+        ]),
         'configurable': false,
       };
       if (!declaration.isFinal) {
-        descriptor['set'] = _polymerDart.callMethod(
-          'propertySetterFactory', [
-            name,
-            (dartInstance, value) {
-              smoke.write(dartInstance, declaration.name, dartValue(value));
-            }
-          ]
-        );
+        descriptor['set'] = _polymerDart.callMethod('propertySetterFactory', [
+          name,
+          (dartInstance, value) {
+            smoke.write(dartInstance, declaration.name, dartValue(value));
+          }
+        ]);
       }
       // Add a proxy getter/setter for this property.
-      context['Object'].callMethod('defineProperty', [
-        prototype,
-        name,
-        new JsObject.jsify(descriptor),
-      ]);
+      context['Object'].callMethod(
+          'defineProperty', [prototype, name, new JsObject.jsify(descriptor),]);
     } else if (declaration.isMethod) {
       // TODO(jakemac): consolidate this code with the code in properties.dart.
-      prototype[name] = _polymerDart.callMethod(
-          'invokeDartFactory',
-          [
-            (dartInstance, arguments) {
-              var newArgs = arguments.map((arg) => dartValue(arg)).toList();
-              return smoke.invoke(
-                  dartInstance, declaration.name, newArgs, adjust: true);
-            }
-          ]);
+      prototype[name] = _polymerDart.callMethod('invokeDartFactory', [
+        (dartInstance, arguments) {
+          var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+          return smoke.invoke(dartInstance, declaration.name, newArgs,
+              adjust: true);
+        }
+      ]);
     }
   }
 
@@ -105,7 +98,6 @@ JsFunction _buildJsConstructorForType(Type dartType) {
 
 /// Converts a dart value to a js value, using proxies when possible.
 /// TODO(jakemac): Use expando to cache js arrays that mirror dart lists?
-/// TODO(jakemac): DateTime objects.
 dynamic jsValue(dartValue) {
   if (dartValue is JsObject) {
     return dartValue;
@@ -115,20 +107,20 @@ dynamic jsValue(dartValue) {
     var newList = new JsArray.from(dartValue.map((item) => jsValue(item)));
     _addDartInstance(newList, dartValue);
     return newList;
-  } else if(dartValue is Map) {
+  } else if (dartValue is Map) {
     var newMap = new JsObject(context['Object']);
     dartValue.forEach((k, v) {
       newMap[k] = jsValue(v);
     });
     _addDartInstance(newMap, dartValue);
     return newMap;
+  } else if (dartValue is DateTime) {
+    return new JsObject(context['Date'], [dartValue.millisecondsSinceEpoch]);
   }
   return dartValue;
 }
 
-
 /// Converts a js value to a dart value, unwrapping proxies as they are found.
-/// TODO(jakemac): Date objects.
 dynamic dartValue(jsValue) {
   if (jsValue is JsArray) {
     var dartList = _getDartInstance(jsValue);
@@ -140,27 +132,27 @@ dynamic dartValue(jsValue) {
     var dartClass = _getDartInstance(jsValue);
     if (dartClass != null) return dartClass;
 
-    // Don't try and deal with non-standard js objects.
-    if (jsValue['constructor'] != context['Object']) return jsValue;
-
-    var dartMap = {};
-    var keys = context['Object'].callMethod('keys', [jsValue]);
-    for (var key in keys) {
-      dartMap[key] = dartValue(jsValue[key]);
+    var constructor = jsValue['constructor'];
+    if (constructor == context['Date']) {
+      return new DateTime.fromMillisecondsSinceEpoch(
+          jsValue.callMethod('getTime'));
+    } else if (constructor == context['Object']) {
+      var dartMap = {};
+      var keys = context['Object'].callMethod('keys', [jsValue]);
+      for (var key in keys) {
+        dartMap[key] = dartValue(jsValue[key]);
+      }
+      _addDartInstance(jsValue, dartMap);
+      return dartMap;
     }
-    _addDartInstance(jsValue, dartMap);
-    return dartMap;
   }
   return jsValue;
 }
 
 /// Adds a reference to the original dart instance to a js proxy object.
 void _addDartInstance(JsObject jsObject, dartInstance) {
-  var details = new JsObject.jsify({
-    'configurable': false,
-    'enumerable': false,
-    'writeable': false,
-  });
+  var details = new JsObject.jsify(
+      {'configurable': false, 'enumerable': false, 'writeable': false,});
   // Don't want to jsify the instance, if its a map that will make turn it into
   // a JsObject.
   details['value'] = dartInstance;
