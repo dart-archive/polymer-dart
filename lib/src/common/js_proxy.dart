@@ -47,7 +47,8 @@ JsObject _buildJsProxy(JsProxy instance) {
 
 /// Query for all public fields/methods.
 final _queryOptions =
-    new smoke.QueryOptions(includeMethods: true, includeUpTo: HtmlElement);
+    new smoke.QueryOptions(includeMethods: true, includeUpTo: HtmlElement,
+        excludeOverriden: true);
 final JsObject _polymerDart = context['Polymer']['Dart'];
 
 /// Given a dart type, this creates a javascript constructor and prototype
