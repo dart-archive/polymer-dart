@@ -203,7 +203,11 @@ JsObject _jsType(Type type) {
       return context['String'];
     case 'Map':
     case 'JsObject':
-    default:
       return context['Object'];
+    default:
+      var test = new JsObject(context['Object']);
+      test['__dartClass__'] = type;
+
+      return test;
   }
 }
