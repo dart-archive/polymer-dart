@@ -107,7 +107,7 @@ final _lifecycleMethodOptions = new smoke.QueryOptions(
     includeMethods: true,
     includeProperties: false,
     includeFields: false,
-    matches: (name) => [#ready, #attached, #detached, #attributeChanged].contains(name));
+    matches: (name) => [#ready, #attached, #detached, #attributeChanged, #serialize, #deserialize].contains(name));
 
 /// Set up a proxy for the lifecyle methods, if they exists on the dart class.
 void _setupLifecycleMethods(Type type, Map descriptor) {
@@ -117,6 +117,7 @@ void _setupLifecycleMethods(Type type, Map descriptor) {
         'invokeDartFactory',
         [
           (dartInstance, arguments) {
+            print('Invoking ${smoke.symbolToName(result.name)}');
             var newArgs = arguments.map((arg) => dartValue(arg)).toList();
             return smoke.invoke(
                 dartInstance, result.name, newArgs, adjust: true);

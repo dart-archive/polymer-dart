@@ -145,9 +145,30 @@ dynamic dartValue(jsValue) {
       }
       _addDartInstance(jsValue, dartMap);
       return dartMap;
+    } else if (jsValue is JsFunction) {
+      return _dartType(jsValue);
     }
   }
   return jsValue;
+}
+
+Type _dartType(JsFunction jsValue) {
+  if (jsValue == context['String']) {
+    return String;
+  } else if (jsValue == context['Number']) {
+    return num;
+  } else if (jsValue == context['Boolean']) {
+    return bool;
+  } else if (jsValue == context['Array']) {
+    return List;
+  } else if (jsValue == context['Date']) {
+    return DateTime;
+  } else if (jsValue == context['Object']) {
+    var dart = jsValue['__dartClass__'];
+    print(dart);
+    return Object;
+  }
+  return null;
 }
 
 /// Adds a reference to the original dart instance to a js proxy object.

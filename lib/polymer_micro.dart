@@ -11,6 +11,7 @@ import 'package:web_components/web_components.dart' show HtmlImport;
 import 'src/common/polymer_mixin.dart';
 export 'src/common/polymer_mixin.dart';
 export 'src/common/polymer_register.dart';
+export 'src/common/polymer_serialize.dart';
 import 'src/common/js_proxy.dart';
 export 'src/common/js_proxy.dart';
 export 'src/common/property.dart';
