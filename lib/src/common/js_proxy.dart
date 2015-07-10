@@ -167,7 +167,7 @@ Type _dartType(JsFunction jsValue) {
   } else if (jsValue == context['Date']) {
     return DateTime;
   } else if (jsValue == context['Object']) {
-    return Object;
+    return Map;
   }
   // Unknown type
   return null;

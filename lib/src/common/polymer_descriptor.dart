@@ -157,13 +157,13 @@ final _emptyPropertyInfo = new JsObject.jsify({'defined': false});
 
 /// Compute or return from cache information about `property` for `t`.
 Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
-  var jsType = _jsType(declaration.type);
-  if (jsType == null) return _emptyPropertyInfo;
+  var jsTyped = jsType(declaration.type);
+  if (jsTyped == null) return _emptyPropertyInfo;
 
   Property annotation =
       declaration.annotations.firstWhere((a) => a is Property);
   var property = {
-    'type': jsType,
+    'type': jsTyped,
     'defined': true,
     'notify': annotation.notify,
     'observer': annotation.observer,
@@ -179,11 +179,9 @@ Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
   return property;
 }
 
-dynamic jsType(Type type) => _jsType(type);
-
 /// Given a [Type] return the [JsObject] representation of that type.
 /// TODO(jakemac): Make this more robust, specifically around Lists.
-dynamic _jsType(Type type) {
+dynamic jsType(Type type) {
   var typeString = '$type';
   if (typeString.startsWith('JsArray<')) typeString = 'List';
   if (typeString.startsWith('List<')) typeString = 'List';
@@ -206,6 +204,8 @@ dynamic _jsType(Type type) {
     case 'JsObject':
       return context['Object'];
     default:
+      // Store the type in the same manner as done in _addDartInstance so the
+      // type is retrieved in dartValue through _getDartInstance.
       var value = new JsObject(context['Object']);
       value['__dartClass__'] = type;
 

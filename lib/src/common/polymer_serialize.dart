@@ -3,40 +3,28 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.src.common.polymer_serialize;
 
-import 'dart:convert';
 import 'dart:js';
+import 'js_proxy.dart';
+import 'polymer_mixin.dart';
+import 'polymer_descriptor.dart';
 
 /// Mixin for Polymer serialization methods.
-abstract class PolymerSerialize  {
-  String serialize(Object value) {
-    if ((value is Map) || (value is List)) {
-      return JSON.encode(value);
-    } else if (value is bool) {
-      return value ? '' : null;
-    }
+///
+/// This should only be used if the [serialize] and [deserialize] methods need
+/// to be overriden to support additional Dart types. Any types not explicitly
+/// handled by the overriden method should defer to the original method by
+/// calling the base class's implementation.
+abstract class PolymerSerialize implements PolymerMixin {
+  JsObject get jsElement;
 
-    return value.toString();
+  /// Serializes the [value] into a [String].
+  String serialize(Object value) {
+    return jsElement.callMethod('originalSerialize', [jsValue(value)]).toString();
   }
 
-  Object deserialize(String value, dynamic type) {
-    var ret;
-
-    if (type == String) {
-      ret = value;
-    } else if (type == num) {
-      try {
-        ret = int.parse(value);
-      } catch (e) {
-        ret = double.parse(value);
-      }
-    } else if (type == DateTime) {
-      var jsDate = new JsObject(context['Date'], [value]);
-      ret = new DateTime.fromMillisecondsSinceEpoch(jsDate.callMethod('getTime'));
-    } else if (type == bool) {
-      ret = null != value && false != value;
-    } else  {
-      ret = JSON.decode(value);
-    }
-    return ret;
+  /// Deserializes the [value] into an object of the given [type].
+  Object deserialize(String value, Type type) {
+    return dartValue(jsElement.callMethod('originalDeserialize',
+        [jsValue(value), jsType(type)]));
   }
 }

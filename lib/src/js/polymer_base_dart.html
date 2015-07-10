@@ -7,6 +7,11 @@
       this.originalPolymerCreatedCallback();
     };
 
+    // Store serialize/deserialize to retain the original behavior when the
+    // methods are overriden by PolymerSerialize.
+    Polymer.Base.originalSerialize = Polymer.Base.serialize;
+    Polymer.Base.originalDeserialize = Polymer.Base.deserialize;
+
     Polymer.Dart = {};
     // Used to get an empty constructor function which doesn't call into dart.
     Polymer.Dart.functionFactory = function() { return function() {}; };
