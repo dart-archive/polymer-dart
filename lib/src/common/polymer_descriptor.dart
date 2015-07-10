@@ -181,7 +181,7 @@ Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
 
 /// Given a [Type] return the [JsObject] representation of that type.
 /// TODO(jakemac): Make this more robust, specifically around Lists.
-dynamic jsType(Type type) {
+JsObject jsType(Type type) {
   var typeString = '$type';
   if (typeString.startsWith('JsArray<')) typeString = 'List';
   if (typeString.startsWith('List<')) typeString = 'List';
