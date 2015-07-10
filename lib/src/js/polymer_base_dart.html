@@ -7,42 +7,6 @@
       this.originalPolymerCreatedCallback();
     };
 
-    var originalAttachedCallback = Polymer.Base.attachedCallback;
-    Polymer.Base.attachedCallback = function() {
-      originalAttachedCallback.call(this);
-      if (this.__dartAttached__) this.__dartAttached__();
-    };
-
-    var originalDetachedCallback = Polymer.Base.detachedCallback;
-    Polymer.Base.detachedCallback = function() {
-      if (originalDetachedCallback) originalDetachedCallback.call(this);
-      if (this.__dartDetached__) this.__dartDetached__();
-    };
-
-    var originalDeserialize = Polymer.Base.deserialize;
-    Polymer.Base.deserialize = function(value, type) {
-      console.log('deserialize!');
-      if (this.__dartDeserialize__) {
-        var result = this.__dartDeserialize__(value, type);
-        console.log('HAZ VALUE');
-        console.dir(result);
-        if (result) return result;
-      }
-      if (originalDeserialize) return originalDeserialize.call(this, value, type);
-    };
-
-    var originalSerialize = Polymer.Base.serialize;
-    Polymer.Base.serialize = function(value) {
-      console.log('serialize!');
-      if (this.__dartSerialize__) {
-        var result = this.__dartSerialize__(value);
-        console.log('HAZ VALUE');
-        console.dir(result);
-        if (result) return result;
-      }
-      if (originalSerialize) return originalSerialize.call(this, value);
-    };
-
     Polymer.Dart = {};
     // Used to get an empty constructor function which doesn't call into dart.
     Polymer.Dart.functionFactory = function() { return function() {}; };

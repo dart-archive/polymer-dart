@@ -117,7 +117,6 @@ void _setupLifecycleMethods(Type type, Map descriptor) {
         'invokeDartFactory',
         [
           (dartInstance, arguments) {
-            print('Invoking ${smoke.symbolToName(result.name)}');
             var newArgs = arguments.map((arg) => dartValue(arg)).toList();
             return smoke.invoke(
                 dartInstance, result.name, newArgs, adjust: true);
@@ -180,9 +179,11 @@ Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
   return property;
 }
 
+dynamic jsType(Type type) => _jsType(type);
+
 /// Given a [Type] return the [JsObject] representation of that type.
 /// TODO(jakemac): Make this more robust, specifically around Lists.
-JsObject _jsType(Type type) {
+dynamic _jsType(Type type) {
   var typeString = '$type';
   if (typeString.startsWith('JsArray<')) typeString = 'List';
   if (typeString.startsWith('List<')) typeString = 'List';
@@ -205,9 +206,9 @@ JsObject _jsType(Type type) {
     case 'JsObject':
       return context['Object'];
     default:
-      var test = new JsObject(context['Object']);
-      test['__dartClass__'] = type;
+      var value = new JsObject(context['Object']);
+      value['__dartClass__'] = type;
 
-      return test;
+      return value;
   }
 }

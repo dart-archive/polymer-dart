@@ -129,6 +129,11 @@ dynamic dartValue(jsValue) {
     dartList = jsValue.map((item) => dartValue(item)).toList();
     _addDartInstance(jsValue, dartList);
     return dartList;
+  } else if (jsValue is JsFunction) {
+    var type = _dartType(jsValue);
+    if (type != null) {
+      return type;
+    }
   } else if (jsValue is JsObject) {
     var dartClass = _getDartInstance(jsValue);
     if (dartClass != null) return dartClass;
@@ -145,8 +150,6 @@ dynamic dartValue(jsValue) {
       }
       _addDartInstance(jsValue, dartMap);
       return dartMap;
-    } else if (jsValue is JsFunction) {
-      return _dartType(jsValue);
     }
   }
   return jsValue;
@@ -164,10 +167,9 @@ Type _dartType(JsFunction jsValue) {
   } else if (jsValue == context['Date']) {
     return DateTime;
   } else if (jsValue == context['Object']) {
-    var dart = jsValue['__dartClass__'];
-    print(dart);
     return Object;
   }
+  // Unknown type
   return null;
 }
 

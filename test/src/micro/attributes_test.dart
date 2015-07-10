@@ -14,6 +14,14 @@ import 'package:smoke/mirrors.dart' as smoke;
 const _attributesName = 'attributes-test';
 const _serializeAttributesName = 'serialize-attributes-test';
 
+main() async {
+  smoke.useMirrors();
+  await initPolymer();
+
+  _tests(_attributesName);
+  _tests(_serializeAttributesName);
+}
+
 _tests(String elementName) {
   group(elementName, () {
     var element;
@@ -43,21 +51,13 @@ _tests(String elementName) {
 
     if (elementName == _serializeAttributesName) {
       test('serialized attributes can be marshalled into properties', () {
-        expect(true, true);
+        expect(element.myFoobar, Foobar.bar);
       });
       test('serialized hostAttributes are applied to the host', () {
-        expect(true, true);
+        expect(element.attributes['host-foobar'], 'bar');
       });
     }
   });
-}
-
-main() async {
-  smoke.useMirrors();
-  await initPolymer();
-
-  _tests(_attributesName);
-  _tests(_serializeAttributesName);
 }
 
 @PolymerRegister(_attributesName, hostAttributes: const {
@@ -97,31 +97,13 @@ enum Foobar { foo, bar }
   'host-string': 'string',
   'host-num': 2,
   'host-bool': true,
-  //'host-map': const {'hello': 'world'},
-  //'host-list': const ['hello', 'world'],
+  'host-map': const {'hello': 'world'},
+  'host-list': const ['hello', 'world'],
   // TODO(jakemac): Do we need to support this?
 //  'host-date-time': new DateTime(1987, 07, 18),
   'host-foobar': Foobar.bar
 })
-class SerializedAttributesTest extends PolymerElement with PolymerSerialize {
-  @property
-  String myString;
-
-  @property
-  num myNum;
-
-  @property
-  bool myBool;
-
-  @property
-  Map myMap;
-
-  @property
-  List myList;
-
-  @property
-  DateTime myDateTime;
-
+class SerializedAttributesTest extends AttributesTest with PolymerSerialize {
   @property
   Foobar myFoobar = Foobar.bar;
 
@@ -141,4 +123,3 @@ class SerializedAttributesTest extends PolymerElement with PolymerSerialize {
     }
   }
 }
-
