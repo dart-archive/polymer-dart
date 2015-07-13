@@ -181,7 +181,7 @@ Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
 
 /// Given a [Type] return the [JsObject] representation of that type.
 /// TODO(jakemac): Make this more robust, specifically around Lists.
-JsObject jsType(Type type) {
+dynamic jsType(Type type) {
   var typeString = '$type';
   if (typeString.startsWith('JsArray<')) typeString = 'List';
   if (typeString.startsWith('List<')) typeString = 'List';
@@ -204,11 +204,7 @@ JsObject jsType(Type type) {
     case 'JsObject':
       return context['Object'];
     default:
-      // Store the type in the same manner as done in _addDartInstance so the
-      // type is retrieved in dartValue through _getDartInstance.
-      var value = new JsObject(context['Object']);
-      value['__dartClass__'] = type;
-
-      return value;
+      // Just return the Dart type
+      return type;
   }
 }
