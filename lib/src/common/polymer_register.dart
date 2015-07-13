@@ -4,7 +4,6 @@
 library polymer.src.common.polymer_register;
 
 import 'dart:js';
-import 'dart:html';
 import 'package:web_components/web_components.dart' show CustomElementProxy;
 import 'polymer_descriptor.dart';
 

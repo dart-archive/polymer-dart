@@ -107,7 +107,7 @@ final _lifecycleMethodOptions = new smoke.QueryOptions(
     includeMethods: true,
     includeProperties: false,
     includeFields: false,
-    matches: (name) => [#ready, #attached, #detached, #attributeChanged].contains(name));
+    matches: (name) => [#ready, #attached, #detached, #attributeChanged, #serialize, #deserialize].contains(name));
 
 /// Set up a proxy for the lifecyle methods, if they exists on the dart class.
 void _setupLifecycleMethods(Type type, Map descriptor) {
@@ -157,13 +157,13 @@ final _emptyPropertyInfo = new JsObject.jsify({'defined': false});
 
 /// Compute or return from cache information about `property` for `t`.
 Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
-  var jsType = _jsType(declaration.type);
-  if (jsType == null) return _emptyPropertyInfo;
+  var jsTyped = jsType(declaration.type);
+  if (jsTyped == null) return _emptyPropertyInfo;
 
   Property annotation =
       declaration.annotations.firstWhere((a) => a is Property);
   var property = {
-    'type': jsType,
+    'type': jsTyped,
     'defined': true,
     'notify': annotation.notify,
     'observer': annotation.observer,
@@ -181,7 +181,7 @@ Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
 
 /// Given a [Type] return the [JsObject] representation of that type.
 /// TODO(jakemac): Make this more robust, specifically around Lists.
-JsObject _jsType(Type type) {
+dynamic jsType(Type type) {
   var typeString = '$type';
   if (typeString.startsWith('JsArray<')) typeString = 'List';
   if (typeString.startsWith('List<')) typeString = 'List';
@@ -202,7 +202,9 @@ JsObject _jsType(Type type) {
       return context['String'];
     case 'Map':
     case 'JsObject':
-    default:
       return context['Object'];
+    default:
+      // Just return the Dart type
+      return type;
   }
 }

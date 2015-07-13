@@ -7,17 +7,10 @@
       this.originalPolymerCreatedCallback();
     };
 
-    var originalAttachedCallback = Polymer.Base.attachedCallback;
-    Polymer.Base.attachedCallback = function() {
-      originalAttachedCallback.call(this);
-      if (this.__dartAttached__) this.__dartAttached__();
-    };
-
-    var originalDetachedCallback = Polymer.Base.detachedCallback;
-    Polymer.Base.detachedCallback = function() {
-      if (originalDetachedCallback) originalDetachedCallback.call(this);
-      if (this.__dartDetached__) this.__dartDetached__();
-    };
+    // Store serialize/deserialize to retain the original behavior when the
+    // methods are overriden by PolymerSerialize.
+    Polymer.Base.originalSerialize = Polymer.Base.serialize;
+    Polymer.Base.originalDeserialize = Polymer.Base.deserialize;
 
     Polymer.Dart = {};
     // Used to get an empty constructor function which doesn't call into dart.

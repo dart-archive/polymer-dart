@@ -11,37 +11,56 @@ import 'package:test/test.dart';
 import 'package:polymer/polymer.dart';
 import 'package:smoke/mirrors.dart' as smoke;
 
-AttributesTest element;
+const _attributesName = 'attributes-test';
+const _serializeAttributesName = 'serialize-attributes-test';
 
 main() async {
   smoke.useMirrors();
   await initPolymer();
 
-  setUp(() {
-    element = querySelector('attributes-test');
-  });
+  _tests(_attributesName);
+  _tests(_serializeAttributesName);
+}
 
-  test('attributes can be marshalled into properties', () {
-    expect(element.myString, 'string');
-    expect(element.myNum, 2);
-    expect(element.myBool, true);
-    expect(element.myMap, {'hello': 'world'});
-    expect(element.myList, ['hello', 'world']);
-    expect(element.myDateTime, new DateTime(1987, 07, 18));
-  });
+_tests(String elementName) {
+  group(elementName, () {
+    var element;
 
-  test('hostAttributes are applied to the host', () {
-    expect(element.attributes['host-string'], 'string');
-    expect(element.attributes['host-num'], '2');
-    expect(element.attributes['host-bool'], '');
-    expect(element.attributes['host-map'], '{"hello":"world"}');
-    expect(element.attributes['host-list'], '["hello","world"]');
-//    expect(DateTime.parse(element.attributes['host-date-time']),
-//        new DateTime(1987, 07, 18));
+    setUp(() {
+      element = querySelector(elementName);
+    });
+
+    test('attributes can be marshalled into properties', () {
+      expect(element.myString, 'string');
+      expect(element.myNum, 2);
+      expect(element.myBool, true);
+      expect(element.myMap, {'hello': 'world'});
+      expect(element.myList, ['hello', 'world']);
+      expect(element.myDateTime, new DateTime(1987, 07, 18));
+    });
+
+    test('hostAttributes are applied to the host', () {
+      expect(element.attributes['host-string'], 'string');
+      expect(element.attributes['host-num'], '2');
+      expect(element.attributes['host-bool'], '');
+      expect(element.attributes['host-map'], '{"hello":"world"}');
+      expect(element.attributes['host-list'], '["hello","world"]');
+  //    expect(DateTime.parse(element.attributes['host-date-time']),
+  //        new DateTime(1987, 07, 18));
+    });
+
+    if (elementName == _serializeAttributesName) {
+      test('serialized attributes can be marshalled into properties', () {
+        expect(element.myFoobar, Foobar.bar);
+      });
+      test('serialized hostAttributes are applied to the host', () {
+        expect(element.attributes['host-foobar'], 'bar');
+      });
+    }
   });
 }
 
-@PolymerRegister('attributes-test', hostAttributes: const {
+@PolymerRegister(_attributesName, hostAttributes: const {
   'host-string': 'string',
   'host-num': 2,
   'host-bool': true,
@@ -57,7 +76,6 @@ class AttributesTest extends PolymerElement {
   @property
   num myNum;
 
-
   @property
   bool myBool;
 
@@ -71,4 +89,37 @@ class AttributesTest extends PolymerElement {
   DateTime myDateTime;
 
   AttributesTest.created() : super.created();
+}
+
+enum Foobar { foo, bar }
+
+@PolymerRegister(_serializeAttributesName, hostAttributes: const {
+  'host-string': 'string',
+  'host-num': 2,
+  'host-bool': true,
+  'host-map': const {'hello': 'world'},
+  'host-list': const ['hello', 'world'],
+  // TODO(jakemac): Do we need to support this?
+//  'host-date-time': new DateTime(1987, 07, 18),
+  'host-foobar': Foobar.bar
+})
+class SerializedAttributesTest extends AttributesTest with PolymerSerialize {
+  @property
+  Foobar myFoobar = Foobar.bar;
+
+  SerializedAttributesTest.created() : super.created();
+
+  String serialize(Object value) {
+    return (value is Foobar)
+        ? value.toString().split('.')[1]
+        : super.serialize(value);
+  }
+
+  Object deserialize(String value, dynamic type) {
+    if (type == Foobar) {
+      return value == 'bar' ? Foobar.bar : Foobar.foo;
+    } else {
+      return super.deserialize(value, type);
+    }
+  }
 }

@@ -129,6 +129,11 @@ dynamic dartValue(jsValue) {
     dartList = jsValue.map((item) => dartValue(item)).toList();
     _addDartInstance(jsValue, dartList);
     return dartList;
+  } else if (jsValue is JsFunction) {
+    var type = _dartType(jsValue);
+    if (type != null) {
+      return type;
+    }
   } else if (jsValue is JsObject) {
     var dartClass = _getDartInstance(jsValue);
     if (dartClass != null) return dartClass;
@@ -148,6 +153,24 @@ dynamic dartValue(jsValue) {
     }
   }
   return jsValue;
+}
+
+Type _dartType(JsFunction jsValue) {
+  if (jsValue == context['String']) {
+    return String;
+  } else if (jsValue == context['Number']) {
+    return num;
+  } else if (jsValue == context['Boolean']) {
+    return bool;
+  } else if (jsValue == context['Array']) {
+    return List;
+  } else if (jsValue == context['Date']) {
+    return DateTime;
+  } else if (jsValue == context['Object']) {
+    return Map;
+  }
+  // Unknown type
+  return null;
 }
 
 /// Adds a reference to the original dart instance to a js proxy object.
