@@ -4,7 +4,6 @@
 library polymer.lib.src.common.js_proxy;
 
 import 'dart:js';
-import 'dart:html';
 import 'package:polymer_interop/polymer_interop.dart';
 export 'package:polymer_interop/polymer_interop.dart' show dartValue, jsValue;
 import 'package:reflectable/reflectable.dart';
