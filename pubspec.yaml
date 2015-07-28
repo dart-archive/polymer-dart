@@ -15,10 +15,15 @@ dependencies:
   smoke: '>=0.3.4 <0.4.0'
   test: '^0.12.3'
   web_components: '>=0.11.3 <0.13.0'
+  reflectable:
+    path: ../reflectable/reflectable
 transformers:
 - web_components
 - test/pub_serve:
     $include: test/**_test{.*,}.dart
+- reflectable:
+    entry_points:
+      - test/src/common/js_proxy_test.dart
 
 dependency_overrides:
   polymer_interop:

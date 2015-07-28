@@ -11,6 +11,7 @@ import 'package:test/test.dart';
 
 class EmptyModel {}
 
+@jsProxyReflectable
 class MyModel extends Object with JsProxy {
   int value = 0;
   int get readOnlyVal => 1;
@@ -19,6 +20,7 @@ class MyModel extends Object with JsProxy {
   int incrementBy([int amount = 1]) => value += amount;
 }
 
+@jsProxyReflectable
 class CachedMyModel extends MyModel {
   CachedMyModel() {
     useCache = true;
