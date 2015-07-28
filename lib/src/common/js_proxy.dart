@@ -4,8 +4,7 @@
 library polymer.lib.src.common.js_proxy;
 
 import 'dart:js';
-import 'dart:html';
-import 'package:smoke/smoke.dart' as smoke;
+import 'package:reflectable/reflectable.dart';
 
 // Mixin this class to get js proxy support!
 abstract class JsProxy {
@@ -45,10 +44,11 @@ JsObject _buildJsProxy(JsProxy instance) {
   return proxy;
 }
 
-/// Query for all public fields/methods.
-final _queryOptions =
-    new smoke.QueryOptions(includeMethods: true, includeUpTo: HtmlElement,
-        excludeOverriden: true);
+class JsProxyReflectable extends Reflectable {
+  const JsProxyReflectable() : super(instanceInvokeCapability);
+}
+const jsProxyReflectable = const JsProxyReflectable();
+
 final JsObject _polymerDart = context['Polymer']['Dart'];
 
 /// Given a dart type, this creates a javascript constructor and prototype
@@ -57,15 +57,44 @@ JsFunction _buildJsConstructorForType(Type dartType) {
   var constructor = _polymerDart.callMethod('functionFactory');
   var prototype = new JsObject(context['Object']);
 
-  var declarations = smoke.query(dartType, _queryOptions);
-  for (var declaration in declarations) {
-    var name = smoke.symbolToName(declaration.name);
-    if (declaration.isField || declaration.isProperty) {
+  ClassMirror mirror;
+  try {
+    mirror = jsProxyReflectable.reflectType(dartType);
+  } catch (e) {
+    throw 'type $dartType is missing the @jsProxyReflectable annotation';
+  }
+  var declarations = new Map.from(mirror.declarations);
+  var superClass;
+  // Currently crashes post-transform if superclass isn't annotated with
+  // Reflectable.
+  try {
+    superClass = mirror.superclass;
+  } catch(e) {
+    superClass = null;
+  }
+
+  while (superClass != null && superClass.reflectedType != Object) {
+    superClass.declarations.forEach((k, v) {
+      if (declarations.containsKey(k)) return;
+      declarations[k] = v;
+    });
+    // Currently crashes post-transform if superclass isn't annotated with
+    // Reflectable.
+    try {
+      superClass = superClass.superclass;
+    } catch(e) {
+      superClass = null;
+    }
+  }
+
+  declarations.forEach((String name, DeclarationMirror declaration) {
+    if (declaration is VariableMirror) {
       var descriptor = {
         'get': _polymerDart.callMethod('propertyAccessorFactory', [
           name,
           (dartInstance) {
-            return jsValue(smoke.read(dartInstance, declaration.name));
+            var mirror = jsProxyReflectable.reflect(dartInstance);
+            return jsValue(mirror.invokeGetter(name));
           }
         ]),
         'configurable': false,
@@ -74,24 +103,25 @@ JsFunction _buildJsConstructorForType(Type dartType) {
         descriptor['set'] = _polymerDart.callMethod('propertySetterFactory', [
           name,
           (dartInstance, value) {
-            smoke.write(dartInstance, declaration.name, dartValue(value));
+            var mirror = jsProxyReflectable.reflect(dartInstance);
+            mirror.invokeSetter(name, dartValue(value));
           }
         ]);
       }
       // Add a proxy getter/setter for this property.
       context['Object'].callMethod(
           'defineProperty', [prototype, name, new JsObject.jsify(descriptor),]);
-    } else if (declaration.isMethod) {
+    } else if (declaration is MethodMirror) {
       // TODO(jakemac): consolidate this code with the code in properties.dart.
       prototype[name] = _polymerDart.callMethod('invokeDartFactory', [
         (dartInstance, arguments) {
           var newArgs = arguments.map((arg) => dartValue(arg)).toList();
-          return smoke.invoke(dartInstance, declaration.name, newArgs,
-              adjust: true);
+          var mirror = jsProxyReflectable.reflect(dartInstance);
+          return mirror.invoke(name, newArgs);
         }
       ]);
     }
-  }
+  });
 
   constructor['prototype'] = prototype;
   return constructor;
