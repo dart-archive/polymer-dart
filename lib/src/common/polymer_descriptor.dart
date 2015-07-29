@@ -38,7 +38,7 @@ final JsObject _polymerDart = context['Polymer']['Dart'];
 /// [Property].
 Map<String, DeclarationMirror> propertyDeclarationsFor(Type type) {
   return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
-    if (_isRegularMethod(declaration) || _isSetter(declaration)) return false;
+    if (isRegularMethod(declaration) || isSetter(declaration)) return false;
     return declaration.metadata.any((d) => d is Property);
   });
 }
@@ -57,7 +57,7 @@ Map buildPropertiesObject(Type type) {
 /// All @Observe annotated methods.
 Map<String, DeclarationMirror> _observeMethodsFor(Type type) {
   return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
-    if (!_isRegularMethod(declaration)) return false;
+    if (!isRegularMethod(declaration)) return false;
     return declaration.metadata.any((d) => d is Observe);
   });
 }
@@ -78,7 +78,7 @@ List _buildObserversObject(Type type) {
 /// All @Listen annotated methods.
 Map<String, DeclarationMirror> _listenMethodsFor(Type type) {
   return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
-    if (!_isRegularMethod(declaration)) return false;
+    if (!isRegularMethod(declaration)) return false;
     return declaration.metadata.any((d) => d is Listen);
   });
 }
@@ -102,7 +102,7 @@ const _lifecycleMethods = const ['ready', 'attached', 'detached',
 /// All lifecycle methods for a type.
 Map<String, DeclarationMirror> _lifecycleMethodsFor(Type type) {
   return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
-    if (!_isRegularMethod(declaration)) return false;
+    if (!isRegularMethod(declaration)) return false;
     return _lifecycleMethods.contains(name);
   });
 }
@@ -126,7 +126,7 @@ void _setupLifecycleMethods(Type type, Map descriptor) {
 /// All methods annotated with @eventHandler.
 Map<String, DeclarationMirror> _eventHandlerMethodsFor(Type type) {
   return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
-    if (!_isRegularMethod(declaration)) return false;
+    if (!isRegularMethod(declaration)) return false;
     return declaration.metadata.any((d) => d is EventHandler);
   });
 }
@@ -163,7 +163,7 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
   } else if (declaration is MethodMirror) {
     assert(declaration.isGetter);
     propertyType = declaration.returnType.reflectedType;
-    isFinal = !_hasSetter(type, declaration.simpleName);
+    isFinal = !hasSetter(declaration);
   }
   var jsTyped = jsType(propertyType);
   if (jsTyped == null) return _emptyPropertyInfo;
@@ -185,19 +185,6 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
     property['readOnly'] = true;
   }
   return property;
-}
-
-bool _isRegularMethod(DeclarationMirror declaration) {
-  return declaration is MethodMirror && declaration.isRegularMethod;
-}
-
-bool _isSetter(DeclarationMirror declaration) {
-  return declaration is MethodMirror && declaration.isSetter;
-}
-
-bool _hasSetter(Type type, String getterName) {
-  return jsProxyReflectable.reflectType(type).declarations
-      .containsKey('${getterName}=');
 }
 
 /// Given a [Type] return the [JsObject] representation of that type.

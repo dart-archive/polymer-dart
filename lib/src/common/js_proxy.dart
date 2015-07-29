@@ -61,7 +61,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
 
   var declarations = declarationsFor(dartType, jsProxyReflectable);
   declarations.forEach((String name, DeclarationMirror declaration) {
-    if (declaration is VariableMirror) {
+    if (isProperty(declaration)) {
       var descriptor = {
         'get': _polymerDart.callMethod('propertyAccessorFactory', [
           name,
@@ -72,7 +72,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
         ]),
         'configurable': false,
       };
-      if (!declaration.isFinal) {
+      if (!isFinal(declaration)) {
         descriptor['set'] = _polymerDart.callMethod('propertySetterFactory', [
           name,
           (dartInstance, value) {
@@ -84,7 +84,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
       // Add a proxy getter/setter for this property.
       context['Object'].callMethod(
           'defineProperty', [prototype, name, new JsObject.jsify(descriptor),]);
-    } else if (declaration is MethodMirror) {
+    } else if (isRegularMethod(declaration)) {
       // TODO(jakemac): consolidate this code with the code in properties.dart.
       prototype[name] = _polymerDart.callMethod('invokeDartFactory', [
         (dartInstance, arguments) {
