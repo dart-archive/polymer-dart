@@ -23,6 +23,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   TestElement.created() : super.created();
