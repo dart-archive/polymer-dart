@@ -34,3 +34,31 @@ ClassMirror _getSuper(ClassMirror clazz) {
     return null;
   }
 }
+
+bool isFinal(DeclarationMirror declaration) {
+  if (declaration is VariableMirror) return declaration.isFinal;
+  if (declaration is MethodMirror && declaration.isGetter) {
+    return !hasSetter(declaration);
+  }
+  return false;
+}
+
+bool isProperty(DeclarationMirror declaration) {
+  if (declaration is VariableMirror) return true;
+  if (declaration is MethodMirror) return !isRegularMethod(declaration);
+  return false;
+}
+bool isRegularMethod(DeclarationMirror declaration) {
+  return declaration is MethodMirror && declaration.isRegularMethod;
+}
+
+bool isSetter(DeclarationMirror declaration) {
+  return declaration is MethodMirror && declaration.isSetter;
+}
+
+bool hasSetter(MethodMirror getterDeclaration) {
+  assert(getterDeclaration.isGetter);
+  var owner = getterDeclaration.owner;
+  assert(owner is LibraryMirror || owner is ClassMirror);
+  return owner.declarations.containsKey('${getterDeclaration.simpleName}=');
+}
