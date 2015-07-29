@@ -8,10 +8,8 @@ import 'dart:js';
 import 'package:test/test.dart';
 import 'package:polymer/polymer.dart';
 import 'package:polymer/src/common/polymer_descriptor.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 main() async {
-  smoke.useMirrors();
 
   await initPolymer();
 
@@ -62,6 +60,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 class Test {
   @property
   String myString;
@@ -130,6 +129,7 @@ void expectProperty(JsObject actual, {
 }
 
 void expectEqual(JsObject actual, Map expected) {
+  expect(actual, isNotNull);
   var keys = context['Object'].callMethod('keys', [actual]);
   for (var key in keys) {
     expect(actual[key], equals(expected[key]));

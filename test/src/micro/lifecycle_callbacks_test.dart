@@ -7,12 +7,10 @@ library polymer.test.src.micro.lifecycle_callbacks_test;
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer_micro.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 LifecycleTest element;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   setUp(() {
@@ -50,6 +48,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('lifecycle-test')
 class LifecycleTest extends PolymerElement {
   bool createdCalled = false;

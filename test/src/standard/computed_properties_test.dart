@@ -7,12 +7,10 @@ library polymer.test.src.standard.computed_properties_test;
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 TestElement element;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   setUp(() {
@@ -33,6 +31,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   @Property(computed: 'addProperties(first, second)')
@@ -47,5 +46,5 @@ class TestElement extends PolymerElement {
   TestElement.created() : super.created();
 
   @eventHandler
-  int addProperties() => first + second;
+  int addProperties([_, __]) => first + second;
 }

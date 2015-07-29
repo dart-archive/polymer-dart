@@ -7,12 +7,10 @@ library polymer.test.src.standard.property_change_callbacks_test.dart;
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 TestElement element;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   setUp(() {
@@ -57,6 +55,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   @Property(observer: 'fooChanged')
@@ -72,17 +71,17 @@ class TestElement extends PolymerElement {
   TestElement.created() : super.created();
 
   @eventHandler
-  void fooChanged() {
+  void fooChanged([_, __]) {
     fooChangedCount++;
   }
 
   @Observe('bar')
-  void barChanged() {
+  void barChanged([_, __]) {
     barChangedCount++;
   }
 
   @Observe('foo, bar')
-  void fooOrBarChanged() {
+  void fooOrBarChanged([_, __]) {
     fooOrBarChangedCount++;
   }
 }

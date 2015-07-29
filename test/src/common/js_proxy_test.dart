@@ -6,7 +6,6 @@ library polymer.test.src.common.js_proxy_test;
 
 import 'dart:js';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 class EmptyModel {}
@@ -31,7 +30,6 @@ MyModel model;
 CachedMyModel cachedModel;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   setUp(() {

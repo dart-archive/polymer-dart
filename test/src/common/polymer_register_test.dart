@@ -7,11 +7,9 @@ library polymer.test.src.common.polymer_register_test;
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   test('regular elements', () {
@@ -23,11 +21,13 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   TestElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-input', extendsTag: 'input')
 class TestInput extends InputElement with PolymerMixin, JsProxy {
   TestInput.created() : super.created();

@@ -7,12 +7,10 @@ library polymer.test.src.standard.attribute_binding_test;
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 TestElement element;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   setUp(() {
@@ -26,6 +24,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   @property
