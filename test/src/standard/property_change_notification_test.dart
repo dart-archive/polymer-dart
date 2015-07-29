@@ -90,6 +90,7 @@ class Model extends JsProxy {
   Model(this.value);
 }
 
+@jsProxyReflectable
 @PolymerRegister('parent-element')
 class ParentElement extends PolymerElement {
   @Property(notify: true)
@@ -98,6 +99,7 @@ class ParentElement extends PolymerElement {
   ParentElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('child-element')
 class ChildElement extends PolymerElement {
   @Property(notify: true)
@@ -106,6 +108,7 @@ class ChildElement extends PolymerElement {
   ChildElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('grandchild-element')
 class GrandchildElement extends PolymerElement {
   @Property(notify: true)

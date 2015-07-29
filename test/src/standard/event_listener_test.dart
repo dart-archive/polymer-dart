@@ -30,6 +30,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   bool sawCustomEvent = false;

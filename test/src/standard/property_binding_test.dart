@@ -44,11 +44,13 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 class Model extends Object with JsProxy {
   int value;
   Model(this.value);
 }
 
+@jsProxyReflectable
 @PolymerRegister('parent-element')
 class ParentElement extends PolymerElement {
   @property
@@ -57,6 +59,7 @@ class ParentElement extends PolymerElement {
   ParentElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('child-element')
 class ChildElement extends PolymerElement {
   @property
@@ -65,6 +68,7 @@ class ChildElement extends PolymerElement {
   ChildElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('grandchild-element')
 class GrandchildElement extends PolymerElement {
   @property

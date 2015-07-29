@@ -34,11 +34,13 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('simple-element')
 class SimpleElement extends PolymerElement {
   SimpleElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('select-element')
 class SelectElement extends PolymerElement {
   SelectElement.created() : super.created();

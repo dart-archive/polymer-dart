@@ -48,6 +48,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('lifecycle-test')
 class LifecycleTest extends PolymerElement {
   bool createdCalled = false;

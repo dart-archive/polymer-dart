@@ -21,11 +21,13 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   TestElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-input', extendsTag: 'input')
 class TestInput extends InputElement with PolymerMixin, JsProxy {
   TestInput.created() : super.created();
