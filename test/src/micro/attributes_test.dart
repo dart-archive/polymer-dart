@@ -9,13 +9,11 @@ import 'package:test/test.dart';
 // TODO(jakemac): `mixin` is only defined for polymer standard, but is used
 // by attribute features in micro? May just need to update polymer js.
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 const _attributesName = 'attributes-test';
 const _serializeAttributesName = 'serialize-attributes-test';
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   _tests(_attributesName);
@@ -60,6 +58,7 @@ _tests(String elementName) {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister(_attributesName, hostAttributes: const {
   'host-string': 'string',
   'host-num': 2,
@@ -93,6 +92,7 @@ class AttributesTest extends PolymerElement {
 
 enum Foobar { foo, bar }
 
+@jsProxyReflectable
 @PolymerRegister(_serializeAttributesName, hostAttributes: const {
   'host-string': 'string',
   'host-num': 2,

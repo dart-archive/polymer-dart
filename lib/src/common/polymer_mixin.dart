@@ -25,9 +25,6 @@ abstract class PolymerMixin implements JsProxy {
     useCache = true;
     jsElement.callMethod('originalPolymerCreatedCallback');
   }
-
-  /// TODO(jakemac): Sort? What is the best way to accomplish this on the js
-  /// side of things in polymer?
 }
 
 class Foo extends Object with Polymer, Polymer, Polymer {}

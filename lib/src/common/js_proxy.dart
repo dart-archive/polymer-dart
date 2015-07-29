@@ -8,6 +8,7 @@ import 'dart:html';
 import 'package:polymer_interop/polymer_interop.dart';
 export 'package:polymer_interop/polymer_interop.dart' show dartValue, jsValue;
 import 'package:reflectable/reflectable.dart';
+import 'declarations.dart';
 
 // Mixin this class to get js proxy support!
 abstract class JsProxy implements JsProxyInterface {
@@ -48,7 +49,8 @@ JsObject _buildJsProxy(JsProxy instance) {
 }
 
 class JsProxyReflectable extends Reflectable {
-  const JsProxyReflectable() : super(instanceInvokeCapability);
+  const JsProxyReflectable()
+      : super(instanceInvokeCapability, metadataCapability);
 }
 const jsProxyReflectable = const JsProxyReflectable();
 
@@ -60,36 +62,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
   var constructor = _polymerDart.callMethod('functionFactory');
   var prototype = new JsObject(context['Object']);
 
-  ClassMirror mirror;
-  try {
-    mirror = jsProxyReflectable.reflectType(dartType);
-  } catch (e) {
-    throw 'type $dartType is missing the @jsProxyReflectable annotation';
-  }
-  var declarations = new Map.from(mirror.declarations);
-  var superClass;
-  // Currently crashes post-transform if superclass isn't annotated with
-  // Reflectable.
-  try {
-    superClass = mirror.superclass;
-  } catch(e) {
-    superClass = null;
-  }
-
-  while (superClass != null && superClass.reflectedType != Object) {
-    superClass.declarations.forEach((k, v) {
-      if (declarations.containsKey(k)) return;
-      declarations[k] = v;
-    });
-    // Currently crashes post-transform if superclass isn't annotated with
-    // Reflectable.
-    try {
-      superClass = superClass.superclass;
-    } catch(e) {
-      superClass = null;
-    }
-  }
-
+  var declarations = declarationsFor(dartType, jsProxyReflectable);
   declarations.forEach((String name, DeclarationMirror declaration) {
     if (declaration is VariableMirror) {
       var descriptor = {
