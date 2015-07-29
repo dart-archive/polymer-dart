@@ -7,12 +7,10 @@ library polymer.test.src.standard.event_listener_test;
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 TestElement element;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   setUp(() {
@@ -32,6 +30,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   bool sawCustomEvent = false;
@@ -40,12 +39,12 @@ class TestElement extends PolymerElement {
   TestElement.created() : super.created();
 
   @Listen('custom-event')
-  void onCustomEvent() {
+  void onCustomEvent([_, __]) {
     sawCustomEvent = true;
   }
 
   @eventHandler
-  void buttonClicked() {
+  void buttonClicked([_, __]) {
     sawButtonEvent = true;
   }
 }

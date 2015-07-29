@@ -8,10 +8,8 @@ import 'dart:async';
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer_mini.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   test('Ready is called bottom-up', () {
@@ -23,16 +21,19 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('parent-element')
 class ParentElement extends ReadyRecordingElement {
   ParentElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('child-element')
 class ChildElement extends ReadyRecordingElement {
   ChildElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('grandchild-element')
 class GrandchildElement extends ReadyRecordingElement {
   GrandchildElement.created() : super.created();

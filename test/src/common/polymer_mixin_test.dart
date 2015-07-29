@@ -7,13 +7,11 @@ library polymer.test.src.common.polymer_mixin_test;
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 TestElement element;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   setUp(() {
@@ -203,6 +201,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends HtmlElement with PolymerMixin, JsProxy {
   @property
