@@ -187,6 +187,19 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
   return property;
 }
 
+bool _isRegularMethod(DeclarationMirror declaration) {
+  return declaration is MethodMirror && declaration.isRegularMethod;
+}
+
+bool _isSetter(DeclarationMirror declaration) {
+  return declaration is MethodMirror && declaration.isSetter;
+}
+
+bool _hasSetter(Type type, String getterName) {
+  return jsProxyReflectable.reflectType(type).declarations
+      .containsKey('${getterName}=');
+}
+
 /// Given a [Type] return the [JsObject] representation of that type.
 /// TODO(jakemac): Make this more robust, specifically around Lists.
 dynamic jsType(Type type) {
