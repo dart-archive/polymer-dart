@@ -23,6 +23,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('simple-element')
 class SimpleElement extends PolymerElement {
   @property
