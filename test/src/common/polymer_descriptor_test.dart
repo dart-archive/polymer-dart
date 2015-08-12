@@ -132,6 +132,6 @@ void expectProperty(JsObject actual, {
 void expectEqual(JsObject actual, Map expected) {
   var keys = context['Object'].callMethod('keys', [actual]);
   for (var key in keys) {
-    expect(actual[key], expected[key]);
+    expect(actual[key], equals(expected[key]));
   }
 }
