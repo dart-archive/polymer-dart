@@ -22,6 +22,7 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
   var object = {
     'is': annotation.tagName,
     'extends': annotation.extendsTag,
+    'hostAttributes': annotation.hostAttributes,
     'properties': _buildPropertiesObject(type),
     'observers': _buildObserversObject(type),
     'listeners': _buildListenersObject(type),
