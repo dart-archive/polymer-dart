@@ -8,6 +8,7 @@ import 'dart:html';
 
 export 'package:polymer_interop/polymer_interop.dart';
 import 'package:web_components/web_components.dart' show HtmlImport;
+export 'src/common/behavior.dart';
 import 'src/common/polymer_mixin.dart';
 export 'src/common/polymer_mixin.dart';
 export 'src/common/polymer_register.dart';
