@@ -5,11 +5,12 @@ library polymer.src.common.polymer_js_proxy;
 
 import 'dart:js';
 import 'package:polymer_interop/polymer_interop.dart' show Polymer, PolymerDom;
+import 'package:web_components/web_components.dart';
 import 'js_proxy.dart';
 
 
 /// Basic api for re-using the polymer js prototypes.
-abstract class PolymerMixin implements JsProxy {
+abstract class PolymerMixin implements JsProxy, CustomElementProxyMixin {
   JsObject _proxy;
 
   JsObject get jsElement {
