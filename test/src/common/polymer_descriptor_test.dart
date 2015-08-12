@@ -57,11 +57,22 @@ main() async {
     expect(descriptor['handleSomeEvent'] is JsFunction, isTrue);
     expect(descriptor['myDoubleChanged'] is JsFunction, isTrue);
     expect(descriptor['myNumsCombined'] is JsFunction, isTrue);
+
+    expect(descriptor['behaviors'], isNotNull);
+    expect(descriptor['behaviors'].length, 2);
+    expect(descriptor['behaviors'][0], context['Foo']['BehaviorOne']);
+    expect(descriptor['behaviors'][1], context['Foo']['BehaviorTwo']);
   });
 }
 
+@BehaviorProxy(const ['Foo', 'BehaviorOne'])
+class BehaviorOne {}
+
+@BehaviorProxy(const ['Foo', 'BehaviorTwo'])
+class BehaviorTwo {}
+
 @jsProxyReflectable
-class Test {
+class Test extends Object with BehaviorOne, BehaviorTwo {
   @property
   String myString;
   @Property(notify: true)

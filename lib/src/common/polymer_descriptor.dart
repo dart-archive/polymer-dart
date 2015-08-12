@@ -5,6 +5,7 @@ library polymer.src.micro.properties;
 
 import 'dart:js';
 import 'package:reflectable/reflectable.dart';
+import 'behavior.dart';
 import 'declarations.dart';
 import 'js_proxy.dart';
 import 'property.dart';
@@ -20,9 +21,10 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
     'is': annotation.tagName,
     'extends': annotation.extendsTag,
     'hostAttributes': annotation.hostAttributes,
-    'properties': buildPropertiesObject(type),
+    'properties': _buildPropertiesObject(type),
     'observers': _buildObserversObject(type),
     'listeners': _buildListenersObject(type),
+    'behaviors': _buildBehaviorsList(type),
     '__isPolymerDart__': true,
   };
   _setupLifecycleMethods(type, object);
@@ -44,7 +46,7 @@ Map<String, DeclarationMirror> propertyDeclarationsFor(Type type) {
 }
 
 // Set up the `properties` descriptor object.
-Map buildPropertiesObject(Type type) {
+Map _buildPropertiesObject(Type type) {
   var declarations = propertyDeclarationsFor(type);
   var properties = {};
   declarations.forEach((String name, DeclarationMirror declaration) {
@@ -187,17 +189,21 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
   return property;
 }
 
-bool _isRegularMethod(DeclarationMirror declaration) {
-  return declaration is MethodMirror && declaration.isRegularMethod;
-}
+/// List of [JsObjects]s representing the behaviors for an element.
+List<JsObject> _buildBehaviorsList(Type type) {
+  var behaviors = <JsObject>[];
 
-bool _isSetter(DeclarationMirror declaration) {
-  return declaration is MethodMirror && declaration.isSetter;
-}
+  isBehavior(instance) => instance is BehaviorInterface;
 
-bool _hasSetter(Type type, String getterName) {
-  return jsProxyReflectable.reflectType(type).declarations
-      .containsKey('${getterName}=');
+  var interfaces = mixinsFor(type, jsProxyReflectable,
+      where: (ClassMirror mixin) => mixin.metadata.any(isBehavior));
+  for (var interface in interfaces) {
+    behaviors.add(
+        (interface.metadata.firstWhere(isBehavior) as BehaviorInterface)
+            .getBehavior(interface.reflectedType));
+  }
+
+  return behaviors.isEmpty ? null : behaviors;
 }
 
 /// Given a [Type] return the [JsObject] representation of that type.
