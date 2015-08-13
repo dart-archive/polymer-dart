@@ -6,13 +6,11 @@ library polymer.test.src.common.js_proxy_test;
 
 import 'dart:js';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
-//import 'package:unittest/unittest.dart';
-//import 'package:unittest/html_config.dart';
 
 class EmptyModel {}
 
+@jsProxyReflectable
 class MyModel extends Object with JsProxy {
   int value = 0;
   int get readOnlyVal => 1;
@@ -21,6 +19,7 @@ class MyModel extends Object with JsProxy {
   int incrementBy([int amount = 1]) => value += amount;
 }
 
+@jsProxyReflectable
 class CachedMyModel extends MyModel {
   CachedMyModel() {
     useCache = true;
@@ -31,8 +30,6 @@ MyModel model;
 CachedMyModel cachedModel;
 
 main() async {
-  smoke.useMirrors();
-//  useHtmlConfiguration();
   await initPolymer();
 
   setUp(() {

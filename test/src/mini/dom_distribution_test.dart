@@ -7,12 +7,10 @@ library polymer.test.src.mini.dom_distribution_test;
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer_mini.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 PolymerElement element;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   test('Simple', () {
@@ -36,11 +34,13 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('simple-element')
 class SimpleElement extends PolymerElement {
   SimpleElement.created() : super.created();
 }
 
+@jsProxyReflectable
 @PolymerRegister('select-element')
 class SelectElement extends PolymerElement {
   SelectElement.created() : super.created();

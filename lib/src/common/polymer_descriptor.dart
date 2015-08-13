@@ -3,9 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.src.micro.properties;
 
-import 'dart:html';
 import 'dart:js';
-import 'package:smoke/smoke.dart' as smoke;
+import 'package:reflectable/reflectable.dart';
+import 'declarations.dart';
 import 'js_proxy.dart';
 import 'property.dart';
 import 'event_handler.dart';
@@ -31,137 +31,144 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
   return new JsObject.jsify(object);
 }
 
-/// Query options for finding properties on types.
-final _propertyQueryOptions = new smoke.QueryOptions(
-    includeUpTo: HtmlElement, withAnnotations: const [Property]);
-
 /// Custom js object containing some helper methods for dart.
 final JsObject _polymerDart = context['Polymer']['Dart'];
 
-/// Returns a list of [smoke.Declaration]s for all fields annotated as a
+/// Returns a list of [DeclarationMirror]s for all fields annotated as a
 /// [Property].
-List<smoke.Declaration> propertyDeclarationsFor(Type type) =>
-    smoke.query(type, _propertyQueryOptions);
+Map<String, DeclarationMirror> propertyDeclarationsFor(Type type) {
+  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
+    if (isRegularMethod(declaration) || isSetter(declaration)) return false;
+    return declaration.metadata.any((d) => d is Property);
+  });
+}
 
 // Set up the `properties` descriptor object.
 Map buildPropertiesObject(Type type) {
   var declarations = propertyDeclarationsFor(type);
   var properties = {};
-  for (var declaration in declarations) {
-    var name = smoke.symbolToName(declaration.name);
-    if (declaration.isField || declaration.isProperty) {
-      // Build a properties object for this property.
-      properties[name] = _getPropertyInfoForType(type, declaration);
-    }
-  }
+  declarations.forEach((String name, DeclarationMirror declaration) {
+    // Build a properties object for this property.
+    properties[name] = _getPropertyInfoForType(type, declaration);
+  });
   return properties;
 }
 
-/// Query for the @Observe annotated methods.
-final _observeMethodOptions = new smoke.QueryOptions(
-    includeUpTo: HtmlElement,
-    includeMethods: true,
-    includeProperties: false,
-    includeFields: false,
-    withAnnotations: const [Observe]);
+/// All @Observe annotated methods.
+Map<String, DeclarationMirror> _observeMethodsFor(Type type) {
+  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
+    if (!isRegularMethod(declaration)) return false;
+    return declaration.metadata.any((d) => d is Observe);
+  });
+}
 
 /// Set up the `observers` descriptor object, see
 /// https://www.polymer-project.org/1.0/docs/devguide/properties.html#multi-property-observers
 List _buildObserversObject(Type type) {
-  var declarations = smoke.query(type, _observeMethodOptions);
+  var declarations = _observeMethodsFor(type);
   var observers = [];
-  for (var declaration in declarations) {
-    var name = smoke.symbolToName(declaration.name);
-    Observe observe = declaration.annotations.firstWhere((e) => e is Observe);
+  declarations.forEach((String name, DeclarationMirror declaration) {
+    Observe observe = declaration.metadata.firstWhere((e) => e is Observe);
     // Build a properties object for this property.
     observers.add('$name(${observe.properties})');
-  }
+  });
   return observers;
 }
 
-/// Query for the @Listen annotated methods.
-final _listenMethodOptions = new smoke.QueryOptions(
-    includeUpTo: HtmlElement,
-    includeMethods: true,
-    includeProperties: false,
-    includeFields: false,
-    withAnnotations: const [Listen]);
+/// All @Listen annotated methods.
+Map<String, DeclarationMirror> _listenMethodsFor(Type type) {
+  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
+    if (!isRegularMethod(declaration)) return false;
+    return declaration.metadata.any((d) => d is Listen);
+  });
+}
 
 /// Set up the `listeners` descriptor object, see
 /// https://www.polymer-project.org/1.0/docs/devguide/events.html#event-listeners
 Map _buildListenersObject(Type type) {
-  var declarations = smoke.query(type, _listenMethodOptions);
+  var declarations = _listenMethodsFor(type);
   var listeners = {};
-  for (var declaration in declarations) {
-    var name = smoke.symbolToName(declaration.name);
-    for (Listen listen in declaration.annotations.where((e) => e is Listen)) {
+  declarations.forEach((String name, DeclarationMirror declaration) {
+    for (Listen listen in declaration.metadata.where((e) => e is Listen)) {
       listeners[listen.eventName] = name;
     }
-  }
+  });
   return listeners;
 }
 
-/// Query for the lifecycle methods.
-final _lifecycleMethodOptions = new smoke.QueryOptions(
-    includeUpTo: HtmlElement,
-    includeMethods: true,
-    includeProperties: false,
-    includeFields: false,
-    matches: (name) => [#ready, #attached, #detached, #attributeChanged, #serialize, #deserialize].contains(name));
+const _lifecycleMethods = const ['ready', 'attached', 'detached',
+    'attributeChanged', 'serialize', 'deserialize'];
+
+/// All lifecycle methods for a type.
+Map<String, DeclarationMirror> _lifecycleMethodsFor(Type type) {
+  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
+    if (!isRegularMethod(declaration)) return false;
+    return _lifecycleMethods.contains(name);
+  });
+}
 
 /// Set up a proxy for the lifecyle methods, if they exists on the dart class.
 void _setupLifecycleMethods(Type type, Map descriptor) {
-  List<smoke.Declaration> results = smoke.query(type, _lifecycleMethodOptions);
-  for (var result in results){
-    descriptor[smoke.symbolToName(result.name)] = _polymerDart.callMethod(
+  var declarations = _lifecycleMethodsFor(type);
+  declarations.forEach((String name, DeclarationMirror declaration) {
+    descriptor[name] = _polymerDart.callMethod(
         'invokeDartFactory',
         [
           (dartInstance, arguments) {
             var newArgs = arguments.map((arg) => dartValue(arg)).toList();
-            return smoke.invoke(
-                dartInstance, result.name, newArgs, adjust: true);
+            var instanceMirror = jsProxyReflectable.reflect(dartInstance);
+            return instanceMirror.invoke(name, newArgs);
           }
         ]);
-  }
+  });
 }
 
-/// Query for the [EventHandler] annotated methods.
-final _eventHandlerMethodOptions = new smoke.QueryOptions(
-    includeUpTo: HtmlElement,
-    includeMethods: true,
-    includeProperties: false,
-    includeFields: false,
-    withAnnotations: const [EventHandler]);
+/// All methods annotated with @eventHandler.
+Map<String, DeclarationMirror> _eventHandlerMethodsFor(Type type) {
+  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
+    if (!isRegularMethod(declaration)) return false;
+    return declaration.metadata.any((d) => d is EventHandler);
+  });
+}
 
 /// Set up a proxy for any method with an @eventHandler annotation.
 void _setupEventHandlerMethods(Type type, Map descriptor) {
-  List<smoke.Declaration> results =
-      smoke.query(type, _eventHandlerMethodOptions);
-  for (var result in results){
+  var declarations = _eventHandlerMethodsFor(type);
+  declarations.forEach((String name, DeclarationMirror declaration) {
     // TODO(jakemac): Support functions with more than 6 args? We should at
     // least throw a better error in that case.
-    descriptor[smoke.symbolToName(result.name)] = _polymerDart.callMethod(
+    descriptor[name] = _polymerDart.callMethod(
         'invokeDartFactory',
         [
           (dartInstance, arguments) {
             var newArgs = arguments.map((arg) => dartValue(arg)).toList();
-            return smoke.invoke(
-                dartInstance, result.name, newArgs, adjust: true);
+            var instanceMirror = jsProxyReflectable.reflect(dartInstance);
+            return instanceMirror.invoke(name, newArgs);
           }
         ]);
-  }
+  });
 }
 
 /// Object that represents a proeprty that was not found.
 final _emptyPropertyInfo = new JsObject.jsify({'defined': false});
 
 /// Compute or return from cache information about `property` for `t`.
-Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
-  var jsTyped = jsType(declaration.type);
+Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
+  assert(declaration is VariableMirror || declaration is MethodMirror);
+  var propertyType;
+  var isFinal;
+  if (declaration is VariableMirror) {
+    propertyType = declaration.type.reflectedType;
+    isFinal = declaration.isFinal;
+  } else if (declaration is MethodMirror) {
+    assert(declaration.isGetter);
+    propertyType = declaration.returnType.reflectedType;
+    isFinal = !hasSetter(declaration);
+  }
+  var jsTyped = jsType(propertyType);
   if (jsTyped == null) return _emptyPropertyInfo;
 
-  Property annotation =
-      declaration.annotations.firstWhere((a) => a is Property);
+  Property annotation = declaration.metadata.firstWhere((a) => a is Property);
   var property = {
     'type': jsTyped,
     'defined': true,
@@ -170,10 +177,11 @@ Map _getPropertyInfoForType(Type type, smoke.Declaration declaration) {
     'reflectToAttribute': annotation.reflectToAttribute,
     'computed': annotation.computed,
     'value': new JsFunction.withThis((dartInstance, [_]) {
-      return jsValue(smoke.read(dartInstance, declaration.name));
+      var instanceMirror = jsProxyReflectable.reflect(dartInstance);
+      return jsValue(instanceMirror.invokeGetter(declaration.simpleName));
     }),
   };
-  if (declaration.isFinal) {
+  if (isFinal) {
     property['readOnly'] = true;
   }
   return property;

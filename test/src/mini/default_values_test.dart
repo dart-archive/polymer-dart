@@ -8,12 +8,10 @@ import 'dart:html';
 import 'package:test/test.dart';
 // TODO(jakemac): Why doesn't this work with polymer_mini.dart?
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 
 SimpleElement element;
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   test('Initializers are passed as default values to js', () {
@@ -25,6 +23,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('simple-element')
 class SimpleElement extends PolymerElement {
   @property
