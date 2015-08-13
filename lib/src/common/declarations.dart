@@ -1,20 +1,33 @@
+// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 library polymer.src.common.declarations;
 
 import 'package:reflectable/reflectable.dart';
+import '../../polymer_micro.dart';
 
-typedef bool _WhereFn(String name, DeclarationMirror declaration);
+List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
+    {bool where(ClassMirror mirror)}) {
+  var typeMirror = _reflect(type, reflectionClass);
+  var mixins = [];
+  var superClass = _getSuper(typeMirror);
+  while (superClass != null && superClass.mixin.reflectedType != PolymerMixin) {
+    var mixin = superClass.mixin;
+    if (mixin != superClass && (where == null || where(mixin))) {
+      mixins.add(mixin);
+    }
+    superClass = _getSuper(superClass);
+  }
+  return mixins.reversed.toList();
+}
 
 Map<String, DeclarationMirror> declarationsFor(
-    Type type, Reflectable reflectionClass, {_WhereFn where}) {
-  var typeMirror;
-  try {
-    typeMirror = reflectionClass.reflectType(type);
-  } catch (e) {
-    throw 'type $type is missing the $reflectionClass annotation';
-  }
+    Type type, Reflectable reflectionClass,
+    {bool where(String name, DeclarationMirror declaration)}) {
+  var typeMirror = _reflect(type, reflectionClass);
   var declarations = {};
   var superClass = typeMirror;
-  while (superClass != null && superClass.reflectedType != Object) {
+  while (superClass != null && superClass.mixin.reflectedType != PolymerMixin) {
     superClass.declarations.forEach((name, declaration) {
       if (declarations.containsKey(name)) return;
       if (where != null && !where(name, declaration)) return;
@@ -25,12 +38,20 @@ Map<String, DeclarationMirror> declarationsFor(
   return declarations;
 }
 
+ClassMirror _reflect(Type type, Reflectable reflectionClass) {
+  try {
+    return reflectionClass.reflectType(type);
+  } catch (e) {
+    throw 'type $type is missing the $reflectionClass annotation';
+  }
+}
+
 ClassMirror _getSuper(ClassMirror clazz) {
   // Currently throws post-transform if superclass isn't annotated with a
   // [Reflectable] class.
   try {
     return clazz.superclass;
-  } catch(e) {
+  } catch (e) {
     return null;
   }
 }
@@ -48,6 +69,7 @@ bool isProperty(DeclarationMirror declaration) {
   if (declaration is MethodMirror) return !isRegularMethod(declaration);
   return false;
 }
+
 bool isRegularMethod(DeclarationMirror declaration) {
   return declaration is MethodMirror && declaration.isRegularMethod;
 }

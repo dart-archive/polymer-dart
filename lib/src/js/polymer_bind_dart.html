@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
 <script>
 if (Polymer.Bind) {
   // Overwrite prepareInstance to a no-op for dart elements.
@@ -5,7 +10,7 @@ if (Polymer.Bind) {
   Polymer.Bind.prepareInstance = function (inst) {
     if (inst.__isPolymerDart__) return;
     this._originalPrepareInstance(inst);
-  }
+  };
 
   // We always need to create property accessors for dart elements, because we
   // always have `effects` (updating the dart class).
@@ -21,8 +26,20 @@ if (Polymer.Bind) {
     // map of properties to effects
     var fx$ = model._propertyEffects || {};
     var p$ = model.properties;
-    // for each property with effects
-    for (var n in p$) {
+
+    // The union of the keys in fx$ and p$ (fx$ might contain properties from
+    // js behaviors, which don't appear in p$).
+    var allProperties = {};
+    for (var key in p$) {
+      allProperties[key] = true;
+    }
+    for (var key in fx$) {
+      allProperties[key] = true;
+    }
+
+    // for each dart property (with or without effects) and each js property
+    // with effects
+    for (var n in allProperties) {
       // array of effects
       var fx = fx$[n];
       // effects have priority

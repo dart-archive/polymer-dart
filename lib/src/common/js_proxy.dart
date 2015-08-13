@@ -1,10 +1,11 @@
-// Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
+// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 library polymer.lib.src.common.js_proxy;
 
 import 'dart:js';
 import 'package:reflectable/reflectable.dart';
+import 'behavior.dart';
 import 'declarations.dart';
 
 // Mixin this class to get js proxy support!
@@ -59,7 +60,12 @@ JsFunction _buildJsConstructorForType(Type dartType) {
   var constructor = _polymerDart.callMethod('functionFactory');
   var prototype = new JsObject(context['Object']);
 
-  var declarations = declarationsFor(dartType, jsProxyReflectable);
+  var declarations = declarationsFor(
+      dartType, jsProxyReflectable, where: (name, declaration) {
+    // Skip declarations from [BehaviorProxy] classes. These should not
+    // read/write from the dart class.
+    return !declaration.owner.metadata.any((m) => m is BehaviorProxy);
+  });
   declarations.forEach((String name, DeclarationMirror declaration) {
     if (isProperty(declaration)) {
       var descriptor = {

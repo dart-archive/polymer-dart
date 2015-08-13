@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <script src="packages/web_components/webcomponents.min.js"></script>
+  <link rel="x-dart-test" href="behavior_test.dart">
+  <!--<script type="application/dart" src="behavior_test.dart"></script>-->
+  <script src="packages/test/dart.js"></script>
+</head>
+<body>
+<dom-module id="my-element">
+  <template>
+    <div id="jsBehaviorString">{{jsBehaviorString}}</div>
+    <div id="dartBehaviorString">{{dartBehaviorString}}</div>
+  </template>
+</dom-module>
+<script>
+  window.JsBehavior = {
+    // Lifecycle methods
+    created: function() {
+      // Internal bookkeeping for tests.
+      this.jsInvocations = {
+        'created': [],
+        'attached': [],
+        'detached': [],
+        'attributeChanged': [],
+        'jsBehaviorStringChanged': [],
+        'jsBehaviorNumChanged': [],
+        'onJsBehaviorEvent': []
+      };
+
+      this.jsInvocations['created'].push([this]);
+    },
+    attached: function() {
+      this.jsInvocations['attached'].push([this]);
+    },
+    detached: function() {
+      this.jsInvocations['detached'].push([this]);
+    },
+    attributeChanged: function(name, type, value) {
+      this.jsInvocations['attributeChanged'].push([this, name, type, value]);
+    },
+
+    // Properties
+    properties: {
+      jsBehaviorString: {
+        type: String,
+        observer: 'jsBehaviorStringChanged'
+      },
+      jsBehaviorNum: Number
+    },
+    jsBehaviorStringChanged: function(newValue, oldValue) {
+      this.jsInvocations['jsBehaviorStringChanged'].push([newValue, oldValue]);
+    },
+
+    // Observers
+    observers: [
+        'jsBehaviorNumChanged(jsBehaviorNum)'
+    ],
+    jsBehaviorNumChanged: function(jsBehaviorNum) {
+      this.jsInvocations['jsBehaviorNumChanged'].push([jsBehaviorNum]);
+    },
+
+    // Listeners
+    listeners: {
+        'js-behavior-event': 'onJsBehaviorEvent'
+    },
+    onJsBehaviorEvent: function(e, detail) {
+      this.jsInvocations['onJsBehaviorEvent'].push([e, detail]);
+    }
+  }
+</script>
+</body>
+</html>

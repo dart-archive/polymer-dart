@@ -1,10 +1,11 @@
-// Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
+// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 library polymer.src.micro.properties;
 
 import 'dart:js';
 import 'package:reflectable/reflectable.dart';
+import 'behavior.dart';
 import 'declarations.dart';
 import 'js_proxy.dart';
 import 'property.dart';
@@ -20,9 +21,10 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
     'is': annotation.tagName,
     'extends': annotation.extendsTag,
     'hostAttributes': annotation.hostAttributes,
-    'properties': buildPropertiesObject(type),
+    'properties': _buildPropertiesObject(type),
     'observers': _buildObserversObject(type),
     'listeners': _buildListenersObject(type),
+    'behaviors': _buildBehaviorsList(type),
     '__isPolymerDart__': true,
   };
   _setupLifecycleMethods(type, object);
@@ -44,7 +46,7 @@ Map<String, DeclarationMirror> propertyDeclarationsFor(Type type) {
 }
 
 // Set up the `properties` descriptor object.
-Map buildPropertiesObject(Type type) {
+Map _buildPropertiesObject(Type type) {
   var declarations = propertyDeclarationsFor(type);
   var properties = {};
   declarations.forEach((String name, DeclarationMirror declaration) {
@@ -96,8 +98,14 @@ Map _buildListenersObject(Type type) {
   return listeners;
 }
 
-const _lifecycleMethods = const ['ready', 'attached', 'detached',
-    'attributeChanged', 'serialize', 'deserialize'];
+const _lifecycleMethods = const [
+  'ready',
+  'attached',
+  'detached',
+  'attributeChanged',
+  'serialize',
+  'deserialize'
+];
 
 /// All lifecycle methods for a type.
 Map<String, DeclarationMirror> _lifecycleMethodsFor(Type type) {
@@ -111,15 +119,13 @@ Map<String, DeclarationMirror> _lifecycleMethodsFor(Type type) {
 void _setupLifecycleMethods(Type type, Map descriptor) {
   var declarations = _lifecycleMethodsFor(type);
   declarations.forEach((String name, DeclarationMirror declaration) {
-    descriptor[name] = _polymerDart.callMethod(
-        'invokeDartFactory',
-        [
-          (dartInstance, arguments) {
-            var newArgs = arguments.map((arg) => dartValue(arg)).toList();
-            var instanceMirror = jsProxyReflectable.reflect(dartInstance);
-            return instanceMirror.invoke(name, newArgs);
-          }
-        ]);
+    descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
+      (dartInstance, arguments) {
+        var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+        var instanceMirror = jsProxyReflectable.reflect(dartInstance);
+        return instanceMirror.invoke(name, newArgs);
+      }
+    ]);
   });
 }
 
@@ -137,15 +143,13 @@ void _setupEventHandlerMethods(Type type, Map descriptor) {
   declarations.forEach((String name, DeclarationMirror declaration) {
     // TODO(jakemac): Support functions with more than 6 args? We should at
     // least throw a better error in that case.
-    descriptor[name] = _polymerDart.callMethod(
-        'invokeDartFactory',
-        [
-          (dartInstance, arguments) {
-            var newArgs = arguments.map((arg) => dartValue(arg)).toList();
-            var instanceMirror = jsProxyReflectable.reflect(dartInstance);
-            return instanceMirror.invoke(name, newArgs);
-          }
-        ]);
+    descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
+      (dartInstance, arguments) {
+        var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+        var instanceMirror = jsProxyReflectable.reflect(dartInstance);
+        return instanceMirror.invoke(name, newArgs);
+      }
+    ]);
   });
 }
 
@@ -185,6 +189,21 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
     property['readOnly'] = true;
   }
   return property;
+}
+
+/// List of [JsObjects]s representing the behaviors for an element.
+List<JsObject> _buildBehaviorsList(Type type) {
+  var behaviors = <JsObject>[];
+
+  var mixins = mixinsFor(type, jsProxyReflectable);
+  for (ClassMirror mixin in mixins) {
+    BehaviorAnnotation behavior = mixin.metadata
+        .firstWhere((meta) => meta is BehaviorAnnotation, orElse: () => null);
+    if (behavior == null) continue;
+    behaviors.add(behavior.getBehavior(mixin.reflectedType));
+  }
+
+  return behaviors;
 }
 
 /// Given a [Type] return the [JsObject] representation of that type.
