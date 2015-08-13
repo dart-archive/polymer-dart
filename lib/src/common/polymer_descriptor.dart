@@ -203,7 +203,7 @@ List<JsObject> _buildBehaviorsList(Type type) {
             .getBehavior(interface.reflectedType));
   }
 
-  return behaviors.isEmpty ? null : behaviors;
+  return behaviors;
 }
 
 /// Given a [Type] return the [JsObject] representation of that type.
