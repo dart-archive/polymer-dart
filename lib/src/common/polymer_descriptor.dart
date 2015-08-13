@@ -98,8 +98,14 @@ Map _buildListenersObject(Type type) {
   return listeners;
 }
 
-const _lifecycleMethods = const ['ready', 'attached', 'detached',
-    'attributeChanged', 'serialize', 'deserialize'];
+const _lifecycleMethods = const [
+  'ready',
+  'attached',
+  'detached',
+  'attributeChanged',
+  'serialize',
+  'deserialize'
+];
 
 /// All lifecycle methods for a type.
 Map<String, DeclarationMirror> _lifecycleMethodsFor(Type type) {
@@ -113,15 +119,13 @@ Map<String, DeclarationMirror> _lifecycleMethodsFor(Type type) {
 void _setupLifecycleMethods(Type type, Map descriptor) {
   var declarations = _lifecycleMethodsFor(type);
   declarations.forEach((String name, DeclarationMirror declaration) {
-    descriptor[name] = _polymerDart.callMethod(
-        'invokeDartFactory',
-        [
-          (dartInstance, arguments) {
-            var newArgs = arguments.map((arg) => dartValue(arg)).toList();
-            var instanceMirror = jsProxyReflectable.reflect(dartInstance);
-            return instanceMirror.invoke(name, newArgs);
-          }
-        ]);
+    descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
+      (dartInstance, arguments) {
+        var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+        var instanceMirror = jsProxyReflectable.reflect(dartInstance);
+        return instanceMirror.invoke(name, newArgs);
+      }
+    ]);
   });
 }
 
@@ -139,15 +143,13 @@ void _setupEventHandlerMethods(Type type, Map descriptor) {
   declarations.forEach((String name, DeclarationMirror declaration) {
     // TODO(jakemac): Support functions with more than 6 args? We should at
     // least throw a better error in that case.
-    descriptor[name] = _polymerDart.callMethod(
-        'invokeDartFactory',
-        [
-          (dartInstance, arguments) {
-            var newArgs = arguments.map((arg) => dartValue(arg)).toList();
-            var instanceMirror = jsProxyReflectable.reflect(dartInstance);
-            return instanceMirror.invoke(name, newArgs);
-          }
-        ]);
+    descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
+      (dartInstance, arguments) {
+        var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+        var instanceMirror = jsProxyReflectable.reflect(dartInstance);
+        return instanceMirror.invoke(name, newArgs);
+      }
+    ]);
   });
 }
 
@@ -193,14 +195,12 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
 List<JsObject> _buildBehaviorsList(Type type) {
   var behaviors = <JsObject>[];
 
-  isBehavior(instance) => instance is BehaviorInterface;
-
-  var interfaces = mixinsFor(type, jsProxyReflectable,
-      where: (ClassMirror mixin) => mixin.metadata.any(isBehavior));
-  for (var interface in interfaces) {
-    behaviors.add(
-        (interface.metadata.firstWhere(isBehavior) as BehaviorInterface)
-            .getBehavior(interface.reflectedType));
+  var mixins = mixinsFor(type, jsProxyReflectable);
+  for (ClassMirror mixin in mixins) {
+    BehaviorAnnotation behavior = mixin.metadata
+        .firstWhere((meta) => meta is BehaviorAnnotation, orElse: () => null);
+    if (behavior == null) continue;
+    behaviors.add(behavior.getBehavior(mixin.reflectedType));
   }
 
   return behaviors;
