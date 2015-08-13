@@ -76,6 +76,4 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
 }
 const behavior = const Behavior();
 
-const behavior = const Behavior();
-
 bool _isBehavior(instance) => instance is BehaviorAnnotation;
