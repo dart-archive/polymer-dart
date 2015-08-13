@@ -5,6 +5,7 @@ library polymer.lib.src.common.js_proxy;
 
 import 'dart:js';
 import 'package:reflectable/reflectable.dart';
+import 'behavior.dart';
 import 'declarations.dart';
 
 // Mixin this class to get js proxy support!
@@ -59,7 +60,12 @@ JsFunction _buildJsConstructorForType(Type dartType) {
   var constructor = _polymerDart.callMethod('functionFactory');
   var prototype = new JsObject(context['Object']);
 
-  var declarations = declarationsFor(dartType, jsProxyReflectable);
+  var declarations = declarationsFor(
+      dartType, jsProxyReflectable, where: (name, declaration) {
+    // Skip declarations from [BehaviorProxy] classes. These should not
+    // read/write from the dart class.
+    return !declaration.owner.metadata.any((m) => m is BehaviorProxy);
+  });
   declarations.forEach((String name, DeclarationMirror declaration) {
     if (isProperty(declaration)) {
       var descriptor = {

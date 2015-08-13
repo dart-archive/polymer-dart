@@ -10,16 +10,11 @@ import 'package:polymer/polymer.dart';
 import 'package:polymer/src/common/polymer_descriptor.dart';
 
 main() async {
-
   await initPolymer();
 
   test('can build polymer descriptor objects', () {
-    var annotation = const PolymerRegister(
-        'test-element',
-        extendsTag: 'div',
-        hostAttributes: const {
-          'foo': 'bar',
-        });
+    var annotation = const PolymerRegister('test-element',
+        extendsTag: 'div', hostAttributes: const {'foo': 'bar',});
     JsObject descriptor = createPolymerDescriptor(Test, annotation);
 
     expect(descriptor['is'], annotation.tagName);
@@ -30,26 +25,38 @@ main() async {
     var properties = descriptor['properties'];
     expectProperty(properties['myString'], type: context['String']);
     expectProperty(properties['myInt'], type: context['Number'], notify: true);
-    expectProperty(properties['myDouble'], type: context['Number'],
-        observer: 'myDoubleChanged');
-    expectProperty(properties['myNum'], type: context['Number'],
-        reflectToAttribute: true);
+    expectProperty(properties['myDouble'],
+        type: context['Number'], observer: 'myDoubleChanged');
+    expectProperty(properties['myNum'],
+        type: context['Number'], reflectToAttribute: true);
     expectProperty(properties['myBool'], type: context['Boolean']);
     expectProperty(properties['myMap']);
     expectProperty(properties['myStringMap']);
     expectProperty(properties['myList'], type: context['Array']);
     expectProperty(properties['myStringList'], type: context['Array']);
     expectProperty(properties['myDateTime'], type: context['Date']);
-    expectProperty(properties['computedNum'], type: context['Number'],
+    expectProperty(properties['computedNum'],
+        type: context['Number'],
         computed: 'myNumsCombined(myInt, myDouble, myNum)');
+    // From the dart behaviors!
+    expectProperty(properties['behaviorOneProperty'], type: context['String']);
+    expectProperty(properties['behaviorTwoProperty'], type: context['Number']);
 
     var observers = descriptor['observers'];
-    expect(observers[0], 'myStringChanged(myString)');
-    expect(observers[1], 'myDoubleOrIntChanged(myDouble, myInt)');
+    expect(observers, contains('myStringChanged(myString)'));
+    expect(observers, contains('myDoubleOrIntChanged(myDouble, myInt)'));
+    // From the dart behaviors!
+    expect(
+        observers, contains('behaviorOnePropertyChanged(behaviorOneProperty)'));
+    expect(
+        observers, contains('behaviorTwoPropertyChanged(behaviorTwoProperty)'));
 
     var listeners = descriptor['listeners'];
     expect(listeners['tap'], 'onTap');
     expect(listeners['someId.tap'], 'onSomeIdTap');
+    // From the dart behaviors!
+    expect(listeners['someEventOne'], 'onSomeEventOne');
+    expect(listeners['someEventTwo'], 'onSomeEventTwo');
 
     expect(descriptor['ready'] is JsFunction, isTrue);
     expect(descriptor['attached'] is JsFunction, isTrue);
@@ -57,22 +64,59 @@ main() async {
     expect(descriptor['handleSomeEvent'] is JsFunction, isTrue);
     expect(descriptor['myDoubleChanged'] is JsFunction, isTrue);
     expect(descriptor['myNumsCombined'] is JsFunction, isTrue);
+    // From the dart behaviors!
+    expect(descriptor['behaviorOneExposedMethod'] is JsFunction, isTrue);
+    expect(descriptor['behaviorTwoExposedMethod'] is JsFunction, isTrue);
 
     expect(descriptor['behaviors'], isNotNull);
-    expect(descriptor['behaviors'].length, 2);
-    expect(descriptor['behaviors'][0], context['Foo']['BehaviorOne']);
-    expect(descriptor['behaviors'][1], context['Foo']['BehaviorTwo']);
+    expect(descriptor['behaviors'].length, 4);
+    expect(descriptor['behaviors'][0], context['Foo']['JsBehaviorOne']);
+    expect(descriptor['behaviors'][1], behavior.getBehavior(DartBehaviorOne));
+    expect(descriptor['behaviors'][2], context['Foo']['JsBehaviorTwo']);
+    expect(descriptor['behaviors'][3], behavior.getBehavior(DartBehaviorTwo));
+    expect(descriptor['behaviors'][1], isNot(descriptor['behaviors'][3]));
   });
 }
 
-@BehaviorProxy(const ['Foo', 'BehaviorOne'])
-class BehaviorOne {}
+@BehaviorProxy(const ['Foo', 'JsBehaviorOne'])
+class JsBehaviorOne {}
 
-@BehaviorProxy(const ['Foo', 'BehaviorTwo'])
-class BehaviorTwo {}
+@BehaviorProxy(const ['Foo', 'JsBehaviorTwo'])
+class JsBehaviorTwo {}
+
+@behavior
+class DartBehaviorOne {
+  @property
+  String behaviorOneProperty;
+
+  @Observe('behaviorOneProperty')
+  void behaviorOnePropertyChanged() {}
+
+  @Listen('someEventOne')
+  void onSomeEventOne() {}
+
+  @eventHandler
+  void behaviorOneExposedMethod() {}
+}
+
+@behavior
+class DartBehaviorTwo {
+  @property
+  int behaviorTwoProperty;
+
+  @Observe('behaviorTwoProperty')
+  void behaviorTwoPropertyChanged() {}
+
+  @Listen('someEventTwo')
+  void onSomeEventTwo() {}
+
+  @eventHandler
+  void behaviorTwoExposedMethod() {}
+}
 
 @jsProxyReflectable
-class Test extends Object with BehaviorOne, BehaviorTwo {
+class Test extends Object
+    with JsBehaviorOne, DartBehaviorOne, JsBehaviorTwo, DartBehaviorTwo {
   @property
   String myString;
   @Property(notify: true)
@@ -124,9 +168,14 @@ class Test extends Object with BehaviorOne, BehaviorTwo {
   }
 }
 
-void expectProperty(JsObject actual, {
-    computed: null, defined: true, notify: false, observer: null,
-    reflectToAttribute: false, type: null, value: isNotNull}) {
+void expectProperty(JsObject actual,
+    {computed: null,
+    defined: true,
+    notify: false,
+    observer: null,
+    reflectToAttribute: false,
+    type: null,
+    value: isNotNull}) {
   var expected = {
     'computed': computed,
     'defined': defined,
