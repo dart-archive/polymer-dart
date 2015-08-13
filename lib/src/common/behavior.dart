@@ -4,14 +4,11 @@
 library polymer.src.common.behavior;
 
 import 'dart:js';
+import 'package:polymer_interop/polymer_interop.dart' show BehaviorAnnotation;
+export 'package:polymer_interop/polymer_interop.dart'
+    show BehaviorAnnotation, BehaviorProxy;
 import 'package:reflectable/reflectable.dart';
 import 'js_proxy.dart';
-
-// Interface for behavior annotations.
-abstract class BehaviorAnnotation {
-  // Returns the JsObject created for this behavior.
-  JsObject getBehavior(Type type);
-}
 
 Map<Type, JsObject> _behaviorsByType = {};
 
@@ -53,26 +50,3 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
 }
 
 const behavior = const Behavior();
-
-// Annotation class for wrappers around behaviors written in javascript.
-class BehaviorProxy implements BehaviorAnnotation {
-  // Path within js global context object to the original js behavior object.
-  final List<String> _jsPath;
-
-  // Returns the actual behavior.
-  JsObject getBehavior(Type type) {
-    return _behaviorsByType.putIfAbsent(type, () {
-      if (_jsPath.isEmpty) {
-        throw 'Invalid empty path for BehaviorProxy $_jsPath.';
-      }
-      var obj = context;
-      for (var part in _jsPath) {
-        obj = obj[part];
-      }
-      return obj;
-    });
-  }
-
-  // TODO(jakemac): Support dot separated Strings for paths?
-  const BehaviorProxy(this._jsPath);
-}
