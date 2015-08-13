@@ -50,6 +50,7 @@ class Behavior extends Reflectable implements BehaviorInterface {
   const Behavior()
       : super(declarationsCapability, typeCapability, const StaticInvokeCapability(_lifecycleMethodsPattern));
 }
+const behavior = const Behavior();
 
 // Annotation class for wrappers around behaviors written in javascript.
 class BehaviorProxy implements BehaviorInterface {
