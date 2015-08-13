@@ -76,7 +76,7 @@ main() async {
       });
 
       _testAttributeChanged(invocations) {
-        expect(invocations['attributeChanged'], [
+       expect(invocations['attributeChanged'], [
           [el, 'js', null, 'hello'],
           [el, 'dart', null, 'hello'],
         ]);
@@ -166,6 +166,7 @@ main() async {
       test('get assigned', () {
         expect(el.attributes['dart'], 'hello');
         expect(el.attributes['js'], 'hello');
+
       });
     });
   });

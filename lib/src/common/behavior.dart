@@ -80,6 +80,7 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
             const StaticInvokeCapability(_allMethods),
             const InstanceInvokeCapability(_allMethods));
 }
+const behavior = const Behavior();
 
 const behavior = const Behavior();
 
