@@ -9,6 +9,7 @@ import 'dart:js';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
 import 'package:web_components/web_components.dart';
+import '../../common.dart';
 
 main() async {
   await initPolymer();
