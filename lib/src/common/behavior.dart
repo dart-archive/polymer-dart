@@ -40,7 +40,7 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
         if (name == _attributeChanged) {
           obj[name] = new JsFunction.withThis(
               (thisArg, String attributeName, String oldVal, String newVal) {
-            typeMirror.invoke(
+           typeMirror.invoke(
                 name, [dartValue(thisArg), attributeName, oldVal, newVal]);
           });
         } else {
@@ -80,6 +80,7 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
             const StaticInvokeCapability(_allMethods),
             const InstanceInvokeCapability(_allMethods));
 }
+
 const behavior = const Behavior();
 
 const behavior = const Behavior();
