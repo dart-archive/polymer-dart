@@ -6,12 +6,9 @@ library polymer.src.common.behavior;
 import 'dart:js';
 import 'package:reflectable/reflectable.dart';
 import 'js_proxy.dart';
-import 'polymer_descriptor.dart';
-
-typedef void _VoidFn();
 
 // Interface for behavior annotations.
-abstract class BehaviorInterface {
+abstract class BehaviorAnnotation {
   // Returns the JsObject created for this behavior.
   JsObject getBehavior(Type type);
 }
@@ -23,7 +20,7 @@ const String _lifecycleMethodsPattern =
 final RegExp _lifecycleMethodsRegex = new RegExp(_lifecycleMethodsPattern);
 
 // Annotation class for behaviors written in dart.
-class Behavior extends Reflectable implements BehaviorInterface {
+class Behavior extends Reflectable implements BehaviorAnnotation {
   JsObject getBehavior(Type type) {
     return _behaviorsByType.putIfAbsent(type, () {
       var obj = new JsObject(context['Object']);
@@ -35,7 +32,7 @@ class Behavior extends Reflectable implements BehaviorInterface {
         if (!_lifecycleMethodsRegex.hasMatch(name)) return;
         if (name == 'attributeChanged') {
           obj[name] = new JsFunction.withThis(
-                  (thisArg, String attributeName, Type type, value) {
+              (thisArg, String attributeName, Type type, value) {
             typeMirror.invoke(
                 name, [dartValue(thisArg), attributeName, type, value]);
           });
@@ -51,12 +48,14 @@ class Behavior extends Reflectable implements BehaviorInterface {
   }
 
   const Behavior()
-      : super(declarationsCapability, typeCapability, const StaticInvokeCapability(_lifecycleMethodsPattern));
+      : super(declarationsCapability, typeCapability,
+            const StaticInvokeCapability(_lifecycleMethodsPattern));
 }
+
 const behavior = const Behavior();
 
 // Annotation class for wrappers around behaviors written in javascript.
-class BehaviorProxy implements BehaviorInterface {
+class BehaviorProxy implements BehaviorAnnotation {
   // Path within js global context object to the original js behavior object.
   final List<String> _jsPath;
 
@@ -74,5 +73,6 @@ class BehaviorProxy implements BehaviorInterface {
     });
   }
 
+  // TODO(jakemac): Support dot separated Strings for paths?
   const BehaviorProxy(this._jsPath);
 }
