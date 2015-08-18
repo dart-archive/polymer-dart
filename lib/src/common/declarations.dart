@@ -11,7 +11,7 @@ List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
   var typeMirror = _reflect(type, reflectionClass);
   var mixins = [];
   var superClass = _getSuper(typeMirror);
-  while (superClass != null && superClass.mixin.reflectedType != PolymerMixin) {
+  while (superClass != null && !_isPolymerMixin(superClass.mixin)) {
     var mixin = superClass.mixin;
     if (mixin != superClass && (where == null || where(mixin))) {
       mixins.add(mixin);
@@ -27,7 +27,7 @@ Map<String, DeclarationMirror> declarationsFor(
   var typeMirror = _reflect(type, reflectionClass);
   var declarations = {};
   var superClass = typeMirror;
-  while (superClass != null && superClass.mixin.reflectedType != PolymerMixin) {
+  while (superClass != null && !_isPolymerMixin(superClass.mixin)) {
     superClass.declarations.forEach((name, declaration) {
       if (declarations.containsKey(name)) return;
       if (where != null && !where(name, declaration)) return;
@@ -36,6 +36,11 @@ Map<String, DeclarationMirror> declarationsFor(
     superClass = _getSuper(superClass);
   }
   return declarations;
+}
+
+bool _isPolymerMixin(ClassMirror clazz) {
+  return clazz.reflectedType == PolymerMixin ||
+      clazz.reflectedType == PolymerBase;
 }
 
 ClassMirror _reflect(Type type, Reflectable reflectionClass) {
