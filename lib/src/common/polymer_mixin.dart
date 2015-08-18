@@ -32,10 +32,6 @@ abstract class PolymerMixin implements JsProxy {
   void set(String path, value) =>
       jsElement.callMethod('set', [path, jsValue(value)]);
 
-  /// Notify of a change to a property path.
-  void notifyPath(String path, value) =>
-    jsElement.callMethod('notifyPath', [path, jsValue(value)]);
-
   /// Add `item` to a list at `path`.
   void add(String path, item) {
     smoke.read(this, smoke.nameToSymbol(path))..add(item);
@@ -178,27 +174,6 @@ abstract class PolymerMixin implements JsProxy {
 
   /// TODO(jakemac): Sort? What is the best way to accomplish this on the js
   /// side of things in polymer?
-
-  // TODO(jakemac): investigate wrapping this object in something that
-  // implements map, see
-  // https://chromiumcodereview.appspot.com/23291005/patch/25001/26002 for an
-  // example of this.
-  JsObject get $ => jsElement[r'$'];
-
-  /// The shadow or shady root, depending on which system is in use.
-  DocumentFragment get root => jsElement['root'];
-
-  /// Fire a custom event.
-  CustomEvent fire( String type, {
-      dynamic detail, bool canBubble: true, bool cancelable: true, Node node}) {
-    var options = {
-      'node': node,
-      'bubbles': canBubble,
-      'cancelable': cancelable,
-    };
-    return jsElement.callMethod(
-        'fire', [type, jsValue(detail), jsValue(options)]);
-  }
 }
 
 class Foo extends Object with Polymer, Polymer, Polymer {}

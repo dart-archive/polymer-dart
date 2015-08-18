@@ -204,7 +204,7 @@ main() async {
 }
 
 @PolymerRegister('test-element')
-class TestElement extends HtmlElement with PolymerMixin, JsProxy {
+class TestElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
   @property
   int myInt = 1;
 
