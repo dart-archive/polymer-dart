@@ -77,8 +77,8 @@ JsFunction _buildJsConstructorForType(Type dartType) {
   var constructor = _polymerDart.callMethod('functionFactory');
   var prototype = new JsObject(context['Object']);
 
-  var declarations = declarationsFor(
-      dartType, jsProxyReflectable, where: (name, declaration) {
+  var declarations =
+      declarationsFor(dartType, jsProxyReflectable, where: (name, declaration) {
     // Skip declarations from [BehaviorProxy] classes. These should not
     // read/write from the dart class.
     return !declaration.owner.metadata.any((m) => m is BehaviorProxy);
