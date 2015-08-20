@@ -28,6 +28,7 @@ BSD-style license that can be found in the LICENSE file.
         'attached': [],
         'detached': [],
         'attributeChanged': [],
+        'ready': [],
         'jsBehaviorStringChanged': [],
         'jsBehaviorNumChanged': [],
         'onJsBehaviorEvent': []
@@ -43,6 +44,9 @@ BSD-style license that can be found in the LICENSE file.
     },
     attributeChanged: function(name, type, value) {
       this.jsInvocations['attributeChanged'].push([this, name, type, value]);
+    },
+    ready: function() {
+      this.jsInvocations['ready'].push([this]);
     },
 
     // Properties

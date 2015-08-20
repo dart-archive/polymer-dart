@@ -25,6 +25,9 @@ main() async {
         expect(invocations['created'], [
           [el]
         ]);
+        expect(invocations['ready'], [
+          [el]
+        ]);
         expect(invocations['attached'], isEmpty);
         expect(invocations['detached'], isEmpty);
         expect(invocations['attributeChanged'], isEmpty);
@@ -182,6 +185,7 @@ class DartBehavior {
     'attached': [],
     'detached': [],
     'attributeChanged': [],
+    'ready': [],
     'dartBehaviorStringChanged': [],
     'dartBehaviorNumChanged': [],
     'onDartBehaviorEvent': []
@@ -203,6 +207,10 @@ class DartBehavior {
   static attributeChanged(DartBehavior thisArg, String name, type, value) {
     thisArg.dartInvocations['attributeChanged']
         .add([thisArg, name, type, value]);
+  }
+
+  static ready(DartBehavior thisArg) {
+    thisArg.dartInvocations['ready'].add([thisArg]);
   }
 
   // Properties
