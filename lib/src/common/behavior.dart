@@ -13,7 +13,7 @@ import 'js_proxy.dart';
 Map<Type, JsObject> _behaviorsByType = {};
 
 const String _lifecycleMethodsPattern =
-    r'^created|attached|detached|attributeChanged$';
+    r'^created|attached|detached|attributeChanged|ready$';
 final RegExp _lifecycleMethodsRegex = new RegExp(_lifecycleMethodsPattern);
 
 // Annotation class for behaviors written in dart.
