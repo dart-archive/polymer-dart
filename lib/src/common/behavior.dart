@@ -8,6 +8,7 @@ import 'package:polymer_interop/polymer_interop.dart' show BehaviorAnnotation;
 export 'package:polymer_interop/polymer_interop.dart'
     show BehaviorAnnotation, BehaviorProxy;
 import 'package:reflectable/reflectable.dart';
+import 'declarations.dart';
 import 'js_proxy.dart';
 
 Map<Type, JsObject> _behaviorsByType = {};
@@ -40,13 +41,30 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
         }
       });
 
-      return obj;
+      // Check superinterfaces for additional behaviors.
+      var behaviors = [];
+      for (var interface in typeMirror.superinterfaces) {
+        var meta =
+            interface.metadata.firstWhere(_isBehavior, orElse: () => null);
+        if (meta == null) continue;
+        behaviors.add(meta.getBehavior(interface.reflectedType));
+      }
+
+      // If we have no additional behaviors, then just return `obj`.
+      if (behaviors.isEmpty) return obj;
+
+      // If we do have dependent behaviors, return the list of all of them,
+      // adding `obj` to the end.
+      behaviors.add(obj);
+      return new JsArray.from(behaviors);
     });
   }
 
   const Behavior()
-      : super(declarationsCapability, typeCapability,
+      : super(declarationsCapability, typeCapability, metadataCapability,
             const StaticInvokeCapability(_lifecycleMethodsPattern));
 }
 
 const behavior = const Behavior();
+
+bool _isBehavior(instance) => instance is BehaviorAnnotation;
