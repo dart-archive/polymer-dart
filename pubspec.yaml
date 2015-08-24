@@ -21,6 +21,7 @@ transformers:
 - reflectable:
     entry_points:
       - test/src/common/behavior_test.dart
+      - test/src/common/behavior_composition_test.dart
       - test/src/common/js_proxy_test.dart
       - test/src/common/polymer_descriptor_test.dart
       - test/src/common/polymer_mixin_test.dart
