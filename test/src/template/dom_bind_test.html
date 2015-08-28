@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <script src="packages/web_components/webcomponents.min.js"></script>
+  <link rel="x-dart-test" href="dom_bind_test.dart">
+  <!--<script type="application/dart" src="dom_bind_test.dart"></script>-->
+  <script src="packages/test/dart.js"></script>
+</head>
+<body>
+<template is="dom-bind">
+  <user-element user="{{user}}"></user-element>
+  <div class="name">{{user.name}}</div>
+</template>
+<dom-module id="user-element">
+  <template>
+    <span>{{user.name}}</span>
+  </template>
+</dom-module>
+</body>
+</html>

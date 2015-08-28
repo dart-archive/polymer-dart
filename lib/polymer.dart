@@ -11,5 +11,6 @@ export 'src/common/event_handler.dart';
 export 'src/common/listen.dart';
 export 'src/common/observe.dart';
 export 'src/template/array_selector.dart';
+export 'src/template/dom_bind.dart';
 export 'src/template/dom_if.dart';
 export 'src/template/dom_repeat.dart';
