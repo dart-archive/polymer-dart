@@ -6,7 +6,6 @@ library polymer.src.common.polymer_js_proxy;
 import 'dart:html';
 import 'dart:js';
 import 'package:polymer_interop/polymer_interop.dart' show Polymer, PolymerDom;
-import 'package:smoke/smoke.dart' as smoke;
 import 'js_proxy.dart';
 
 
@@ -34,28 +33,23 @@ abstract class PolymerMixin implements JsProxy {
 
   /// Add `item` to a list at `path`.
   void add(String path, item) {
-    smoke.read(this, smoke.nameToSymbol(path))..add(item);
     jsElement.callMethod('push', [path, jsValue(item)]);
   }
 
   /// Add `items` to a list at `path`.
   void addAll(String path, Iterable items) {
-    smoke.read(this, smoke.nameToSymbol(path))..addAll(items);
     jsElement.callMethod(
         'push', [path]..addAll(items.map((item) => jsValue(item))));
   }
 
   /// Remove all items from a list at `path`.
   void clear(String path) {
-    smoke.read(this, smoke.nameToSymbol(path))..clear();
     jsElement.callMethod('splice', [path, 0, jsElement[path].length]);
   }
 
   /// Sets the objects in the range `start` inclusive to `end` exclusive to the
   /// given `fillValue` on the list at `path`.
   void fillRange(String path, int start, int end, [fillValue]) {
-    smoke.read(this, smoke.nameToSymbol(path))
-      ..fillRange(start, end, fillValue);
     var numToFill = end - start;
     jsElement.callMethod(
         'splice',
@@ -63,15 +57,16 @@ abstract class PolymerMixin implements JsProxy {
           ..addAll(new List.filled(numToFill, jsValue(fillValue))));
   }
 
+  /// Gets a value at `path`.
+  get(String path) => dartValue(jsElement.callMethod('get', [path]));
+
   /// Inserts `element` at position `index` to the list at `path`.
   void insert(String path, int index, element) {
-    smoke.read(this, smoke.nameToSymbol(path))..insert(index, element);
     jsElement.callMethod('splice', [path, index, 0, jsValue(element)]);
   }
 
   /// Inserts `elements` at position `index` to the list at `path`.
   void insertAll(String path, int index, Iterable elements) {
-    smoke.read(this, smoke.nameToSymbol(path))..insertAll(index, elements);
     jsElement.callMethod(
         'splice',
         [path, index, 0]..addAll(elements.map((element) => jsValue(element))));
@@ -82,10 +77,8 @@ abstract class PolymerMixin implements JsProxy {
   /// **Note**: Renamed from `remove` because that conflicts with
   /// HtmlElement.remove.
   bool removeItem(String path, value) {
-    List list = smoke.read(this, smoke.nameToSymbol(path));
+    List list = get(path);
     var index = list.indexOf(value);
-    if (index == -1) return false;
-    list.remove(value);
     /// Assumes the lists are in sync! We are in lots of trouble if they aren't
     /// though, and verifying it is a lot more expensive.
     jsElement.callMethod('splice', [path, index, 1]);
@@ -95,29 +88,24 @@ abstract class PolymerMixin implements JsProxy {
   /// Removes the item at `index` from the list at `path`. Returns the removed
   /// element.
   dynamic removeAt(String path, int index) {
-    var element = smoke.read(this, smoke.nameToSymbol(path)).removeAt(index);
-    jsElement.callMethod('splice', [path, index, 1]);
-    return element;
+    return dartValue(jsElement.callMethod('splice', [path, index, 1])[0]);
   }
 
   /// Removes the last from the list at `path`. Returns the removed element.
   dynamic removeLast(String path) {
-    var element = smoke.read(this, smoke.nameToSymbol(path)).removeLast();
-    jsElement.callMethod('pop', [path]);
-    return element;
+    return dartValue(jsElement.callMethod('pop', [path]));
   }
 
   /// Removes the objects in the range `start` inclusive to `end` exclusive from
   /// the list at `path`.
   void removeRange(String path, int start, int end) {
-    smoke.read(this, smoke.nameToSymbol(path))..removeRange(start, end);
     jsElement.callMethod('splice', [path, start, end - start]);
   }
 
   /// Removes all objects from the list at `path` that satisfy `test`.
   /// TODO(jakemac): Optimize by removing whole ranges?
   void removeWhere(String path, bool test(element)) {
-    var list = smoke.read(this, smoke.nameToSymbol(path));
+    var list = get(path);
     var indexesToRemove = [];
     for (int i = 0; i < list.length; i++) {
       if (test(list[i])) indexesToRemove.add(i);
@@ -130,8 +118,6 @@ abstract class PolymerMixin implements JsProxy {
   /// Removes the objects in the range `start` inclusive to `end` exclusive and
   /// inserts the contents of `replacement` in its place for the list at `path`.
   void replaceRange(String path, int start, int end, Iterable replacement) {
-    smoke.read(this, smoke.nameToSymbol(path))
-      ..replaceRange(start, end, replacement);
     jsElement.callMethod(
         'splice',
         [path, start, end - start]
@@ -146,9 +132,8 @@ abstract class PolymerMixin implements JsProxy {
   /// Overwrites objects in the list at `path` with the objects of `iterable`,
   /// starting at position `index` in this list.
   void setAll(String path, int index, Iterable iterable) {
-    var list = smoke.read(this, smoke.nameToSymbol(path));
+    var list = get(path);
     var numToRemove = list.length - index;
-    list..setAll(index, iterable);
     jsElement.callMethod(
         'splice',
         [path, index, numToRemove]
@@ -159,8 +144,6 @@ abstract class PolymerMixin implements JsProxy {
   /// the range `start`, inclusive, to `end`, exclusive, of the list at `path`.
   void setRange(
       String path, int start, int end, Iterable iterable, [int skipCount = 0]) {
-    smoke.read(this, smoke.nameToSymbol(path))
-      ..setRange(start, end, iterable, skipCount);
     int numToReplace = end - start;
     jsElement.callMethod(
       'splice',

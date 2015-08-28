@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <script src="packages/web_components/webcomponents.min.js"></script>
+  <link rel="x-dart-test" href="array_selector_test.dart">
+  <!--<script type="application/dart" src="array_selector_test.dart"></script>-->
+  <script src="packages/test/dart.js"></script>
+</head>
+<body>
+<dom-module id="employee-list">
+
+  <template>
+
+    <div> Employee list: </div>
+    <template is="dom-repeat" id="employeeList" items="{{employees}}">
+      <div>First name: <span>{{item.first}}</span></div>
+      <div>Last name: <span>{{item.last}}</span></div>
+      <button on-click="toggleSelection">Select</button>
+    </template>
+
+    <array-selector id="selector" items="{{employees}}" selected="{{selected}}" multi toggle></array-selector>
+
+    <div> Selected employees: </div>
+    <template is="dom-repeat" id="selectedEmployeeList" items="{{selected}}">
+      <div>First name: <span>{{item.first}}</span></div>
+      <div>Last name: <span>{{item.last}}</span></div>
+    </template>
+
+  </template>
+</dom-module>
+</body>
+</html>

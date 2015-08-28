@@ -86,6 +86,23 @@ class DomRepeat extends TemplateElement with CustomElementProxyMixin {
   ///   if (model.index < 10) {
   ///     model.set('item.checked', true);
   ///   }
-  JsObject modelForElement(Element element) =>
-      dartValue(jsElement.callMethod('modelForElement', [element]));
+  DomRepeatModel modelForElement(Element element) =>
+      new DomRepeatModel(jsElement.callMethod('modelForElement', [element]));
+
+  /// Returns the actual `model.item` for an element.
+  itemForElement(Element element) =>
+      dartValue(jsElement.callMethod('itemForElement', [element]));
+}
+
+// Dart wrapper for template models that come back from dom-repeat.
+class DomRepeatModel {
+  final JsObject _proxy;
+  get item => dartValue(_proxy['item']);
+  int get index => _proxy['index'];
+
+  DomRepeatModel(this._proxy);
+  factory DomRepeatModel.fromEvent(e) {
+    var proxy = new JsObject.fromBrowserObject(e)['model'];
+    return new DomRepeatModel(proxy);
+  }
 }
