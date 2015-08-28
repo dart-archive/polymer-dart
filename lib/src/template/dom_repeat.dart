@@ -10,7 +10,8 @@ import 'package:web_components/web_components.dart';
 import 'package:polymer/polymer.dart';
 
 @CustomElementProxy('dom-repeat', extendsTag: 'template')
-class DomRepeat extends TemplateElement with CustomElementProxyMixin {
+class DomRepeat extends TemplateElement
+    with CustomElementProxyMixin, PolymerBase {
   DomRepeat.created() : super.created();
 
   /// An array containing items determining how many instances of the template
@@ -104,14 +105,18 @@ class DomRepeat extends TemplateElement with CustomElementProxyMixin {
 }
 
 // Dart wrapper for template models that come back from dom-repeat.
-class DomRepeatModel {
-  final JsObject _proxy;
-  get item => dartValue(_proxy['item']);
-  int get index => _proxy['index'];
+class DomRepeatModel extends Object with PolymerBase {
+  final JsObject jsElement;
 
-  DomRepeatModel(this._proxy);
+  get item => dartValue(jsElement['item']);
+  int get index => jsElement['index'];
+
+  DomRepeatModel(this.jsElement);
   factory DomRepeatModel.fromEvent(e) {
     var proxy = new JsObject.fromBrowserObject(e)['model'];
+    if (proxy is HtmlElement) {
+      proxy = new JsObject.fromBrowserObject(proxy);
+    }
     return new DomRepeatModel(proxy);
   }
 }

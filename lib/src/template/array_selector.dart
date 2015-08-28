@@ -8,7 +8,8 @@ import 'package:web_components/web_components.dart';
 import 'package:polymer/polymer.dart';
 
 @CustomElementProxy('array-selector')
-class ArraySelector extends HtmlElement with CustomElementProxyMixin {
+class ArraySelector extends HtmlElement
+    with CustomElementProxyMixin, PolymerBase {
   ArraySelector.created() : super.created();
 
   /// An array containing items from which selection will be made.

@@ -9,7 +9,8 @@ import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 
 @CustomElementProxy('dom-bind', extendsTag: 'template')
-class DomBind extends TemplateElement with CustomElementProxyMixin {
+class DomBind extends TemplateElement
+    with CustomElementProxyMixin, PolymerBase {
   DomBind.created() : super.created();
 
   void render() {

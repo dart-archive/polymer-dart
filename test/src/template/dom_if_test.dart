@@ -3,9 +3,11 @@ library polymer.test.src.template.dom_if_test;
 
 import 'dart:html';
 import 'package:polymer/polymer.dart';
+import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 main() async {
+  smoke.useMirrors();
   await initPolymer();
 
   UserElement element;

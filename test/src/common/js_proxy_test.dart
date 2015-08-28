@@ -8,8 +8,6 @@ import 'dart:js';
 import 'package:polymer/polymer.dart';
 import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
-//import 'package:unittest/unittest.dart';
-//import 'package:unittest/html_config.dart';
 
 class EmptyModel {}
 
@@ -32,15 +30,14 @@ CachedMyModel cachedModel;
 
 main() async {
   smoke.useMirrors();
-//  useHtmlConfiguration();
   await initPolymer();
 
-  setUp(() {
-    model = new MyModel();
-    cachedModel = new CachedMyModel();
-  });
-
   group('basic', () {
+    setUp(() {
+      model = new MyModel();
+      cachedModel = new CachedMyModel();
+    });
+
     test('proxy has reference to the original dart object', () {
       expect(model.jsProxy['__dartClass__'], model);
     });
@@ -76,99 +73,4 @@ main() async {
       expect(cachedModel.jsProxy['value'], 10);
     });
   });
-
-  group('dartValue', () {
-    test('array', () {
-      var model = new MyModel();
-      var array = new JsArray.from([1, jsValue(model), 'a']);
-      var dartList = dartValue(array) as List;
-      expect(dartList, [1, model, 'a']);
-      expect(array['__dartClass__'], dartList);
-    });
-
-    test('proxy array', () {
-      var model = new MyModel();
-      var list = [1, model, 'a'];
-      var array = jsValue(list) as JsArray;
-      expect(dartValue(array), list);
-    });
-
-    test('object', () {
-      var model = new MyModel();
-      var object =
-          new JsObject.jsify({'1': 1, 'model': jsValue(model), 'a': 'a',});
-      var dartMap = dartValue(object) as Map;
-      expect(dartMap, {'1': 1, 'model': model, 'a': 'a',});
-      expect(object['__dartClass__'], dartMap);
-    });
-
-    test('proxy object', () {
-      var model = new MyModel();
-      var map = {'1': 1, 'model': model, 'a': 'a',};
-      var object = jsValue(map) as JsObject;
-      expect(dartValue(object), map);
-    });
-
-    test('custom js objects are left alone', () {
-      var constructor = new JsFunction.withThis((_) {});
-      var object = new JsObject(constructor);
-      expect(dartValue(object), object);
-    });
-
-    test('Date objects', () {
-      var jsDate = new JsObject(context['Date'], [1000]);
-      var dartDate = dartValue(jsDate) as DateTime;
-      expect(dartDate.millisecondsSinceEpoch, 1000);
-    });
-  });
-
-  group('jsValue', () {
-    test('JsProxy objects', () {
-      var model = new MyModel();
-      expect(jsValue(model), model.jsProxy);
-    });
-
-    test('JsObject objects', () {
-      var object = new JsObject(context['Object']);
-      expect(jsValue(object), object);
-    });
-
-    test('Iterables', () {
-      var model = new MyModel();
-      var list = [1, model, 2];
-      var jsArray = jsValue(list) as JsArray;
-      expect(jsArray, new JsArray.from([1, model.jsProxy, 2]));
-      expect(jsArray['__dartClass__'], list);
-    });
-
-    test('Maps', () {
-      var model = new MyModel();
-      var map = {'1': 1, 'model': model, 'a': 'a',};
-      var jsObject = jsValue(map) as JsObject;
-      expectEqual(jsObject, {
-        '1': 1,
-        'model': model.jsProxy,
-        'a': 'a',
-        '__dartClass__': map,
-      });
-    });
-
-    test('Arbitrary class', () {
-      var model = new EmptyModel();
-      expect(jsValue(model), model);
-    });
-
-    test('DateTime objects', () {
-      var dartDate = new DateTime.fromMillisecondsSinceEpoch(1000);
-      var jsDate = jsValue(dartDate);
-      expect(jsDate.callMethod('getTime'), 1000);
-    });
-  });
-}
-
-void expectEqual(JsObject actual, Map expected) {
-  var keys = context['Object'].callMethod('keys', [actual]);
-  for (var key in keys) {
-    expect(expected[key], actual[key]);
-  }
 }

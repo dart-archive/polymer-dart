@@ -4,9 +4,11 @@ library polymer.test.src.template.array_selector_test;
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
+import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 main() async {
+  smoke.useMirrors();
   await initPolymer();
 
   EmployeeList element;

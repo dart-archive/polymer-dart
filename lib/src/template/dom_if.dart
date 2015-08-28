@@ -9,7 +9,7 @@ import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 
 @CustomElementProxy('dom-if', extendsTag: 'template')
-class DomIf extends TemplateElement with CustomElementProxyMixin {
+class DomIf extends TemplateElement with CustomElementProxyMixin, PolymerBase {
   DomIf.created() : super.created();
 
   void render() => jsElement.callMethod('render');

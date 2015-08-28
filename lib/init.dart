@@ -5,7 +5,6 @@ library polymer.lib.init;
 
 import 'dart:async';
 import 'dart:js';
-import 'package:initialize/initialize.dart' show Initializer;
 import 'package:web_components/web_components.dart';
 import 'src/common/js_proxy.dart';
 import 'src/common/polymer_register.dart';

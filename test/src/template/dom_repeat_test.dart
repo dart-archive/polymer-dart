@@ -4,9 +4,11 @@ library polymer.test.src.template.dom_repeat_test;
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
+import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 main() async {
+  smoke.useMirrors();
   await initPolymer();
 
   UserList element;
@@ -28,6 +30,14 @@ main() async {
       expectUsers(element, ['A', 'B', 'C', 'D']);
       element.removeRange('users', 1, 3);
       expectUsers(element, ['A', 'D']);
+    });
+
+    test('modify items from model', () {
+      element.userList.render();
+      var model = element.userList.modelForElement(
+          Polymer.dom(element.root).querySelector('.user'));
+      model.set('item.name', 'C');
+      expectUsers(element, ['C', 'B']);
     });
 
     test('sort items by method name', () {
