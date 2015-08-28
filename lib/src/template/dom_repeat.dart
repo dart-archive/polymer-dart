@@ -40,6 +40,10 @@ class DomRepeat extends TemplateElement with CustomElementProxyMixin {
   /// Using a sort function has no effect on the underlying `items` array.
   dynamic get sort => dartValue(jsElement['sort']);
   void set sort(newVal) {
+    if (newVal is Function) {
+      var original = newVal;
+      newVal = (a, b) => original(dartValue(a), dartValue(b));
+    }
     jsElement.callMethod('set', ['sort', newVal]);
   }
 
@@ -50,6 +54,11 @@ class DomRepeat extends TemplateElement with CustomElementProxyMixin {
   /// Using a filter function has no effect on the underlying `items` array.
   dynamic get filter => dartValue(jsElement['filter']);
   void set filter(newVal) {
+    if (newVal is Function) {
+      var original = newVal;
+      newVal = (element, [index, array]) =>
+          original(dartValue(element), index, dartValue(array));
+    }
     jsElement.callMethod('set', ['filter', newVal]);
   }
 
