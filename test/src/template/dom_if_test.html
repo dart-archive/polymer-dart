@@ -7,15 +7,16 @@ BSD-style license that can be found in the LICENSE file.
 <html>
 <head>
   <script src="packages/web_components/webcomponents.min.js"></script>
-  <link rel="x-dart-test" href="dom_repeat_test.dart">
-  <!--<script type="application/dart" src="dom_repeat_test.dart"></script>-->
+  <link rel="x-dart-test" href="dom_if_test.dart">
+  <!--<script type="application/dart" src="dom_if_test.dart"></script>-->
   <script src="packages/test/dart.js"></script>
 </head>
 <body>
-<dom-module id="user-list">
+<dom-module id="user-element">
   <template>
-    <template is="dom-repeat" id="userList" items="{{users}}">
-      <div class="user">{{item.name}}</div>
+    <span>{{user.name}}</span>
+    <template id="adminIf" is="dom-if" if="{{user.isAdmin}}">
+      <span class="admin-only">Admin Only Info!!</span>
     </template>
   </template>
 </dom-module>

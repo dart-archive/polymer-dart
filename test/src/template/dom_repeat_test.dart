@@ -11,7 +11,7 @@ main() async {
 
   UserList element;
 
-  group('dome-repeat', () {
+  group('dom-repeat', () {
     setUp(() {
       element = new UserList();
     });
