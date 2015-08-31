@@ -18,16 +18,25 @@ BSD-style license that can be found in the LICENSE file.
     Polymer.Base.originalDeserialize = Polymer.Base.deserialize;
 
     Polymer.Dart = {};
+
+    // Placeholder for `undefined` return values. This should eventually go
+    // away, once we have dart:js support for `undefined`.
+    Polymer.Dart.undefined = {};
+
     // Used to get an empty constructor function which doesn't call into dart.
     Polymer.Dart.functionFactory = function() { return function() {}; };
+
     // Generates a function which accesses a particular property on a dart
     // class
     Polymer.Dart.propertyAccessorFactory = function(property, dartGetter) {
       return function() {
         if (this.__cache__) return this.__cache__[property];
-        return dartGetter(this.__dartClass__);
+        var value = dartGetter(this.__dartClass__);
+        if (value === Polymer.Dart.undefined) return undefined;
+        return value;
       };
     };
+
     // Generates a function which sets a particular property on a dart class.
     Polymer.Dart.propertySetterFactory = function(property, dartSetter) {
       return function(value) {
@@ -35,6 +44,7 @@ BSD-style license that can be found in the LICENSE file.
         dartSetter(this.__dartClass__, value);
       };
     };
+
     // Generates a function which invokes a dart function with this or the
     // __dartClass__ proxy if it exists as the first argument, and all other
     // arguments as the second argument.
@@ -47,7 +57,9 @@ BSD-style license that can be found in the LICENSE file.
         for (var i = 0; i < arguments.length; i++) {
           args[i] = arguments[i];
         }
-        return dartFunction(thisArg, args);
+        var value = dartFunction(thisArg, args);
+        if (value === Polymer.Dart.undefined) return undefined;
+        return value;
       }
     };
   })();
