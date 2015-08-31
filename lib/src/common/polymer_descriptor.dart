@@ -13,6 +13,7 @@ import 'event_handler.dart';
 import 'listen.dart';
 import 'observe.dart';
 import 'polymer_register.dart';
+import '../js/undefined.dart';
 
 /// Creates a javascript object which can be passed to polymer js to register
 /// an element, given a dart [Type] and a [PolymerRegister] annotation.
@@ -180,10 +181,12 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
     'observer': annotation.observer,
     'reflectToAttribute': annotation.reflectToAttribute,
     'computed': annotation.computed,
-    'value': new JsFunction.withThis((dartInstance, [_]) {
+    'value':_polymerDart.callMethod('invokeDartFactory', [(dartInstance, _) {
       var instanceMirror = jsProxyReflectable.reflect(dartInstance);
-      return jsValue(instanceMirror.invokeGetter(declaration.simpleName));
-    }),
+      var value = jsValue(instanceMirror.invokeGetter(declaration.simpleName));
+      if (value == null) return polymerDartUndefined;
+      return value;
+    }]),
   };
   if (isFinal) {
     property['readOnly'] = true;
