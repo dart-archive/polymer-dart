@@ -42,6 +42,10 @@ transformers:
       - test/src/standard/property_change_notification_test.dart
       - test/src/standard/read_only_properties_test.dart
       - test/src/standard/reflect_to_attribute_test.dart
+      - test/src/template/array_selector_test.dart
+      - test/src/template/dom_bind_test.dart
+      - test/src/template/dom_if_test.dart
+      - test/src/template/dom_repeat_test.dart
 dependency_overrides:
   polymer_interop:
     git:
