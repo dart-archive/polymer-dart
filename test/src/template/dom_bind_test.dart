@@ -3,11 +3,9 @@ library polymer.test.src.template.dom_bind_test;
 
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   DomBind domBind;
@@ -35,6 +33,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('user-element')
 class UserElement extends PolymerElement {
   UserElement.created() : super.created();
@@ -44,6 +43,7 @@ class UserElement extends PolymerElement {
   User user = new User('Bob');
 }
 
+@jsProxyReflectable
 class User extends JsProxy {
   String name;
   User(this.name);

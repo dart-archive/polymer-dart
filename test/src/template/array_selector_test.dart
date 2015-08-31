@@ -4,11 +4,9 @@ library polymer.test.src.template.array_selector_test;
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   EmployeeList element;
@@ -44,6 +42,7 @@ main() async {
   });
 }
 
+@jsProxyReflectable
 @PolymerRegister('employee-list')
 class EmployeeList extends PolymerElement {
   EmployeeList.created() : super.created();
@@ -73,6 +72,7 @@ class EmployeeList extends PolymerElement {
   }
 }
 
+@jsProxyReflectable
 class Employee extends JsProxy {
   String first;
   String last;

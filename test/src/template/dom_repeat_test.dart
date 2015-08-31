@@ -4,11 +4,9 @@ library polymer.test.src.template.dom_repeat_test;
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:smoke/mirrors.dart' as smoke;
 import 'package:test/test.dart';
 
 main() async {
-  smoke.useMirrors();
   await initPolymer();
 
   UserList element;
@@ -110,6 +108,7 @@ void expectUsers(UserList element, List<String> names) {
   }
 }
 
+@jsProxyReflectable
 @PolymerRegister('user-list')
 class UserList extends PolymerElement {
   UserList.created() : super.created();
@@ -139,6 +138,7 @@ class UserList extends PolymerElement {
   }
 }
 
+@jsProxyReflectable
 class User extends JsProxy {
   String name;
   User(this.name);
