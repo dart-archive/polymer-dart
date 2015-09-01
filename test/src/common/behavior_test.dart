@@ -30,7 +30,6 @@ main() async {
         ]);
         expect(invocations['attached'], isEmpty);
         expect(invocations['detached'], isEmpty);
-        expect(invocations['attributeChanged'], isEmpty);
       }
 
       test('JS created', () {
@@ -47,7 +46,6 @@ main() async {
           [el]
         ]);
         expect(invocations['detached'], isEmpty);
-        expect(invocations['attributeChanged'], isEmpty);
       }
 
       test('JS attached', () {
@@ -64,7 +62,6 @@ main() async {
         expect(invocations['detached'], [
           [el]
         ]);
-        expect(invocations['attributeChanged'], isEmpty);
       }
 
       test('JS detached', () {
@@ -76,9 +73,17 @@ main() async {
       });
 
       _testAttributeChanged(invocations) {
-        el.attributes['foo'] = 'bar';
         expect(invocations['attributeChanged'], [
-          [el, 'foo', null, 'bar']
+          [el, 'js', null, 'hello'],
+          [el, 'dart', null, 'hello'],
+        ]);
+        el.attributes['js'] = 'is widely used';
+        el.attributes['dart'] = 'is the best';
+        expect(invocations['attributeChanged'], [
+          [el, 'js', null, 'hello'],
+          [el, 'dart', null, 'hello'],
+          [el, 'js', 'hello', 'is widely used'],
+          [el, 'dart', 'hello', 'is the best'],
         ]);
       }
 
@@ -151,6 +156,13 @@ main() async {
         expect(el.dartInvocations['onDartBehaviorEvent'], [
           [e, e.detail]
         ]);
+      });
+    });
+
+    group('host attributes', () {
+      test('get assigned', () {
+        expect(el.attributes['dart'], 'hello');
+        expect(el.attributes['js'], 'hello');
       });
     });
   });
@@ -229,6 +241,11 @@ class DartBehavior {
   void onDartBehaviorEvent(e, [_]) {
     dartInvocations['onDartBehaviorEvent'].add([e, _]);
   }
+
+  // Host Attributes
+  static const Map<String, String> hostAttributes = const {
+    'dart': 'hello'
+  };
 }
 
 @jsProxyReflectable

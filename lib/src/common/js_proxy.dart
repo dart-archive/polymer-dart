@@ -50,8 +50,12 @@ JsObject _buildJsProxy(JsProxy instance) {
 
 class JsProxyReflectable extends Reflectable {
   const JsProxyReflectable()
-      : super(instanceInvokeCapability, metadataCapability,
-            declarationsCapability, typeCapability);
+      : super(
+            instanceInvokeCapability,
+            metadataCapability,
+            declarationsCapability,
+            typeCapability,
+            const StaticInvokeCapability('hostAttributes'));
 }
 
 const jsProxyReflectable = const JsProxyReflectable();

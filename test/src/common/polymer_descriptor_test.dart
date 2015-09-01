@@ -13,14 +13,13 @@ main() async {
   await initPolymer();
 
   test('can build polymer descriptor objects', () {
-    var annotation = const PolymerRegister('test-element',
-        extendsTag: 'div', hostAttributes: const {'foo': 'bar',});
+    var annotation = const PolymerRegister('test-element', extendsTag: 'div');
     JsObject descriptor = createPolymerDescriptor(Test, annotation);
 
     expect(descriptor['is'], annotation.tagName);
     expect(descriptor['extends'], annotation.extendsTag);
     expect(descriptor['__isPolymerDart__'], true);
-    expectEqual(descriptor['hostAttributes'], annotation.hostAttributes);
+    expectEqual(descriptor['hostAttributes'], Test.hostAttributes);
 
     var properties = descriptor['properties'];
     expectProperty(properties['myString'], type: context['String']);
@@ -166,6 +165,8 @@ class Test extends Object
   num myNumsCombined() {
     return myInt + myDouble + myNum;
   }
+
+  static Map<String, String> hostAttributes = const {'foo': 'bar'};
 }
 
 void expectProperty(JsObject actual,

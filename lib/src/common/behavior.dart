@@ -16,6 +16,8 @@ Map<Type, JsObject> _behaviorsByType = {};
 const String _lifecycleMethodsPattern =
     r'^created|attached|detached|attributeChanged|ready$';
 final RegExp _lifecycleMethodsRegex = new RegExp(_lifecycleMethodsPattern);
+const String _hostAttributes = 'hostAttributes';
+const String _allMethods = '${_hostAttributes}|${_lifecycleMethodsPattern}';
 
 // Annotation class for behaviors written in dart.
 class Behavior extends Reflectable implements BehaviorAnnotation {
@@ -27,12 +29,22 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
       // a `this` arg as the first argument.
       var typeMirror = this.reflectType(type);
       typeMirror.staticMembers.forEach((String name, MethodMirror method) {
+        if (name == _hostAttributes) {
+          var hostAttributes = typeMirror.invokeGetter(_hostAttributes);
+          if (hostAttributes is! Map) {
+            throw '`hostAttributes` on $type must be a `Map`, but got a '
+                '${hostAttributes.runtimeType}';
+          }
+          obj['hostAttributes'] = new JsObject.jsify(hostAttributes);
+          return;
+        }
+
         if (!_lifecycleMethodsRegex.hasMatch(name)) return;
         if (name == 'attributeChanged') {
           obj[name] = new JsFunction.withThis(
-              (thisArg, String attributeName, Type type, value) {
+              (thisArg, String attributeName, String oldVal, String newVal) {
             typeMirror.invoke(
-                name, [dartValue(thisArg), attributeName, type, value]);
+                name, [dartValue(thisArg), attributeName, oldVal, newVal]);
           });
         } else {
           obj[name] = new JsFunction.withThis((thisArg) {
@@ -62,7 +74,7 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
 
   const Behavior()
       : super(declarationsCapability, typeCapability, metadataCapability,
-            const StaticInvokeCapability(_lifecycleMethodsPattern));
+            const StaticInvokeCapability(_allMethods));
 }
 
 const behavior = const Behavior();
