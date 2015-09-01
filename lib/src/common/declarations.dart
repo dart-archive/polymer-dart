@@ -8,7 +8,7 @@ import '../../polymer_micro.dart';
 
 List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
     {bool where(ClassMirror mirror)}) {
-  var typeMirror = _reflect(type, reflectionClass);
+  var typeMirror = reflect(type, reflectionClass);
   var mixins = [];
   var superClass = _getSuper(typeMirror);
   while (superClass != null && !_isPolymerMixin(superClass.mixin)) {
@@ -27,7 +27,7 @@ List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
 Map<String, DeclarationMirror> declarationsFor(
     Type type, Reflectable reflectionClass,
     {bool where(String name, DeclarationMirror declaration)}) {
-  var typeMirror = _reflect(type, reflectionClass);
+  var typeMirror = reflect(type, reflectionClass);
   var declarations = {};
   var superClass = typeMirror;
   while (superClass != null && !_isPolymerMixin(superClass.mixin)) {
@@ -46,7 +46,7 @@ bool _isPolymerMixin(ClassMirror clazz) {
       clazz.reflectedType == PolymerBase;
 }
 
-ClassMirror _reflect(Type type, Reflectable reflectionClass) {
+ClassMirror reflect(Type type, Reflectable reflectionClass) {
   try {
     return reflectionClass.reflectType(type);
   } catch (e) {
@@ -79,7 +79,9 @@ bool isProperty(DeclarationMirror declaration) {
 }
 
 bool isRegularMethod(DeclarationMirror declaration) {
-  return declaration is MethodMirror && declaration.isRegularMethod;
+  return declaration is MethodMirror &&
+      !declaration.isStatic &&
+      declaration.isRegularMethod;
 }
 
 bool isSetter(DeclarationMirror declaration) {

@@ -21,7 +21,6 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
   var object = {
     'is': annotation.tagName,
     'extends': annotation.extendsTag,
-    'hostAttributes': annotation.hostAttributes,
     'properties': _buildPropertiesObject(type),
     'observers': _buildObserversObject(type),
     'listeners': _buildListenersObject(type),
@@ -30,6 +29,7 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
   };
   _setupLifecycleMethods(type, object);
   _setupEventHandlerMethods(type, object);
+  _setupHostAttributes(type, object);
 
   return new JsObject.jsify(object);
 }
@@ -152,6 +152,19 @@ void _setupEventHandlerMethods(Type type, Map descriptor) {
       }
     ]);
   });
+}
+
+/// Add the hostAttributes property to the descriptor if it exists.
+void _setupHostAttributes(Type type, Map descriptor) {
+  var typeMirror = reflect(type, jsProxyReflectable);
+  if (typeMirror.staticMembers.containsKey('hostAttributes')) {
+    var hostAttributes = typeMirror.invokeGetter('hostAttributes');
+    if (hostAttributes is! Map) {
+      throw '`hostAttributes` on $type must be a `Map`, but got a '
+      '${hostAttributes.runtimeType}';
+    }
+    descriptor['hostAttributes'] = hostAttributes;
+  }
 }
 
 /// Object that represents a proeprty that was not found.

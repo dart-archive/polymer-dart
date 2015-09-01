@@ -5,9 +5,8 @@
 library polymer.test.src.micro.attributes_test;
 
 import 'dart:html';
+import 'dart:js';
 import 'package:test/test.dart';
-// TODO(jakemac): `mixin` is only defined for polymer standard, but is used
-// by attribute features in micro? May just need to update polymer js.
 import 'package:polymer/polymer.dart';
 
 const _attributesName = 'attributes-test';
@@ -43,8 +42,11 @@ _tests(String elementName) {
       expect(element.attributes['host-bool'], '');
       expect(element.attributes['host-map'], '{"hello":"world"}');
       expect(element.attributes['host-list'], '["hello","world"]');
-  //    expect(DateTime.parse(element.attributes['host-date-time']),
-  //        new DateTime(1987, 07, 18));
+      // TODO(jakemac): Shouldn't have to go through js interop here.
+      expect(
+          element.jsElement.callMethod('deserialize',
+              [element.attributes['host-date-time'], context['Date']]),
+          new DateTime(1987, 07, 18));
     });
 
     if (elementName == _serializeAttributesName) {
@@ -59,15 +61,7 @@ _tests(String elementName) {
 }
 
 @jsProxyReflectable
-@PolymerRegister(_attributesName, hostAttributes: const {
-  'host-string': 'string',
-  'host-num': 2,
-  'host-bool': true,
-  'host-map': const {'hello': 'world'},
-  'host-list': const ['hello', 'world'],
-  // TODO(jakemac): Do we need to support this?
-//  'host-date-time': new DateTime(1987, 07, 18),
-})
+@PolymerRegister(_attributesName)
 class AttributesTest extends PolymerElement {
   @property
   String myString;
@@ -87,25 +81,35 @@ class AttributesTest extends PolymerElement {
   @property
   DateTime myDateTime;
 
+  static final Map<String, String> hostAttributes = {
+    'host-string': 'string',
+    'host-num': 2,
+    'host-bool': true,
+    'host-map': const {'hello': 'world'},
+    'host-list': const ['hello', 'world'],
+    'host-date-time': new DateTime(1987, 07, 18),
+  };
+
   AttributesTest.created() : super.created();
 }
 
 enum Foobar { foo, bar }
 
 @jsProxyReflectable
-@PolymerRegister(_serializeAttributesName, hostAttributes: const {
-  'host-string': 'string',
-  'host-num': 2,
-  'host-bool': true,
-  'host-map': const {'hello': 'world'},
-  'host-list': const ['hello', 'world'],
-  // TODO(jakemac): Do we need to support this?
-//  'host-date-time': new DateTime(1987, 07, 18),
-  'host-foobar': Foobar.bar
-})
+@PolymerRegister(_serializeAttributesName)
 class SerializedAttributesTest extends AttributesTest with PolymerSerialize {
   @property
   Foobar myFoobar = Foobar.bar;
+
+  static final Map<String, String> hostAttributes = {
+    'host-string': 'string',
+    'host-num': 2,
+    'host-bool': true,
+    'host-map': const {'hello': 'world'},
+    'host-list': const ['hello', 'world'],
+    'host-date-time': new DateTime(1987, 07, 18),
+    'host-foobar': Foobar.bar
+  };
 
   SerializedAttributesTest.created() : super.created();
 
