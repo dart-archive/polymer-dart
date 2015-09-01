@@ -116,10 +116,7 @@ main() async {
 
       test('Dart property.observe', () {
         el.set('dartBehaviorString', 'dartValue');
-        // TODO(jakemac): Remove inital `[null, null]` call once we fix
-        // https://github.com/dart-lang/polymer-dart/issues/558
         expect(el.dartInvocations['dartBehaviorStringChanged'], [
-          [null, null],
           ['dartValue', null]
         ]);
       });
@@ -133,10 +130,7 @@ main() async {
 
       test('Dart @Observe', () {
         el.set('dartBehaviorNum', 1);
-        // TODO(jakemac): Remove inital `null` call once we fix
-        // https://github.com/dart-lang/polymer-dart/issues/558
         expect(el.dartInvocations['dartBehaviorNumChanged'], [
-          [null],
           [1]
         ]);
       });
