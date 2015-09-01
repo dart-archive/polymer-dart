@@ -8,7 +8,11 @@ import '../../polymer_micro.dart';
 
 List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
     {bool where(ClassMirror mirror)}) {
+<<<<<<< HEAD
   var typeMirror = reflectionClass.reflectType(type);
+=======
+  var typeMirror = reflect(type, reflectionClass);
+>>>>>>> move hostAttributes to a static field on the class, and add support for it in behavior mixins
   var mixins = [];
   var superClass = _getSuper(typeMirror);
   while (superClass != null && !_isPolymerMixin(superClass.mixin)) {
@@ -27,7 +31,11 @@ List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
 Map<String, DeclarationMirror> declarationsFor(
     Type type, Reflectable reflectionClass,
     {bool where(String name, DeclarationMirror declaration)}) {
+<<<<<<< HEAD
   var typeMirror = reflectionClass.reflectType(type);
+=======
+  var typeMirror = reflect(type, reflectionClass);
+>>>>>>> move hostAttributes to a static field on the class, and add support for it in behavior mixins
   var declarations = {};
   var superClass = typeMirror;
   while (superClass != null && !_isPolymerMixin(superClass.mixin)) {

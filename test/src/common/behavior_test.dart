@@ -165,6 +165,13 @@ main() async {
         expect(el.attributes['js'], 'hello');
       });
     });
+
+    group('host attributes', () {
+      test('get assigned', () {
+        expect(el.attributes['dart'], 'hello');
+        expect(el.attributes['js'], 'hello');
+      });
+    });
   });
 }
 
