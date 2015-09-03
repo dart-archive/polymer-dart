@@ -55,6 +55,7 @@ class JsProxyReflectable extends Reflectable {
             metadataCapability,
             declarationsCapability,
             typeCapability,
+            typeRelationsCapability,
             const StaticInvokeCapability('hostAttributes'));
 }
 
