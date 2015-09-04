@@ -248,7 +248,6 @@ class DartBehavior {
   };
 }
 
-@jsProxyReflectable
 @PolymerRegister('my-element')
 class MyElement extends PolymerElement with JsBehavior, DartBehavior {
   MyElement.created() : super.created();

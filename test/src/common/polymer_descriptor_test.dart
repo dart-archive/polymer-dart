@@ -113,9 +113,10 @@ class DartBehaviorTwo {
   void behaviorTwoExposedMethod() {}
 }
 
-@jsProxyReflectable
-class Test extends Object
+class Test extends PolymerElement
     with JsBehaviorOne, DartBehaviorOne, JsBehaviorTwo, DartBehaviorTwo {
+  Test.created() : super.created();
+
   @property
   String myString;
   @Property(notify: true)

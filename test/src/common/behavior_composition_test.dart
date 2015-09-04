@@ -17,8 +17,8 @@ main() async {
 
   group('behavior composition', () {
     test('Correct usage of mixins works', () {
-      var descriptor = createPolymerDescriptor(
-          Good, const PolymerRegister('good-element'));
+      var descriptor =
+          createPolymerDescriptor(Good, const PolymerRegister('good-element'));
       // Should only get [BehaviorFour] in the top level behaviors object.
       expect(descriptor['behaviors'].length, 1);
 
@@ -63,7 +63,7 @@ main() async {
 abstract class BehaviorOne {}
 
 @behavior
-abstract class BehaviorTwo  {}
+abstract class BehaviorTwo {}
 
 @behavior
 abstract class BehaviorThree implements BehaviorOne, BehaviorTwo {}
@@ -71,12 +71,16 @@ abstract class BehaviorThree implements BehaviorOne, BehaviorTwo {}
 @behavior
 abstract class BehaviorFour implements BehaviorThree {}
 
-@jsProxyReflectable
-class Good extends Object
-    with BehaviorOne, BehaviorTwo, BehaviorThree, BehaviorFour {}
+class Good extends PolymerElement
+    with BehaviorOne, BehaviorTwo, BehaviorThree, BehaviorFour {
+  Good.created() : super.created();
+}
 
-@jsProxyReflectable
-class Incomplete extends Object with BehaviorOne, BehaviorThree {}
+class Incomplete extends PolymerElement with BehaviorOne, BehaviorThree {
+  Incomplete.created() : super.created();
+}
 
-@jsProxyReflectable
-class Invalid extends Object with BehaviorTwo, BehaviorOne, BehaviorThree {}
+class Invalid extends PolymerElement
+    with BehaviorTwo, BehaviorOne, BehaviorThree {
+  Invalid.created() : super.created();
+}

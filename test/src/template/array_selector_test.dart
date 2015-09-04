@@ -42,7 +42,6 @@ main() async {
   });
 }
 
-@jsProxyReflectable
 @PolymerRegister('employee-list')
 class EmployeeList extends PolymerElement {
   EmployeeList.created() : super.created();
@@ -72,7 +71,6 @@ class EmployeeList extends PolymerElement {
   }
 }
 
-@jsProxyReflectable
 class Employee extends JsProxy {
   String first;
   String last;

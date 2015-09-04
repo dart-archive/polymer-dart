@@ -11,6 +11,7 @@ import 'behavior.dart';
 import 'declarations.dart';
 
 // Mixin this class to get js proxy support!
+@jsProxyReflectable
 abstract class JsProxy implements JsProxyInterface {
   /// Lazily create proxy constructors!
   static Map<Type, JsFunction> _jsProxyConstructors = {};
@@ -56,6 +57,7 @@ class JsProxyReflectable extends Reflectable {
             declarationsCapability,
             typeCapability,
             typeRelationsCapability,
+            subtypeQuantifyCapability,
             const StaticInvokeCapability('hostAttributes'));
 }
 

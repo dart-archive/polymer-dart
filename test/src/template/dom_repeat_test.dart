@@ -108,7 +108,6 @@ void expectUsers(UserList element, List<String> names) {
   }
 }
 
-@jsProxyReflectable
 @PolymerRegister('user-list')
 class UserList extends PolymerElement {
   UserList.created() : super.created();
@@ -138,7 +137,6 @@ class UserList extends PolymerElement {
   }
 }
 
-@jsProxyReflectable
 class User extends JsProxy {
   String name;
   User(this.name);

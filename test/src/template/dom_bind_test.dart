@@ -33,7 +33,6 @@ main() async {
   });
 }
 
-@jsProxyReflectable
 @PolymerRegister('user-element')
 class UserElement extends PolymerElement {
   UserElement.created() : super.created();
@@ -43,7 +42,6 @@ class UserElement extends PolymerElement {
   User user = new User('Bob');
 }
 
-@jsProxyReflectable
 class User extends JsProxy {
   String name;
   User(this.name);
