@@ -60,7 +60,6 @@ _tests(String elementName) {
   });
 }
 
-@jsProxyReflectable
 @PolymerRegister(_attributesName)
 class AttributesTest extends PolymerElement {
   @property
@@ -95,7 +94,6 @@ class AttributesTest extends PolymerElement {
 
 enum Foobar { foo, bar }
 
-@jsProxyReflectable
 @PolymerRegister(_serializeAttributesName)
 class SerializedAttributesTest extends AttributesTest with PolymerSerialize {
   @property

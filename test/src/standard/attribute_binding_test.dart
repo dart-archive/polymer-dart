@@ -24,7 +24,6 @@ main() async {
   });
 }
 
-@jsProxyReflectable
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   @property

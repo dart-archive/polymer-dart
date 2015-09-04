@@ -15,6 +15,7 @@ import 'declarations.dart';
 /// JS, but proxies all method calls and properties to the dart instance.
 /// Calling [dartValue] on that [JsObject] will also return the original dart
 /// instance (not a copy).
+@jsProxyReflectable
 abstract class JsProxy implements JsProxyInterface {
   /// Lazily create proxy constructors!
   static Map<Type, JsFunction> _jsProxyConstructors = {};
