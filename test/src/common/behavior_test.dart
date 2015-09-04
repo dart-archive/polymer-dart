@@ -76,7 +76,6 @@ main() async {
       });
 
       _testAttributeChanged(invocations) {
-<<<<<<< HEAD
        expect(invocations['attributeChanged'], [
           [el, 'js', null, 'hello'],
           [el, 'dart', null, 'hello'],
@@ -86,17 +85,6 @@ main() async {
         expect(invocations['attributeChanged'], [
           [el, 'js', null, 'hello'],
           [el, 'dart', null, 'hello'],
-=======
-        expect(invocations['attributeChanged'], [
-          [el, 'js', null, 'hello'],
-          [el, 'dart', null, 'hello'],
-        ]);
-        el.attributes['js'] = 'is widely used';
-        el.attributes['dart'] = 'is the best';
-        expect(invocations['attributeChanged'], [
-          [el, 'js', null, 'hello'],
-          [el, 'dart', null, 'hello'],
->>>>>>> move hostAttributes to a static field on the class, and add support for it in behavior mixins
           [el, 'js', 'hello', 'is widely used'],
           [el, 'dart', 'hello', 'is the best'],
         ]);
