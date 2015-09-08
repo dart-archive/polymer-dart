@@ -21,10 +21,7 @@ main() async {
     });
 
     test('add and remove items', () {
-      element.addAll('users', [
-        new User('C'),
-        new User('D'),
-      ]);
+      element.addAll('users', [new User('C'), new User('D'),]);
       expectUsers(element, ['A', 'B', 'C', 'D']);
       element.removeRange('users', 1, 3);
       expectUsers(element, ['A', 'D']);
@@ -32,58 +29,41 @@ main() async {
 
     test('modify items from model', () {
       element.userList.render();
-      var model = element.userList.modelForElement(
-          Polymer.dom(element.root).querySelector('.user'));
+      var model = element.userList
+          .modelForElement(Polymer.dom(element.root).querySelector('.user'));
       model.set('item.name', 'C');
       expectUsers(element, ['C', 'B']);
     });
 
     test('sort items by method name', () {
-      element.set('users', [
-        new User('B'),
-        new User('A'),
-        new User('E'),
-        new User('D'),
-      ]);
+      element.set('users',
+          [new User('B'), new User('A'), new User('E'), new User('D'),]);
       element.userList.sort = 'sortUsers';
       expectUsers(element, ['A', 'B', 'D', 'E']);
     });
 
     test('sort items by function tearoff', () {
-      element.set('users', [
-        new User('B'),
-        new User('A'),
-        new User('E'),
-        new User('D'),
-      ]);
+      element.set('users',
+          [new User('B'), new User('A'), new User('E'), new User('D'),]);
 
       element.userList.sort = reverseSort;
       expectUsers(element, ['E', 'D', 'B', 'A']);
     });
 
     test('filter items by method name', () {
-      element.set('users', [
-        new User('B'),
-        new User('A'),
-        new User('E'),
-        new User('D'),
-      ]);
+      element.set('users',
+          [new User('B'), new User('A'), new User('E'), new User('D'),]);
       element.userList.filter = 'removeAAndE';
       expectUsers(element, ['B', 'D']);
     });
 
     test('filter items by function tearoff', () {
-      element.set('users', [
-        new User('B'),
-        new User('A'),
-        new User('E'),
-        new User('D'),
-      ]);
+      element.set('users',
+          [new User('B'), new User('A'), new User('E'), new User('D'),]);
 
       element.userList.filter = keepAAndE;
       expectUsers(element, ['A', 'E']);
     });
-
   });
 }
 
@@ -119,10 +99,7 @@ class UserList extends PolymerElement {
   DomRepeat get userList => $['userList'];
 
   ready() {
-    set('users', [
-      new User('A'),
-      new User('B'),
-    ]);
+    set('users', [new User('A'), new User('B'),]);
   }
 
   @eventHandler

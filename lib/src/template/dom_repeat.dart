@@ -96,8 +96,13 @@ class DomRepeat extends TemplateElement
   ///   if (model.index < 10) {
   ///     model.set('item.checked', true);
   ///   }
-  DomRepeatModel modelForElement(Element element) =>
-      new DomRepeatModel(jsElement.callMethod('modelForElement', [element]));
+  DomRepeatModel modelForElement(Element element) {
+    var proxy = jsElement.callMethod('modelForElement', [element]);
+    if (proxy is HtmlElement) {
+      proxy = new JsObject.fromBrowserObject(proxy);
+    }
+    return new DomRepeatModel(proxy);
+  }
 
   /// Returns the actual `model.item` for an element.
   itemForElement(Element element) =>
