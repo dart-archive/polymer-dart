@@ -46,7 +46,8 @@ main() async {
   test('root', () {
     expect(Polymer.dom(element.root), isNotNull);
     expect(Polymer.dom(element.root).children.first, element.$['parent']);
-    expect(Polymer.dom(element.root).querySelector('#child'), element.$['child']);
+    expect(
+        Polymer.dom(element.root).querySelector('#child'), element.$['child']);
   });
 
   group('List api: ', () {

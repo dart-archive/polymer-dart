@@ -58,10 +58,8 @@ class EmployeeList extends PolymerElement {
   DomRepeat get selectedEmployeeList => $['selectedEmployeeList'];
 
   ready() {
-    set('employees', [
-      new Employee('Bob', 'Smith'),
-      new Employee('Sally', 'Johnson'),
-    ]);
+    set('employees',
+        [new Employee('Bob', 'Smith'), new Employee('Sally', 'Johnson'),]);
   }
 
   @eventHandler

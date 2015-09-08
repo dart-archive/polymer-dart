@@ -10,8 +10,8 @@ import 'polymer_descriptor.dart';
 class PolymerRegister extends CustomElementProxy {
   final Map<String, dynamic> hostAttributes;
 
-  const PolymerRegister(
-      String tagName, {String extendsTag, this.hostAttributes})
+  const PolymerRegister(String tagName,
+      {String extendsTag, this.hostAttributes})
       : super(tagName, extendsTag: extendsTag);
 
   void initialize(Type type) {

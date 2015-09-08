@@ -16,12 +16,11 @@ class Property {
   /// Provided for computed properties.
   final String computed;
 
-  const Property({
-    this.notify: false,
-    this.observer,
-    this.reflectToAttribute: false,
-    this.computed
-  });
+  const Property(
+      {this.notify: false,
+      this.observer,
+      this.reflectToAttribute: false,
+      this.computed});
 }
 
 const property = const Property();

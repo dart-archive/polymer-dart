@@ -30,7 +30,8 @@ void _setUpListMethods() {
   polymerDart['unshift'] = (List list, Iterable items) {
     list.insertAll(0, items.map((item) => dartValue(item)));
   };
-  polymerDart['splice'] = (List list, int start, int deleteCount, Iterable items) {
+  polymerDart['splice'] =
+      (List list, int start, int deleteCount, Iterable items) {
     if (start < 0) start = list.length + start;
     if (deleteCount > 0) list.removeRange(start, start + deleteCount);
     list.insertAll(start, items.map((item) => dartValue(item)));
