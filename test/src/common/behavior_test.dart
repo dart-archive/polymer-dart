@@ -243,9 +243,7 @@ class DartBehavior {
   }
 
   // Host Attributes
-  static const Map<String, String> hostAttributes = const {
-    'dart': 'hello'
-  };
+  static const Map<String, String> hostAttributes = const {'dart': 'hello'};
 }
 
 @PolymerRegister('my-element')

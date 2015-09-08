@@ -161,7 +161,7 @@ void _setupHostAttributes(Type type, Map descriptor) {
     var hostAttributes = typeMirror.invokeGetter('hostAttributes');
     if (hostAttributes is! Map) {
       throw '`hostAttributes` on $type must be a `Map`, but got a '
-      '${hostAttributes.runtimeType}';
+          '${hostAttributes.runtimeType}';
     }
     descriptor['hostAttributes'] = hostAttributes;
   }
@@ -194,12 +194,15 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
     'observer': annotation.observer,
     'reflectToAttribute': annotation.reflectToAttribute,
     'computed': annotation.computed,
-    'value':_polymerDart.callMethod('invokeDartFactory', [(dartInstance, _) {
-      var instanceMirror = jsProxyReflectable.reflect(dartInstance);
-      var value = jsValue(instanceMirror.invokeGetter(declaration.simpleName));
-      if (value == null) return polymerDartUndefined;
-      return value;
-    }]),
+    'value': _polymerDart.callMethod('invokeDartFactory', [
+      (dartInstance, _) {
+        var instanceMirror = jsProxyReflectable.reflect(dartInstance);
+        var value =
+            jsValue(instanceMirror.invokeGetter(declaration.simpleName));
+        if (value == null) return polymerDartUndefined;
+        return value;
+      }
+    ]),
   };
   if (isFinal) {
     property['readOnly'] = true;
@@ -221,7 +224,9 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
   // Verify behavior odering and build up `finalBehaviors`.
   for (var behavior in allBehaviors) {
     void checkAndRemoveSuperInterfaces(ClassMirror clazz) {
-      clazz.superinterfaces.reversed.where(_hasBehaviorMeta).forEach((interface) {
+      clazz.superinterfaces.reversed
+          .where(_hasBehaviorMeta)
+          .forEach((interface) {
         if (finalBehaviors.isEmpty) {
           _throwInvalidMixinOrder(type, clazz);
         }
@@ -245,13 +250,14 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
 
 // Throws an error about expected mixins that must precede the [clazz] mixin.
 void _throwInvalidMixinOrder(Type type, ClassMirror mixin) {
-  var expected = mixin.superinterfaces.where(_hasBehaviorMeta)
-      .map((clazz) => clazz.simpleName).join(', ');
+  var expected = mixin.superinterfaces
+      .where(_hasBehaviorMeta)
+      .map((clazz) => clazz.simpleName)
+      .join(', ');
   throw 'Unexpected mixin ordering on type $type. The ${mixin.simpleName} mixin '
-     'must be  immediately preceded by the following mixins, in this order: '
-     '$expected';
+      'must be  immediately preceded by the following mixins, in this order: '
+      '$expected';
 }
-
 
 /// Given a [Type] return the [JsObject] representation of that type.
 /// TODO(jakemac): Make this more robust, specifically around Lists.
