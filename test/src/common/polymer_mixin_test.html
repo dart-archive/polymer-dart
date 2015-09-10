@@ -19,6 +19,8 @@ BSD-style license that can be found in the LICENSE file.
           child
         </div>
       </div>
+      <!-- Makes sure that if a list is in a binding the updates don't happen twice -->
+      <sub-element my-ints="{{myInts}}"></sub-element>
     </template>
   </dom-module>
 </body>

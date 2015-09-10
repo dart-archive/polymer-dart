@@ -14,8 +14,7 @@ main() => initPolymer();
 
 Future initPolymer() async {
   await initWebComponents(typeFilter: [HtmlImport], initAll: false);
-  // Make sure `src/js/polymer_array_methods.html` is loaded first.
-  _setUpListMethods();
+  // Make sure polymer is loaded first.
   _setUpPropertyChanged();
   await initWebComponents(
       typeFilter: [CustomElement, CustomElementProxy, PolymerRegister],
@@ -24,26 +23,35 @@ Future initPolymer() async {
 
 final _polymerDart = context['Polymer']['Dart'];
 
-void _setUpListMethods() {
-  _polymerDart['push'] = (List list, Iterable items) {
-    list.addAll(items.map((item) => dartValue(item)));
-  };
-  _polymerDart['pop'] = (List list) => list.removeLast();
-  _polymerDart['shift'] = (List list) => list.removeAt(0);
-  _polymerDart['unshift'] = (List list, Iterable items) {
-    list.insertAll(0, items.map((item) => dartValue(item)));
-  };
-  _polymerDart['splice'] =
-      (List list, int start, int deleteCount, Iterable items) {
-    if (start < 0) start = list.length + start;
-    if (deleteCount > 0) list.removeRange(start, start + deleteCount);
-    list.insertAll(start, items.map((item) => dartValue(item)));
-  };
-}
-
 void _setUpPropertyChanged() {
-  _polymerDart['propertyChanged'] = (dartInstance, String path, newValue) {
-    var instanceMirror = jsProxyReflectable.reflect(dartValue(dartInstance));
+  _polymerDart['propertyChanged'] = (instance, String path, newValue) {
+    if (instance is List) {
+      if (path == 'splices') {
+        // Only apply splices once, if multiple elements have a binding set up
+        // for the same list then they will each get called here.
+        var alreadyApplied = newValue['_applied'];
+        if (alreadyApplied == true) return;
+        newValue['_applied'] = true;
+
+        var splices = newValue['indexSplices'];
+        for (var splice in splices) {
+          var index = splice['index'];
+          var removed = splice['removed'];
+          if (removed != null && removed.length > 0) {
+            instance.removeRange(index, index + removed.length);
+          }
+          var addedCount = splice['addedCount'];
+          var original = splice['object'] as JsArray;
+          instance.insertAll(
+              index, original.getRange(index, addedCount + index).map(dartValue));
+        }
+        return;
+      } else if (path == 'length') {
+        // no-op, wait for `splices`.
+        return;
+      }
+    }
+    var instanceMirror = jsProxyReflectable.reflect(instance);
     // Read only property?
     if (instanceMirror.type.instanceMembers['$path'] is! VariableMirror &&
         instanceMirror.type.instanceMembers['$path='] == null) {

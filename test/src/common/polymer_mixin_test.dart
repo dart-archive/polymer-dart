@@ -215,3 +215,13 @@ class TestElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
     polymerCreated();
   }
 }
+
+@PolymerRegister('sub-element')
+class SubElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
+  SubElement.created() : super.created() {
+    polymerCreated();
+  }
+
+  @property
+  List<int> myInts;
+}
