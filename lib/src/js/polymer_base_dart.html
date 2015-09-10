@@ -62,5 +62,15 @@ BSD-style license that can be found in the LICENSE file.
         return value;
       }
     };
+
+    Polymer.Dart.Behavior = {
+      _propertyChanged: function(path, newValue, oldValue) {
+        var parts = path.split('.');
+        var thisArg =
+            parts.length == 1 ? this : this.get(parts[parts.length - 2]);
+        Polymer.Dart.propertyChanged(
+            thisArg, parts[parts.length - 1], newValue);
+      }
+    }
   })();
 </script>
