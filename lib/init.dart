@@ -52,11 +52,10 @@ void _setUpPropertyChanged() {
       }
     }
     var instanceMirror = jsProxyReflectable.reflect(instance);
-    // Read only property?
-    if (instanceMirror.type.instanceMembers['$path'] is! VariableMirror &&
-        instanceMirror.type.instanceMembers['$path='] == null) {
-      return;
-    }
-    instanceMirror.invokeSetter(path, dartValue(newValue));
+    // Catch errors for read only properties. Checking for setters using
+    // reflection is to slow.
+    try {
+      instanceMirror.invokeSetter(path, dartValue(newValue));
+    } on NoSuchMethodError catch(_) {}
   };
 }
