@@ -10,12 +10,14 @@ import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
 
 TestElement element;
+SubElement subElement;
 
 main() async {
   await initPolymer();
 
   setUp(() {
     element = document.createElement('test-element');
+    subElement = element.$['sub'];
   });
 
   test('default values', () {
@@ -23,17 +25,80 @@ main() async {
     expect(element.jsElement['myInt'], 1);
   });
 
-  test('set', () {
-    element.set('myInt', 2);
-    expect(element.myInt, 2);
-    expect(element.jsElement['myInt'], 2);
+  group('set', () {
+    test('basic', () {
+      element.set('myInt', 2);
+      expect(element.myInt, 2);
+      expect(element.jsElement['myInt'], 2);
+    });
+
+    test('Map', () {
+      element.set('myMap.hello', 'world');
+      expect(element.myMap['hello'], 'world');
+      expect(element.jsElement['myMap']['hello'], 'world');
+    });
+
+    test('List', () {
+      element.set('myInts', [1, 2, 3]);
+      expect(element.myInts, [1, 2, 3]);
+      expect(element.jsElement['myInts'], [1, 2, 3]);
+
+      element.set('myInts.1', 4);
+      expect(element.myInts, [1, 4, 3]);
+      expect(element.jsElement['myInts'], [1, 4, 3]);
+    });
+
+    test('JsProxy', () {
+      var newModel = new Model('world');
+      element.set('myModel', newModel);
+      expect(element.myModel, newModel);
+      expect(element.jsElement['myModel'], newModel.jsProxy);
+
+      element.set('myModel.value', 'cool');
+      expect(element.myModel.value, 'cool');
+      expect(element.jsElement['myModel']['value'], 'cool');
+    });
   });
 
-  test('notifyPath', () {
-    element.myInt = 2;
-    expect(element.jsElement['myInt'], 1);
-    element.notifyPath('myInt', 2);
-    expect(element.jsElement['myInt'], 2);
+  group('notifyPath', () {
+    test('basic', () {
+      element.myInt = 2;
+      expect(element.jsElement['myInt'], 1);
+      element.notifyPath('myInt', 2);
+      expect(element.jsElement['myInt'], 2);
+    });
+
+    test('Map', () {
+      element.myMap['hello'] = 'world';
+      expect(element.get('myMap.hello'), null);
+      element.notifyPath('myMap.hello', element.myMap['hello']);
+      expect(element.jsElement['myMap']['hello'], 'world');
+    });
+
+    test('List', () {
+      element.myInts = [1, 2, 3];
+      expect(element.jsElement['myInts'], []);
+      element.notifyPath('myInts', element.myInts);
+      expect(element.jsElement['myInts'], [1, 2, 3]);
+
+      element.myInts[1] = 4;
+      expect(element.jsElement['myInts'], [1, 2, 3]);
+      element.notifyPath('myInts.1', element.myInts[1]);
+      expect(element.myInts, [1, 4, 3]);
+      expect(element.jsElement['myInts'], [1, 4, 3]);
+    });
+
+    test('JsProxy', () {
+      element.myModel = new Model('world');
+      expect(element.jsElement['myModel']['value'], 'hello');
+      element.notifyPath('myModel', element.myModel);
+      expect(element.jsElement['myModel']['value'], 'world');
+
+      element.myModel.value = 'cool';
+      expect(subElement.$['modelValue'].text, 'world');
+      element.notifyPath('myModel.value', element.myModel.value);
+      expect(subElement.$['modelValue'].text, 'cool');
+    });
   });
 
   test('\$', () {
@@ -211,6 +276,12 @@ class TestElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
   @property
   List<int> myInts = [];
 
+  @property
+  Map myMap = {};
+
+  @property
+  Model myModel = new Model('hello');
+
   TestElement.created() : super.created() {
     polymerCreated();
   }
@@ -224,4 +295,15 @@ class SubElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
 
   @property
   List<int> myInts;
+
+  @property
+  Map myMap;
+
+  @property
+  Model myModel;
+}
+
+class Model extends JsProxy {
+  String value;
+  Model(this.value);
 }

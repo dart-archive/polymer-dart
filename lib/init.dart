@@ -26,6 +26,8 @@ final _polymerDart = context['Polymer']['Dart'];
 void _setUpPropertyChanged() {
   _polymerDart['propertyChanged'] = (instance, String path, newValue) {
     if (instance is List) {
+      // We only care about `splices` for Lists. This does mean we don't support
+      // setting special properties of custom List implementations though.
       if (path == 'splices') {
         // Only apply splices once, if multiple elements have a binding set up
         // for the same list then they will each get called here.
@@ -42,20 +44,24 @@ void _setUpPropertyChanged() {
           }
           var addedCount = splice['addedCount'];
           var original = splice['object'] as JsArray;
-          instance.insertAll(
-              index, original.getRange(index, addedCount + index).map(dartValue));
+          instance.insertAll(index,
+              original.getRange(index, addedCount + index).map(dartValue));
         }
-        return;
-      } else if (path == 'length') {
-        // no-op, wait for `splices`.
-        return;
+      } else {
+        try {
+          var index = int.parse(path);
+          instance[index] = dartValue(newValue);
+        } on FormatException catch (_) {}
       }
+    } else if (instance is Map) {
+      instance[path] = dartValue(newValue);
+    } else {
+      var instanceMirror = jsProxyReflectable.reflect(instance);
+      // Catch errors for read only properties. Checking for setters using
+      // reflection is to slow.
+      try {
+        instanceMirror.invokeSetter(path, dartValue(newValue));
+      } on NoSuchMethodError catch (_) {}
     }
-    var instanceMirror = jsProxyReflectable.reflect(instance);
-    // Catch errors for read only properties. Checking for setters using
-    // reflection is to slow.
-    try {
-      instanceMirror.invokeSetter(path, dartValue(newValue));
-    } on NoSuchMethodError catch(_) {}
   };
 }
