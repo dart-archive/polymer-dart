@@ -16,4 +16,11 @@ class DomBind extends TemplateElement
   void render() {
     jsElement.callMethod('render');
   }
+
+  /// Retrieve arbitrary values from the dom-bind instance.
+  operator [](String key) => dartValue(jsElement[key]);
+
+  /// Set arbitrary values on the dom-bind instance. These will be  available
+  /// to the template bindings.
+  operator []=(String key, value) => jsElement[key] = jsValue(value);
 }
