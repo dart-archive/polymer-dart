@@ -128,9 +128,9 @@ Contacting Us
 -------------
 
 Please file issues in our [Issue Tracker][issues] or contact us on the
-[Dart Web UI mailing list][mailinglist].
+[Dart Web mailing list][mailinglist].
 
-We also have the [Web UI development list][devlist] for discussions about
+We also have a [Dart Slack Channel][devlist] for discussions about
 internals of the code, code reviews, etc.
 
 [wc]: http://dvcs.w3.org/hg/webcomponents/raw-file/tip/explainer/index.html
@@ -142,8 +142,8 @@ internals of the code, code reviews, etc.
 [dartium_src]: http://code.google.com/p/dart/wiki/BuildingDartium
 [TodoMVC]: http://todomvc.com/
 [issues]: https://github.com/dart-lang/polymer-dart/issues/new
-[mailinglist]: https://groups.google.com/a/dartlang.org/forum/?fromgroups#!forum/web-ui
-[devlist]: https://groups.google.com/a/dartlang.org/forum/?fromgroups#!forum/web-ui-dev
+[mailinglist]: https://groups.google.com/a/dartlang.org/forum/?fromgroups#!forum/web
+[devlist]: https://dartlang-slack.herokuapp.com/
 [overview]: http://www.dartlang.org/articles/dart-web-components/
 [tools]: https://www.dartlang.org/articles/dart-web-components/tools.html
 [spec]: https://www.dartlang.org/articles/dart-web-components/spec.html
