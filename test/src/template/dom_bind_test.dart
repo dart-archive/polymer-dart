@@ -20,15 +20,30 @@ main() async {
       userNameElement = querySelector('.name');
     });
 
-    test('basic', () {
-      expect(userElement.text, contains(userElement.user.name));
-      expect(userNameElement.text, contains(userElement.user.name));
+    test('set property on child', () {
+      var bob = new User('Bob');
+      userElement.set('user', bob);
+      expect(userElement.text, contains('Bob'));
+      expect(userNameElement.text, contains('Bob'));
 
-      var user = new User('John');
-      userElement.set('user', user);
+      var john = new User('John');
+      userElement.set('user', john);
       domBind.render();
-      expect(userElement.text, contains(user.name));
-      expect(userNameElement.text, contains(user.name));
+      expect(userElement.text, contains('John'));
+      expect(userNameElement.text, contains('John'));
+    });
+
+    test('set property on dom-bind instance', () {
+      var bob = new User('Bob');
+      domBind['user'] = bob;
+      expect(userElement.text, contains('Bob'));
+      expect(userNameElement.text, contains('Bob'));
+
+      var john = new User('John');
+      domBind['user'] = john;
+      domBind.render();
+      expect(userElement.text, contains('John'));
+      expect(userNameElement.text, contains('John'));
     });
   });
 }
@@ -39,7 +54,7 @@ class UserElement extends PolymerElement {
   factory UserElement() => document.createElement('user-element');
 
   @Property(notify: true)
-  User user = new User('Bob');
+  User user;
 }
 
 class User extends JsProxy {
