@@ -21,19 +21,16 @@ main() async {
   });
 }
 
-@jsProxyReflectable
 @PolymerRegister('parent-element')
 class ParentElement extends ReadyRecordingElement {
   ParentElement.created() : super.created();
 }
 
-@jsProxyReflectable
 @PolymerRegister('child-element')
 class ChildElement extends ReadyRecordingElement {
   ChildElement.created() : super.created();
 }
 
-@jsProxyReflectable
 @PolymerRegister('grandchild-element')
 class GrandchildElement extends ReadyRecordingElement {
   GrandchildElement.created() : super.created();
