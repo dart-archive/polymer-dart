@@ -26,5 +26,3 @@ abstract class PolymerMixin implements JsProxy, CustomElementProxyMixin {
     jsElement.callMethod('originalPolymerCreatedCallback');
   }
 }
-
-class Foo extends Object with Polymer, Polymer, Polymer {}
