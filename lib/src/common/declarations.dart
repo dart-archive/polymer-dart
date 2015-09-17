@@ -4,6 +4,9 @@ import 'package:reflectable/reflectable.dart';
 
 typedef bool _WhereFn(String name, DeclarationMirror declaration);
 
+/// Retrieves all the declarations for a class, given a [Reflectable] instance.
+/// If a [_WhereFn] is supplied then it only returns the declarations which
+/// return true from that.
 Map<String, DeclarationMirror> declarationsFor(
     Type type, Reflectable reflectionClass, {_WhereFn where}) {
   var typeMirror;
@@ -45,7 +48,7 @@ bool isFinal(DeclarationMirror declaration) {
 
 bool isProperty(DeclarationMirror declaration) {
   if (declaration is VariableMirror) return true;
-  if (declaration is MethodMirror) return !isRegularMethod(declaration);
+  if (declaration is MethodMirror) return !declaration.isRegularMethod;
   return false;
 }
 bool isRegularMethod(DeclarationMirror declaration) {

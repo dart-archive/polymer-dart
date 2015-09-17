@@ -9,7 +9,11 @@ export 'package:polymer_interop/polymer_interop.dart' show dartValue, jsValue;
 import 'package:reflectable/reflectable.dart';
 import 'declarations.dart';
 
-// Mixin this class to get js proxy support!
+/// Mixin this class to get js proxy support! If a [JsProxy] is passed to
+/// [jsValue] then you will get back a [JsObject] which is fully usable from
+/// JS, but proxies all method calls and properties to the dart instance.
+/// Calling [dartValue] on that [JsObject] will also return the original dart
+/// instance (not a copy).
 abstract class JsProxy implements JsProxyInterface {
   /// Lazily create proxy constructors!
   static Map<Type, JsFunction> _jsProxyConstructors = {};
@@ -47,10 +51,21 @@ JsObject _buildJsProxy(JsProxy instance) {
   return proxy;
 }
 
+/// The [Reflectable] class which gives you the ability to do everything that
+/// PolymerElements and JsProxies need to do.
 class JsProxyReflectable extends Reflectable {
   const JsProxyReflectable()
-      : super(instanceInvokeCapability, metadataCapability);
+      : super(
+            instanceInvokeCapability,
+            metadataCapability,
+            declarationsCapability,
+            typeCapability,
+            typeRelationsCapability,
+            subtypeQuantifyCapability,
+            superclassQuantifyCapability,
+            const StaticInvokeCapability('hostAttributes'));
 }
+
 const jsProxyReflectable = const JsProxyReflectable();
 
 final JsObject _polymerDart = context['Polymer']['Dart'];
