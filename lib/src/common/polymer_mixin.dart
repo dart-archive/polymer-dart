@@ -15,14 +15,13 @@ abstract class PolymerMixin implements JsProxy, CustomElementProxyMixin {
   JsObject get jsElement {
     if (_proxy == null) {
       _proxy = new JsObject.fromBrowserObject(this);
-      _proxy['__data__'] = jsProxy;
     }
     return _proxy;
   }
 
   void polymerCreated() {
-    // Use a cache for js proxy values.
-    useCache = true;
     jsElement.callMethod('originalPolymerCreatedCallback');
   }
+
+
 }

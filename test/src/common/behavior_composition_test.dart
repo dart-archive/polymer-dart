@@ -19,11 +19,12 @@ main() async {
     test('Correct usage of mixins works', () {
       var descriptor =
           createPolymerDescriptor(Good, const PolymerRegister('good-element'));
-      // Should only get [BehaviorFour] in the top level behaviors object.
-      expect(descriptor['behaviors'].length, 1);
+      // Should only get [BehaviorFour] in the top level behaviors object, in
+      // addition to Polymer.Dart.Behavior.
+      expect(descriptor['behaviors'].length, 2);
 
       var behaviorFour = behavior.getBehavior(BehaviorFour);
-      expect(descriptor['behaviors'][0], behaviorFour);
+      expect(descriptor['behaviors'][1], behaviorFour);
       expect(behaviorFour, new isInstanceOf<JsArray>());
       expect(behaviorFour.length, 2);
 

@@ -12,11 +12,6 @@ BSD-style license that can be found in the LICENSE file.
       this.originalPolymerCreatedCallback();
     };
 
-    // Store serialize/deserialize to retain the original behavior when the
-    // methods are overriden by PolymerSerialize.
-    Polymer.Base.originalSerialize = Polymer.Base.serialize;
-    Polymer.Base.originalDeserialize = Polymer.Base.deserialize;
-
     Polymer.Dart = {};
 
     // Placeholder for `undefined` return values. This should eventually go
@@ -62,5 +57,50 @@ BSD-style license that can be found in the LICENSE file.
         return value;
       }
     };
+
+    // Remove any `__dartClass__` instances during serialization.
+    Polymer.Dart.serialize = function(value, type) {
+      var dartClass = value['__dartClass__'];
+      value['__dartClass__'] = undefined;
+      var serialized = Polymer.Base.serialize(value, type);
+      value['__dartClass__'] = dartClass;
+      return serialized;
+    };
+
+    // TODO(jakemac): This shouldn't be necessary, but it is today
+    // https://github.com/dart-lang/sdk/issues/24371
+    Polymer.Dart.deserialize = Polymer.Base.deserialize;
+
+    Polymer.Dart.Behavior = {
+      // Secret hook into property changes. Pretty hacky but its more efficient
+      // than using a JsProxy object for the element.
+      _propertyChanged: function(path, newValue, oldValue) {
+        var parts = path.split('.');
+        var thisArg = parts.length == 1 ?
+            this : this.get(parts.slice(0, parts.length - 1));
+        thisArg = thisArg.__dartClass__ ? thisArg.__dartClass__ : thisArg;
+        Polymer.Dart.propertyChanged(
+            thisArg, parts[parts.length - 1], newValue);
+      },
+
+      notifyPath: function(path, value, fromAbove) {
+        var notified =
+            Polymer.Base.notifyPath.call(this, path, value, fromAbove);
+        if (fromAbove) return notified;
+
+        // If you call notifyPath from dart we need to do manual modifications
+        // on any JsArray or JsObject instances.
+        var parts = this._getPathParts(path);
+        if (parts.length > 1) {
+          var model = this.get(parts.splice(0, parts.length - 1));
+          if (model[parts[0]] !== value) model[parts[0]] = value;
+        }
+        return notified;
+      },
+
+      serialize: function(value, type) {
+        return Polymer.Dart.serialize(value, type);
+      }
+    }
   })();
 </script>

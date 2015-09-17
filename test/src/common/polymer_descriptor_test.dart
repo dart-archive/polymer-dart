@@ -68,12 +68,13 @@ main() async {
     expect(descriptor['behaviorTwoExposedMethod'] is JsFunction, isTrue);
 
     expect(descriptor['behaviors'], isNotNull);
-    expect(descriptor['behaviors'].length, 4);
-    expect(descriptor['behaviors'][0], context['Foo']['JsBehaviorOne']);
-    expect(descriptor['behaviors'][1], behavior.getBehavior(DartBehaviorOne));
-    expect(descriptor['behaviors'][2], context['Foo']['JsBehaviorTwo']);
-    expect(descriptor['behaviors'][3], behavior.getBehavior(DartBehaviorTwo));
-    expect(descriptor['behaviors'][1], isNot(descriptor['behaviors'][3]));
+    expect(descriptor['behaviors'].length, 5);
+    expect(descriptor['behaviors'][0], context['Polymer']['Dart']['Behavior']);
+    expect(descriptor['behaviors'][1], context['Foo']['JsBehaviorOne']);
+    expect(descriptor['behaviors'][2], behavior.getBehavior(DartBehaviorOne));
+    expect(descriptor['behaviors'][3], context['Foo']['JsBehaviorTwo']);
+    expect(descriptor['behaviors'][4], behavior.getBehavior(DartBehaviorTwo));
+    expect(descriptor['behaviors'][2], isNot(descriptor['behaviors'][3]));
   });
 }
 
