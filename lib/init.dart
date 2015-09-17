@@ -61,7 +61,10 @@ void _setUpPropertyChanged() {
       // reflection is to slow.
       try {
         instanceMirror.invokeSetter(path, dartValue(newValue));
-      } on NoSuchMethodError catch (_) {}
+      } on NoSuchMethodError catch (_) {} on NoSuchCapabilityError catch (_) {
+        // TODO(jakemac): Remove once
+        // https://github.com/dart-lang/reflectable/issues/30 is fixed.
+      }
     }
   };
 }
