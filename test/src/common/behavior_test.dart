@@ -151,11 +151,11 @@ main() async {
       });
 
       test('Dart @Listen', () {
-        var e = new CustomEvent('dart-behavior-event', detail: 'dart Detail');
-        el.dispatchEvent(e);
-        expect(el.dartInvocations['onDartBehaviorEvent'], [
-          [e, e.detail]
-        ]);
+        var e = el.fire('dart-behavior-event', detail: 'dart Detail');
+        var invocations = el.dartInvocations['onDartBehaviorEvent'];
+        expect(invocations.length, 1);
+        expect((invocations[0][0] as CustomEventWrapper).proxy, e.proxy);
+        expect(invocations[0][1], e.detail);
       });
     });
 

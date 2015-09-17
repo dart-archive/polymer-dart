@@ -9,14 +9,14 @@ import 'dart:js';
 import 'package:test/test.dart';
 import 'package:polymer/polymer.dart';
 
-const _attributesName = 'attributes-test';
-const _serializeAttributesName = 'serialize-attributes-test';
+const attributesName = 'attributes-test';
+const serializeAttributesName = 'serialize-attributes-test';
 
 main() async {
   await initPolymer();
 
-  _tests(_attributesName);
-  _tests(_serializeAttributesName);
+  _tests(attributesName);
+  _tests(serializeAttributesName);
 }
 
 _tests(String elementName) {
@@ -49,7 +49,7 @@ _tests(String elementName) {
           new DateTime(1987, 07, 18));
     });
 
-    if (elementName == _serializeAttributesName) {
+    if (elementName == serializeAttributesName) {
       test('serialized attributes can be marshalled into properties', () {
         expect(element.myFoobar, Foobar.bar);
       });
@@ -60,7 +60,7 @@ _tests(String elementName) {
   });
 }
 
-@PolymerRegister(_attributesName)
+@PolymerRegister(attributesName)
 class AttributesTest extends PolymerElement {
   @property
   String myString;
@@ -94,7 +94,7 @@ class AttributesTest extends PolymerElement {
 
 enum Foobar { foo, bar }
 
-@PolymerRegister(_serializeAttributesName)
+@PolymerRegister(serializeAttributesName)
 class SerializedAttributesTest extends AttributesTest with PolymerSerialize {
   @property
   Foobar myFoobar = Foobar.bar;
