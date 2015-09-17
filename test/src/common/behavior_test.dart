@@ -166,7 +166,6 @@ main() async {
       test('get assigned', () {
         expect(el.attributes['dart'], 'hello');
         expect(el.attributes['js'], 'hello');
-
       });
     });
 
