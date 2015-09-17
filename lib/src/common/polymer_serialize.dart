@@ -26,10 +26,10 @@ abstract class PolymerSerialize implements PolymerMixin {
 
   /// Deserializes the [value] into an object of the given [type].
   dynamic deserialize(String value, Type type) {
-    return dartValue(_polymerBaseDeserialize.apply([value, jsType(type)]));
+    return dartValue(_polymerDartDeserialize.apply([value, jsType(type)]));
   }
 }
 
 final JsObject _polymer = context['Polymer'];
 final JsFunction _polymerDartSerialize = _polymer['Dart']['serialize'];
-final JsFunction _polymerBaseDeserialize = _polymer['Base']['deserialize'];
+final JsFunction _polymerDartDeserialize = _polymer['Dart']['deserialize'];
