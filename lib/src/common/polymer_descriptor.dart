@@ -216,30 +216,22 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
   var allBehaviors =
       mixinsFor(type, jsProxyReflectable).where(_hasBehaviorMeta);
   // The distilled list of behaviors.
-  var finalBehaviors = new List<ClassMirror>();
+  var behaviorStack = new List<ClassMirror>();
 
-  // Verify behavior odering and build up `finalBehaviors`.
+  // Verify behavior ordering and build up `behaviorStack`.
   for (var behavior in allBehaviors) {
-    void checkAndRemoveSuperInterfaces(ClassMirror clazz) {
-      clazz.superinterfaces.reversed
-          .where(_hasBehaviorMeta)
-          .forEach((interface) {
-        if (finalBehaviors.isEmpty) {
-          _throwInvalidMixinOrder(type, clazz);
-        }
-        var previous = finalBehaviors.removeLast();
-        if (previous != interface) {
-          _throwInvalidMixinOrder(type, clazz);
-        }
-      });
+    for (var interface in behavior.superinterfaces.reversed) {
+      if (!_hasBehaviorMeta(interface)) continue;
+      if (behaviorStack.isEmpty || behaviorStack.removeLast() != interface) {
+        _throwInvalidMixinOrder(type, behavior);
+      }
     }
-    checkAndRemoveSuperInterfaces(behavior);
 
     // Get the js object for the behavior from the annotation, and add it.
-    finalBehaviors.add(behavior);
+    behaviorStack.add(behavior);
   }
 
-  return finalBehaviors.map((ClassMirror behavior) {
+  return behaviorStack.map((ClassMirror behavior) {
     BehaviorAnnotation meta = behavior.metadata.firstWhere(_isBehavior);
     return meta.getBehavior(behavior.reflectedType);
   });
@@ -251,9 +243,9 @@ void _throwInvalidMixinOrder(Type type, ClassMirror mixin) {
       .where(_hasBehaviorMeta)
       .map((clazz) => clazz.simpleName)
       .join(', ');
-  throw 'Unexpected mixin ordering on type $type. The ${mixin.simpleName} mixin '
-      'must be  immediately preceded by the following mixins, in this order: '
-      '$expected';
+  throw 'Unexpected mixin ordering on type $type. The ${mixin.simpleName} '
+      'mixin must be  immediately preceded by the following mixins, in this '
+      'order: $expected';
 }
 
 /// Given a [Type] return the [JsObject] representation of that type.
