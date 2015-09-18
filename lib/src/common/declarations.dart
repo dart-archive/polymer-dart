@@ -8,7 +8,7 @@ import '../../polymer_micro.dart';
 
 List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
     {bool where(ClassMirror mirror)}) {
-  var typeMirror = reflect(type, reflectionClass);
+  var typeMirror = reflectionClass.reflectType(type);
   var mixins = [];
   var superClass = _getSuper(typeMirror);
   while (superClass != null && !_isPolymerMixin(superClass.mixin)) {
@@ -27,7 +27,7 @@ List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
 Map<String, DeclarationMirror> declarationsFor(
     Type type, Reflectable reflectionClass,
     {bool where(String name, DeclarationMirror declaration)}) {
-  var typeMirror = reflect(type, reflectionClass);
+  var typeMirror = reflectionClass.reflectType(type);
   var declarations = {};
   var superClass = typeMirror;
   while (superClass != null && !_isPolymerMixin(superClass.mixin)) {
@@ -44,14 +44,6 @@ Map<String, DeclarationMirror> declarationsFor(
 bool _isPolymerMixin(ClassMirror clazz) {
   return clazz.reflectedType == PolymerMixin ||
       clazz.reflectedType == PolymerBase;
-}
-
-ClassMirror reflect(Type type, Reflectable reflectionClass) {
-  try {
-    return reflectionClass.reflectType(type);
-  } catch (e) {
-    throw 'type $type is missing the $reflectionClass annotation';
-  }
 }
 
 ClassMirror _getSuper(ClassMirror clazz) {

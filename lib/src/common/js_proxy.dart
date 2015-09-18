@@ -20,11 +20,11 @@ abstract class JsProxy implements JsProxyInterface {
   /// Lazily create proxy constructors!
   static Map<Type, JsFunction> _jsProxyConstructors = {};
 
-  /// Whether to introduce a cache layer and make operations read from the cache.
-  /// By default JsProxys have no cache and the proxy reads values directly from
-  /// the Dart object. This is primarily useful for objects that you pass in
-  /// empty, and the javascript code will populate. It should be used carefully
-  /// since its easy to get the two objects out of sync.
+  /// Whether to introduce a cache layer and make operations read from the
+  ///  cache. By default JsProxys have no cache and the proxy reads values
+  /// directly from the Dart object. This is primarily useful for objects that
+  /// you pass in empty, and the javascript code will populate. It should be
+  /// used carefully since its easy to get the two objects out of sync.
   bool useCache = false;
 
   /// The Javascript constructor that will be used to build proxy objects for

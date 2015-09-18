@@ -59,7 +59,7 @@ class EmployeeList extends PolymerElement {
 
   ready() {
     set('employees',
-        [new Employee('Bob', 'Smith'), new Employee('Sally', 'Johnson'),]);
+        [new Employee('Bob', 'Smith'), new Employee('Sally', 'Johnson')]);
   }
 
   @eventHandler

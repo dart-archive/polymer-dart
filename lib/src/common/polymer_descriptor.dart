@@ -13,6 +13,7 @@ import 'event_handler.dart';
 import 'listen.dart';
 import 'observe.dart';
 import 'polymer_register.dart';
+import 'util.dart';
 import '../js/undefined.dart';
 
 /// Creates a javascript object which can be passed to polymer js to register
@@ -156,13 +157,9 @@ void _setupEventHandlerMethods(Type type, Map descriptor) {
 
 /// Add the hostAttributes property to the descriptor if it exists.
 void _setupHostAttributes(Type type, Map descriptor) {
-  var typeMirror = reflect(type, jsProxyReflectable);
-  if (typeMirror.staticMembers.containsKey('hostAttributes')) {
-    var hostAttributes = typeMirror.invokeGetter('hostAttributes');
-    if (hostAttributes is! Map) {
-      throw '`hostAttributes` on $type must be a `Map`, but got a '
-          '${hostAttributes.runtimeType}';
-    }
+  var typeMirror = jsProxyReflectable.reflectType(type);
+  var hostAttributes = readHostAttributes(typeMirror);
+  if (hostAttributes != null) {
     descriptor['hostAttributes'] = hostAttributes;
   }
 }

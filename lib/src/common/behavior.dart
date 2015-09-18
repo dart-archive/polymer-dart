@@ -3,44 +3,41 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.src.common.behavior;
 
+import 'dart:html';
 import 'dart:js';
 import 'package:polymer_interop/polymer_interop.dart' show BehaviorAnnotation;
 export 'package:polymer_interop/polymer_interop.dart'
     show BehaviorAnnotation, BehaviorProxy;
 import 'package:reflectable/reflectable.dart';
-import 'declarations.dart';
+import 'util.dart';
 import 'js_proxy.dart';
 
 Map<Type, JsObject> _behaviorsByType = {};
 
-const String _lifecycleMethodsPattern =
-    r'^created|attached|detached|attributeChanged|ready$';
-final RegExp _lifecycleMethodsRegex = new RegExp(_lifecycleMethodsPattern);
+const String _lifecycleMethods =
+    'created|attached|detached|attributeChanged|ready';
+final RegExp _lifecycleMethodsRegex = new RegExp(_lifecycleMethods);
 const String _hostAttributes = 'hostAttributes';
-const String _allMethods = '${_hostAttributes}|${_lifecycleMethodsPattern}';
+const String _allMethods = '${_hostAttributes}|${_lifecycleMethods}';
+const String _attributeChanged = 'attributeChanged';
 
 // Annotation class for behaviors written in dart.
 class Behavior extends Reflectable implements BehaviorAnnotation {
   JsObject getBehavior(Type type) {
     return _behaviorsByType.putIfAbsent(type, () {
       var obj = new JsObject(context['Object']);
+      var typeMirror = this.reflectType(type);
+
+      var hostAttributes = readHostAttributes(typeMirror);
+      if (hostAttributes != null) {
+        obj[_hostAttributes] = hostAttributes;
+      }
 
       // Add an entry for each static lifecycle method. These methods must take
       // a `this` arg as the first argument.
-      var typeMirror = this.reflectType(type);
       typeMirror.staticMembers.forEach((String name, MethodMirror method) {
-        if (name == _hostAttributes) {
-          var hostAttributes = typeMirror.invokeGetter(_hostAttributes);
-          if (hostAttributes is! Map) {
-            throw '`hostAttributes` on $type must be a `Map`, but got a '
-                '${hostAttributes.runtimeType}';
-          }
-          obj['hostAttributes'] = new JsObject.jsify(hostAttributes);
-          return;
-        }
-
         if (!_lifecycleMethodsRegex.hasMatch(name)) return;
-        if (name == 'attributeChanged') {
+        if (name == _attributeChanged) {
           obj[name] = new JsFunction.withThis(
               (thisArg, String attributeName, String oldVal, String newVal) {
             typeMirror.invoke(
@@ -74,7 +71,8 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
 
   const Behavior()
       : super(declarationsCapability, typeCapability, metadataCapability,
-            const StaticInvokeCapability(_allMethods));
+            const StaticInvokeCapability(_allMethods),
+            const InstanceInvokeCapability(_allMethods));
 }
 
 const behavior = const Behavior();
