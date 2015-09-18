@@ -11,9 +11,9 @@ dependencies:
   html: '>=0.12.0 <0.13.0'
   initialize: '>=0.5.1+3 <0.7.0'
   polymer_interop: '>=0.2.0 <0.3.0'
+  reflectable: 0.2.0
   test: '^0.12.3'
   web_components: '>=0.11.3 <0.13.0'
-  reflectable: 0.2.0
 transformers:
 - web_components
 - test/pub_serve:
