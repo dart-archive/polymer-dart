@@ -68,6 +68,7 @@ class JsProxyReflectable extends Reflectable {
             superclassQuantifyCapability,
             const StaticInvokeCapability('hostAttributes'));
 }
+
 const jsProxyReflectable = const JsProxyReflectable();
 
 final JsObject _polymerDart = context['Polymer']['Dart'];

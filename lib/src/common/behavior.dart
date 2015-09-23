@@ -36,16 +36,6 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
       // Add an entry for each static lifecycle method. These methods must take
       // a `this` arg as the first argument.
       typeMirror.staticMembers.forEach((String name, MethodMirror method) {
-        if (name == _hostAttributes) {
-          var hostAttributes = typeMirror.invokeGetter(_hostAttributes);
-          if (hostAttributes is! Map) {
-            throw '`hostAttributes` on $type must be a `Map`, but got a '
-                '${hostAttributes.runtimeType}';
-          }
-          obj['hostAttributes'] = new JsObject.jsify(hostAttributes);
-          return;
-        }
-
         if (!_lifecycleMethodsRegex.hasMatch(name)) return;
         if (name == _attributeChanged) {
           obj[name] = new JsFunction.withThis(
@@ -80,10 +70,14 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
   }
 
   const Behavior()
-      : super(declarationsCapability, typeCapability, metadataCapability,
+      : super(
+            declarationsCapability,
+            typeCapability,
+            metadataCapability,
             const StaticInvokeCapability(_allMethods),
             const InstanceInvokeCapability(_allMethods));
 }
+
 const behavior = const Behavior();
 
 bool _isBehavior(instance) => instance is BehaviorAnnotation;
