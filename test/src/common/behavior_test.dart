@@ -9,6 +9,7 @@ import 'dart:js';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
 import 'package:web_components/web_components.dart';
+import '../../common.dart';
 
 main() async {
   await initPolymer();
@@ -155,6 +156,13 @@ main() async {
         expect(invocations.length, 1);
         expect((invocations[0][0] as CustomEventWrapper).original, e.original);
         expect(invocations[0][1], e.detail);
+      });
+    });
+
+    group('host attributes', () {
+      test('get assigned', () {
+        expect(el.attributes['dart'], 'hello');
+        expect(el.attributes['js'], 'hello');
       });
     });
 

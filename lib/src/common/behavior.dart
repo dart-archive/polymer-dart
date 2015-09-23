@@ -70,7 +70,10 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
   }
 
   const Behavior()
-      : super(declarationsCapability, typeCapability, metadataCapability,
+      : super(
+            declarationsCapability,
+            typeCapability,
+            metadataCapability,
             const StaticInvokeCapability(_allMethods),
             const InstanceInvokeCapability(_allMethods));
 }
