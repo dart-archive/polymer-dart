@@ -153,7 +153,7 @@ main() async {
         var e = el.fire('dart-behavior-event', detail: 'dart Detail');
         var invocations = el.dartInvocations['onDartBehaviorEvent'];
         expect(invocations.length, 1);
-        expect((invocations[0][0] as CustomEventWrapper).proxy, e.proxy);
+        expect((invocations[0][0] as CustomEventWrapper).original, e.original);
         expect(invocations[0][1], e.detail);
       });
     });
