@@ -47,18 +47,25 @@ void _setUpPropertyChanged() {
           instance.insertAll(index,
               original.getRange(index, addedCount + index).map(dartValue));
         }
+      } else if (path == 'length') {
+        // Ignore this case, wait for `splices`.
+        return;
       } else {
         try {
           var index = int.parse(path);
           instance[index] = dartValue(newValue);
-        } on FormatException catch (_) {}
+        } on FormatException catch (_) {
+          throw 'Only `splices`, `length`, and index paths are supported for '
+              'list types, found $path.';
+        }
       }
     } else if (instance is Map) {
       instance[path] = dartValue(newValue);
     } else {
       var instanceMirror = jsProxyReflectable.reflect(instance);
       // Catch errors for read only properties. Checking for setters using
-      // reflection is to slow.
+      // reflection is too slow.
+      // https://github.com/dart-lang/polymer-dart/issues/590
       try {
         instanceMirror.invokeSetter(path, dartValue(newValue));
       } on NoSuchMethodError catch (_) {} on NoSuchCapabilityError catch (_) {

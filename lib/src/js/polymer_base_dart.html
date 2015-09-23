@@ -60,10 +60,10 @@ BSD-style license that can be found in the LICENSE file.
 
     // Remove any `__dartClass__` instances during serialization.
     Polymer.Dart.serialize = function(value, type) {
-      var dartClass = value['__dartClass__'];
-      value['__dartClass__'] = undefined;
+      var dartClass = value.__dartClass__;
+      delete value.__dartClass__;
       var serialized = Polymer.Base.serialize(value, type);
-      value['__dartClass__'] = dartClass;
+      value.__dartClass__ = dartClass;
       return serialized;
     };
 
@@ -71,14 +71,14 @@ BSD-style license that can be found in the LICENSE file.
     // https://github.com/dart-lang/sdk/issues/24371
     Polymer.Dart.deserialize = Polymer.Base.deserialize;
 
-    Polymer.Dart.Behavior = {
+    Polymer.Dart.InteropBehavior = {
       // Secret hook into property changes. Pretty hacky but its more efficient
       // than using a JsProxy object for the element.
       _propertyChanged: function(path, newValue, oldValue) {
         var parts = path.split('.');
         var thisArg = parts.length == 1 ?
             this : this.get(parts.slice(0, parts.length - 1));
-        thisArg = thisArg.__dartClass__ ? thisArg.__dartClass__ : thisArg;
+        thisArg = thisArg.__dartClass__ || thisArg;
         Polymer.Dart.propertyChanged(
             thisArg, parts[parts.length - 1], newValue);
       },
@@ -93,7 +93,7 @@ BSD-style license that can be found in the LICENSE file.
         var parts = this._getPathParts(path);
         if (parts.length > 1) {
           var model = this.get(parts.splice(0, parts.length - 1));
-          if (model[parts[0]] !== value) model[parts[0]] = value;
+          if (model[parts[0]] != value) model[parts[0]] = value;
         }
         return notified;
       },

@@ -69,7 +69,8 @@ main() async {
 
     expect(descriptor['behaviors'], isNotNull);
     expect(descriptor['behaviors'].length, 5);
-    expect(descriptor['behaviors'][0], context['Polymer']['Dart']['Behavior']);
+    expect(descriptor['behaviors'][0],
+        context['Polymer']['Dart']['InteropBehavior']);
     expect(descriptor['behaviors'][1], context['Foo']['JsBehaviorOne']);
     expect(descriptor['behaviors'][2], behavior.getBehavior(DartBehaviorOne));
     expect(descriptor['behaviors'][3], context['Foo']['JsBehaviorTwo']);
