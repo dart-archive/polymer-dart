@@ -231,10 +231,11 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
     behaviorStack.add(behavior);
   }
 
-  return behaviorStack.map((ClassMirror behavior) {
-    BehaviorAnnotation meta = behavior.metadata.firstWhere(_isBehavior);
-    return meta.getBehavior(behavior.reflectedType);
-  });
+  return <JsObject>[_polymerDart['InteropBehavior']]
+    ..addAll(behaviorStack.map((ClassMirror behavior) {
+      BehaviorAnnotation meta = behavior.metadata.firstWhere(_isBehavior);
+      return meta.getBehavior(behavior.reflectedType);
+    }));
 }
 
 // Throws an error about expected mixins that must precede the [clazz] mixin.
