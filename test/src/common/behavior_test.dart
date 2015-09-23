@@ -76,7 +76,7 @@ main() async {
       });
 
       _testAttributeChanged(invocations) {
-       expect(invocations['attributeChanged'], [
+        expect(invocations['attributeChanged'], [
           [el, 'js', null, 'hello'],
           [el, 'dart', null, 'hello'],
         ]);
