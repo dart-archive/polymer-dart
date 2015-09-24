@@ -7,6 +7,7 @@ library polymer.test.src.micro.lifecycle_callbacks_test;
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer_micro.dart';
+import '../../common.dart';
 
 LifecycleTest element;
 
@@ -21,16 +22,19 @@ main() async {
     expect(element.createdCalled, true);
   });
 
-  test('attached', () {
+  test('attached', () async {
     expect(element.attachedCalled, isFalse);
     document.body.append(element);
+    await wait(0);
     expect(element.attachedCalled, isTrue);
   });
 
-  test('detached', () {
+  test('detached', () async {
     expect(element.detachedCalled, isFalse);
     document.body.append(element);
+    await wait(0);
     element.remove();
+    await wait(0);
     expect(element.detachedCalled, isTrue);
   });
 

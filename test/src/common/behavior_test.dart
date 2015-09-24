@@ -9,6 +9,7 @@ import 'dart:js';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
 import 'package:web_components/web_components.dart';
+import '../../common.dart';
 
 main() async {
   await initPolymer();
@@ -39,36 +40,39 @@ main() async {
         _testCreated(el.dartInvocations);
       });
 
-      _testAttached(invocations) {
+      _testAttached(invocations) async {
         document.body.append(el);
+        await wait(0);
         expect(invocations['attached'], [
           [el]
         ]);
         expect(invocations['detached'], isEmpty);
       }
 
-      test('JS attached', () {
-        _testAttached(el.jsInvocations);
+      test('JS attached', () async {
+        await _testAttached(el.jsInvocations);
       });
 
-      test('Dart attached', () {
-        _testAttached(el.dartInvocations);
+      test('Dart attached', () async {
+        await _testAttached(el.dartInvocations);
       });
 
-      _testDetached(invocations) {
+      _testDetached(invocations) async {
         document.body.append(el);
+        await wait(0);
         el.remove();
+        await wait(0);
         expect(invocations['detached'], [
           [el]
         ]);
       }
 
-      test('JS detached', () {
-        _testDetached(el.jsInvocations);
+      test('JS detached', () async {
+        await _testDetached(el.jsInvocations);
       });
 
-      test('Dart detached', () {
-        _testDetached(el.dartInvocations);
+      test('Dart detached', () async {
+        await _testDetached(el.dartInvocations);
       });
 
       _testAttributeChanged(invocations) {
