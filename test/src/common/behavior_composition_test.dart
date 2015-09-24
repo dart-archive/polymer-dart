@@ -34,11 +34,11 @@ main() async {
       expect(behaviorThree.length, 3);
 
       var behaviorTwo = behavior.getBehavior(BehaviorTwo);
-      expect(behaviorThree, new isInstanceOf<JsObject>());
-      var behaviorOne = behavior.getBehavior(BehaviorOne);
       expect(behaviorTwo, new isInstanceOf<JsObject>());
+      var behaviorOne = behavior.getBehavior(BehaviorOne);
+      expect(behaviorOne, new isInstanceOf<JsObject>());
 
-      expect(behaviorThree[0], behaviorOne);
+      expect(behaviorThree[0], behaviorOneProxy.getBehavior(BehaviorOne));
       expect(behaviorThree[1], behaviorTwo);
       expect(behaviorThree[2], new isInstanceOf<JsObject>());
     });
@@ -59,7 +59,8 @@ main() async {
   });
 }
 
-@behavior
+const behaviorOneProxy = const BehaviorProxy(const ['JsBehavior']);
+@behaviorOneProxy
 abstract class BehaviorOne {}
 
 @behavior
