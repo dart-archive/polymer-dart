@@ -1,7 +1,7 @@
-#### 0.17.0-dev
-  * In progress port of polymer js 0.9.
-  * This is a ground up rewrite, and does not yet have transformer support.
-  * Only PolymerMicroElements exist so far.
+#### 1.0.0-rc.1
+  * Port of polymer js 1.1.
+  * This is a ground up rewrite, and has multiple breaking changes. See the
+    [wiki](https://github.com/dart-lang/polymer-dart/wiki) for more information.
 
 #### 0.16.3+2
   * Fix invalid warning about missing polymer.html import from the linter.
