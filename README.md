@@ -46,7 +46,7 @@ specific version:
 
 ```yaml
 dependencies:
-  polymer: 1.0.0-rc1
+  polymer: 1.0.0-rc.1
 ```
 
 Building and Deploying
