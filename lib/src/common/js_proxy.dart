@@ -5,16 +5,16 @@ library polymer.lib.src.common.js_proxy;
 
 import 'dart:js';
 import 'package:polymer_interop/polymer_interop.dart';
-export 'package:polymer_interop/polymer_interop.dart' show dartValue, jsValue;
+export 'package:polymer_interop/polymer_interop.dart' show convertToDart, convertToJs;
 import 'package:reflectable/reflectable.dart';
 import 'behavior.dart';
 import 'declarations.dart';
 
 /// Mixin this class to get js proxy support! If a [JsProxy] is passed to
-/// [jsValue] then you will get back a [JsObject] which is fully usable from
+/// [convertToJs] then you will get back a [JsObject] which is fully usable from
 /// JS, but proxies all method calls and properties to the dart instance.
-/// Calling [dartValue] on that [JsObject] will also return the original dart
-/// instance (not a copy).
+/// Calling [convertToDart] on that [JsObject] will also return the original
+/// dart instance (not a copy).
 @jsProxyReflectable
 abstract class JsProxy implements JsProxyInterface {
   /// Lazily create proxy constructors!
@@ -46,7 +46,7 @@ abstract class JsProxy implements JsProxyInterface {
 JsObject _buildJsProxy(JsProxy instance) {
   var constructor = instance.jsProxyConstructor;
   var proxy = new JsObject(constructor);
-  addDartInstance(proxy, instance);
+  setDartInstance(proxy, instance);
   if (instance.useCache) {
     proxy['__cache__'] = new JsObject(context['Object']);
   }
@@ -91,7 +91,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
           name,
           (dartInstance) {
             var mirror = jsProxyReflectable.reflect(dartInstance);
-            return jsValue(mirror.invokeGetter(name));
+            return convertToJs(mirror.invokeGetter(name));
           }
         ]),
         'configurable': false,
@@ -101,7 +101,7 @@ JsFunction _buildJsConstructorForType(Type dartType) {
           name,
           (dartInstance, value) {
             var mirror = jsProxyReflectable.reflect(dartInstance);
-            mirror.invokeSetter(name, dartValue(value));
+            mirror.invokeSetter(name, convertToDart(value));
           }
         ]);
       }
@@ -112,9 +112,9 @@ JsFunction _buildJsConstructorForType(Type dartType) {
       // TODO(jakemac): consolidate this code with the code in properties.dart.
       prototype[name] = _polymerDart.callMethod('invokeDartFactory', [
         (dartInstance, arguments) {
-          var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+          var newArgs = arguments.map((arg) => convertToDart(arg)).toList();
           var mirror = jsProxyReflectable.reflect(dartInstance);
-          return jsValue(mirror.invoke(name, newArgs));
+          return convertToJs(mirror.invoke(name, newArgs));
         }
       ]);
     }

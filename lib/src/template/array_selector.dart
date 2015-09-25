@@ -13,13 +13,13 @@ class ArraySelector extends HtmlElement
   ArraySelector.created() : super.created();
 
   /// An array containing items from which selection will be made.
-  List get items => dartValue(jsElement['items']);
+  List get items => convertToDart(jsElement['items']);
   void set items(List newVal) => jsElement.callMethod('set', ['items', items]);
 
   /// When `multi` is true, this is an array that contains any selected.
   /// When `multi` is false, this is the currently selected item, or `null`
   /// if no item is selected.
-  dynamic get selected => dartValue(jsElement['selected']);
+  dynamic get selected => convertToDart(jsElement['selected']);
 
   /// When `true`, calling `select` on an item that is already selected
   /// will deselect the item.
@@ -37,9 +37,9 @@ class ArraySelector extends HtmlElement
   }
 
   /// Deselects the given item if it is already selected.
-  void deselect(item) => jsElement.callMethod('deselect', [jsValue(item)]);
+  void deselect(item) => jsElement.callMethod('deselect', [convertToJs(item)]);
 
   /// Selects the given item.  When `toggle` is true, this will automatically
   /// deselect the item if already selected.
-  void select(item) => jsElement.callMethod('select', [jsValue(item)]);
+  void select(item) => jsElement.callMethod('select', [convertToJs(item)]);
 }

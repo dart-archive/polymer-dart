@@ -41,7 +41,7 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
           obj[name] = new JsFunction.withThis(
               (thisArg, String attributeName, String oldVal, String newVal) {
             typeMirror.invoke(
-                name, [dartValue(thisArg), attributeName, oldVal, newVal]);
+                name, [convertToDart(thisArg), attributeName, oldVal, newVal]);
           });
         } else {
           obj[name] = new JsFunction.withThis((thisArg) {

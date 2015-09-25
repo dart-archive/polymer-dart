@@ -19,14 +19,14 @@ abstract class PolymerSerialize implements PolymerMixin {
 
   /// Serializes the [value] into a [String].
   String serialize(value) {
-    var result = _polymerDartSerialize.apply([jsValue(value)]);
+    var result = _polymerDartSerialize.apply([convertToJs(value)]);
 
     return (result != null) ? result.toString() : null;
   }
 
   /// Deserializes the [value] into an object of the given [type].
   dynamic deserialize(String value, Type type) {
-    return dartValue(_polymerDartDeserialize.apply([value, jsType(type)]));
+    return convertToDart(_polymerDartDeserialize.apply([value, jsType(type)]));
   }
 }
 

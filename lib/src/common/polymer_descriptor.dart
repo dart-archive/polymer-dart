@@ -123,7 +123,7 @@ void _setupLifecycleMethods(Type type, Map descriptor) {
   declarations.forEach((String name, DeclarationMirror declaration) {
     descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
       (dartInstance, arguments) {
-        var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+        var newArgs = arguments.map((arg) => convertToDart(arg)).toList();
         var instanceMirror = jsProxyReflectable.reflect(dartInstance);
         return instanceMirror.invoke(name, newArgs);
       }
@@ -147,7 +147,7 @@ void _setupEventHandlerMethods(Type type, Map descriptor) {
     // least throw a better error in that case.
     descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
       (dartInstance, arguments) {
-        var newArgs = arguments.map((arg) => dartValue(arg)).toList();
+        var newArgs = arguments.map((arg) => convertToDart(arg)).toList();
         var instanceMirror = jsProxyReflectable.reflect(dartInstance);
         return instanceMirror.invoke(name, newArgs);
       }
@@ -195,7 +195,7 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
       (dartInstance, _) {
         var instanceMirror = jsProxyReflectable.reflect(dartInstance);
         var value =
-            jsValue(instanceMirror.invokeGetter(declaration.simpleName));
+            convertToJs(instanceMirror.invokeGetter(declaration.simpleName));
         if (value == null) return polymerDartUndefined;
         return value;
       }

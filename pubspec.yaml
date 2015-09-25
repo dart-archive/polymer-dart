@@ -49,7 +49,7 @@ transformers:
 dependency_overrides:
   polymer_interop:
     git:
-      ref: 0.2.0-dev
+      ref: 0.2.0-rc1
       url: https://github.com/dart-lang/polymer_interop.git
   analyzer: ^0.26.0
 environment:

@@ -16,7 +16,7 @@ class DomRepeat extends TemplateElement
 
   /// An array containing items determining how many instances of the template
   /// to stamp and that that each template instance should bind to.
-  List get items => dartValue(jsElement['items']);
+  List get items => convertToDart(jsElement['items']);
   void set items(List newVal) => jsElement.callMethod('set', ['items', items]);
 
   /// The name of the variable to add to the binding scope for the array
@@ -39,11 +39,11 @@ class DomRepeat extends TemplateElement
   /// name on the element's host, or else be an actual function.  The
   /// function should match the sort function passed to `Array.sort`.
   /// Using a sort function has no effect on the underlying `items` array.
-  dynamic get sort => dartValue(jsElement['sort']);
+  dynamic get sort => convertToDart(jsElement['sort']);
   void set sort(newVal) {
     if (newVal is Function) {
       var original = newVal;
-      newVal = (a, b) => original(dartValue(a), dartValue(b));
+      newVal = (a, b) => original(convertToDart(a), convertToDart(b));
     }
     jsElement.callMethod('set', ['sort', newVal]);
   }
@@ -53,12 +53,12 @@ class DomRepeat extends TemplateElement
   /// name on the element's host, or else be an actual function.  The
   /// function should match the sort function passed to `Array.filter`.
   /// Using a filter function has no effect on the underlying `items` array.
-  dynamic get filter => dartValue(jsElement['filter']);
+  dynamic get filter => convertToDart(jsElement['filter']);
   void set filter(newVal) {
     if (newVal is Function) {
       var original = newVal;
       newVal = (element, [index, array]) =>
-          original(dartValue(element), index, dartValue(array));
+          original(convertToDart(element), index, convertToDart(array));
     }
     jsElement.callMethod('set', ['filter', newVal]);
   }
@@ -106,14 +106,14 @@ class DomRepeat extends TemplateElement
 
   /// Returns the actual `model.item` for an element.
   itemForElement(Element element) =>
-      dartValue(jsElement.callMethod('itemForElement', [element]));
+      convertToDart(jsElement.callMethod('itemForElement', [element]));
 }
 
 // Dart wrapper for template models that come back from dom-repeat.
 class DomRepeatModel extends Object with PolymerBase {
   final JsObject jsElement;
 
-  get item => dartValue(jsElement['item']);
+  get item => convertToDart(jsElement['item']);
   int get index => jsElement['index'];
 
   DomRepeatModel(this.jsElement);

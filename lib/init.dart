@@ -45,7 +45,7 @@ void _setUpPropertyChanged() {
           var addedCount = splice['addedCount'];
           var original = splice['object'] as JsArray;
           instance.insertAll(index,
-              original.getRange(index, addedCount + index).map(dartValue));
+              original.getRange(index, addedCount + index).map(convertToDart));
         }
       } else if (path == 'length') {
         // Ignore this case, wait for `splices`.
@@ -53,21 +53,21 @@ void _setUpPropertyChanged() {
       } else {
         try {
           var index = int.parse(path);
-          instance[index] = dartValue(newValue);
+          instance[index] = convertToDart(newValue);
         } on FormatException catch (_) {
           throw 'Only `splices`, `length`, and index paths are supported for '
               'list types, found $path.';
         }
       }
     } else if (instance is Map) {
-      instance[path] = dartValue(newValue);
+      instance[path] = convertToDart(newValue);
     } else {
       var instanceMirror = jsProxyReflectable.reflect(instance);
       // Catch errors for read only properties. Checking for setters using
       // reflection is too slow.
       // https://github.com/dart-lang/polymer-dart/issues/590
       try {
-        instanceMirror.invokeSetter(path, dartValue(newValue));
+        instanceMirror.invokeSetter(path, convertToDart(newValue));
       } on NoSuchMethodError catch (_) {} on NoSuchCapabilityError catch (_) {
         // TODO(jakemac): Remove once
         // https://github.com/dart-lang/reflectable/issues/30 is fixed.
