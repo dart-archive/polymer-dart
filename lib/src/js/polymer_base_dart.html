@@ -75,12 +75,22 @@ BSD-style license that can be found in the LICENSE file.
       // Secret hook into property changes. Pretty hacky but its more efficient
       // than using a JsProxy object for the element.
       _propertyChanged: function(path, newValue, oldValue) {
+        // resolving with keys for array - is it a bug or a feature ?
         var parts = path.split('.');
-        var thisArg = parts.length == 1 ?
-            this : this.get(parts.slice(0, parts.length - 1));
+        var thisArg =  this;
+        for (var i=0;i<parts.length-1;i++) {
+          if (Array.isArray(thisArg)&&parts[i]==parseInt(parts[i])) {
+            thisArg=Polymer.Collection.get(thisArg).getItem(parseInt(parts[i]));
+          } else {
+            thisArg=thisArg[parts[i]];
+          }
+        }
+        /*
+         var thisArg = parts.length == 1 ?
+         this : this.get(parts.slice(0, parts.length - 1));*/
         thisArg = thisArg.__dartClass__ || thisArg;
         Polymer.Dart.propertyChanged(
-            thisArg, parts[parts.length - 1], newValue);
+                thisArg, parts[parts.length - 1], newValue);
       },
 
       notifyPath: function(path, value, fromAbove) {
@@ -91,10 +101,27 @@ BSD-style license that can be found in the LICENSE file.
         // If you call notifyPath from dart we need to do manual modifications
         // on any JsArray or JsObject instances.
         var parts = this._getPathParts(path);
-        if (parts.length > 1) {
-          var model = this.get(parts.splice(0, parts.length - 1));
-          if (model[parts[0]] != value) model[parts[0]] = value;
+        // if (parts.length > 1) {
+
+        var thisArg =  this;
+        for (var i=0;i<parts.length-1;i++) {
+          if (Array.isArray(thisArg)&&parts[i]==parseInt(parts[i])) {
+            thisArg=Polymer.Collection.get(thisArg).getItem(parseInt(parts[i]));
+          } else {
+            thisArg=thisArg[parts[i]];
+          }
         }
+        var last = parts[parts.length-1];
+        if (Array.isArray(thisArg)&&last==parseInt(last)) {
+          Polymer.Collection.get(thisArg).setItem(partsInt(last),value);
+        } else {
+          thisArg[last] = value;
+        }
+        /*
+         var model = this.get(parts.splice(0, parts.length - 1));
+         if (model[parts[0]] != value) model[parts[0]] = value;
+         */
+        //}
         return notified;
       },
 
