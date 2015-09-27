@@ -56,7 +56,7 @@ main() async {
       element.removeAt('myThings',0);
       element.set('myThings.1.field',"E");
 
-      expect(element.myThings,[new Thing("B"),new Thing("E")]);
+      expect(element.myThings.map((Thing t )=> t.field).toList(),["D","E"]);
     });
 
     test('JsProxy', () {
