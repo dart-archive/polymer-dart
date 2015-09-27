@@ -88,6 +88,8 @@ BSD-style license that can be found in the LICENSE file.
         /*
          var thisArg = parts.length == 1 ?
          this : this.get(parts.slice(0, parts.length - 1));*/
+
+        //TODO : should we try to "demangle" the last part of the path too ? (test case : try to replace an element in the collection and see whats happening)
         thisArg = thisArg.__dartClass__ || thisArg;
         Polymer.Dart.propertyChanged(
                 thisArg, parts[parts.length - 1], newValue);
@@ -113,7 +115,7 @@ BSD-style license that can be found in the LICENSE file.
         }
         var last = parts[parts.length-1];
         if (Array.isArray(thisArg)&&last==parseInt(last)) {
-          Polymer.Collection.get(thisArg).setItem(partsInt(last),value);
+          Polymer.Collection.get(thisArg).setItem(parseInt(last),value);
         } else {
           thisArg[last] = value;
         }
