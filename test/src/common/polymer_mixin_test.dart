@@ -38,7 +38,7 @@ main() async {
       expect(element.jsElement['myMap']['hello'], 'world');
     });
 
-    test('List',  () {
+    test('List', () {
       element.set('myInts', [1, 2, 3]);
       expect(element.myInts, [1, 2, 3]);
       expect(element.jsElement['myInts'], [1, 2, 3]);
@@ -52,23 +52,23 @@ main() async {
       element.add('myThings', new Thing("A"));
       element.add('myThings', new Thing("B"));
       element.add('myThings', new Thing("C"));
-      element.set("myThings.1.field","D");
-      element.removeAt('myThings',0);
-      element.set('myThings.1.field',"E");
+      element.set("myThings.1.field", "D");
+      element.removeAt('myThings', 0);
+      element.set('myThings.1.field', "E");
 
-      expect(element.myThings.map((Thing t )=> t.field).toList(),["D","E"]);
-    },skip:"Until https://github.com/Polymer/polymer/issues/2490 is fixed");
+      expect(element.myThings.map((Thing t) => t.field).toList(), ["D", "E"]);
+    }, skip: "Until https://github.com/Polymer/polymer/issues/2490 is fixed");
 
     test('List.replace', () {
       element.add('myThings', new Thing("A"));
       element.add('myThings', new Thing("B"));
       element.add('myThings', new Thing("C"));
-      element.set("myThings.1",new Thing("D"));
-      element.removeAt('myThings',0);
-      element.set('myThings.1',new Thing("E"));
+      element.set("myThings.1", new Thing("D"));
+      element.removeAt('myThings', 0);
+      element.set('myThings.1', new Thing("E"));
 
-      expect(element.myThings.map((Thing t )=> t.field).toList(),["D","E"]);
-    },skip:"Until https://github.com/Polymer/polymer/issues/2490 is fixed");
+      expect(element.myThings.map((Thing t) => t.field).toList(), ["D", "E"]);
+    }, skip: "Until https://github.com/Polymer/polymer/issues/2490 is fixed");
 
     test('JsProxy', () {
       var newModel = new Model('world');
@@ -293,11 +293,9 @@ class Thing extends JsProxy {
   String field;
   Thing(this.field);
 
-  bool operator==(Thing other) => other.field==this.field;
+  bool operator ==(Thing other) => other.field == this.field;
 
   int get hashCode => field.hashCode;
-
-
 }
 
 @PolymerRegister('test-element')
