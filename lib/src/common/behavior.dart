@@ -8,25 +8,24 @@ import 'dart:js';
 import 'package:polymer_interop/polymer_interop.dart' show BehaviorAnnotation;
 export 'package:polymer_interop/polymer_interop.dart'
     show BehaviorAnnotation, BehaviorProxy;
+@GlobalQuantifyMetaCapability(Behavior, jsProxyReflectable)
 import 'package:reflectable/reflectable.dart';
 import 'util.dart';
 import 'js_proxy.dart';
 
 Map<Type, JsObject> _behaviorsByType = {};
 
-const String _lifecycleMethods =
-    'created|attached|detached|attributeChanged|ready';
-final RegExp _lifecycleMethodsRegex = new RegExp(_lifecycleMethods);
+final RegExp _lifecycleMethodsRegex =
+    new RegExp('created|attached|detached|attributeChanged|ready');
 const String _hostAttributes = 'hostAttributes';
-const String _allMethods = '${_hostAttributes}|${_lifecycleMethods}';
 const String _attributeChanged = 'attributeChanged';
 
 // Annotation class for behaviors written in dart.
-class Behavior extends Reflectable implements BehaviorAnnotation {
+class Behavior implements BehaviorAnnotation {
   JsObject getBehavior(Type type) {
     return _behaviorsByType.putIfAbsent(type, () {
       var obj = new JsObject(context['Object']);
-      var typeMirror = this.reflectType(type);
+      var typeMirror = jsProxyReflectable.reflectType(type);
 
       var hostAttributes = readHostAttributes(typeMirror);
       if (hostAttributes != null) {
@@ -69,16 +68,7 @@ class Behavior extends Reflectable implements BehaviorAnnotation {
     });
   }
 
-  const Behavior()
-      : super(
-            declarationsCapability,
-            typeCapability,
-            metadataCapability,
-            typeRelationsCapability,
-            subtypeQuantifyCapability,
-            superclassQuantifyCapability,
-            const StaticInvokeCapability(_allMethods),
-            const InstanceInvokeCapability(_allMethods));
+  const Behavior();
 }
 
 const behavior = const Behavior();
