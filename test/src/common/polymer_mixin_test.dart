@@ -49,26 +49,26 @@ main() async {
     });
 
     test('List.index', () {
-      element.add('myThings', new Thing("A"));
-      element.add('myThings', new Thing("B"));
-      element.add('myThings', new Thing("C"));
-      element.set("myThings.1.field", "D");
+      element.add('myThings', new Thing('A'));
+      element.add('myThings', new Thing('B'));
+      element.add('myThings', new Thing('C'));
+      element.set('myThings.1.field', 'D');
       element.removeAt('myThings', 0);
-      element.set('myThings.1.field', "E");
+      element.set('myThings.1.field', 'E');
 
-      expect(element.myThings.map((Thing t) => t.field).toList(), ["D", "E"]);
-    }, skip: "Until https://github.com/Polymer/polymer/issues/2490 is fixed");
+      expect(element.myThings.map((Thing t) => t.field).toList(), ['D', 'E']);
+    });
 
     test('List.replace', () {
-      element.add('myThings', new Thing("A"));
-      element.add('myThings', new Thing("B"));
-      element.add('myThings', new Thing("C"));
-      element.set("myThings.1", new Thing("D"));
+      element.add('myThings', new Thing('A'));
+      element.add('myThings', new Thing('B'));
+      element.add('myThings', new Thing('C'));
+      element.set('myThings.1', new Thing('D'));
       element.removeAt('myThings', 0);
-      element.set('myThings.1', new Thing("E"));
+      element.set('myThings.1', new Thing('E'));
 
-      expect(element.myThings.map((Thing t) => t.field).toList(), ["D", "E"]);
-    }, skip: "Until https://github.com/Polymer/polymer/issues/2490 is fixed");
+      expect(element.myThings.map((Thing t) => t.field).toList(), ['D', 'E']);
+    });
 
     test('JsProxy', () {
       var newModel = new Model('world');
@@ -108,6 +108,34 @@ main() async {
       element.notifyPath('myInts.1', element.myInts[1]);
       expect(element.myInts, [1, 4, 3]);
       expect(element.jsElement['myInts'], [1, 4, 3]);
+    });
+
+    test('List.index', () {
+      element.myThings = [new Thing('A'), new Thing('B'), new Thing('C')];
+      element.notifyPath('myThings', element.myThings);
+      element.myThings[1].field = 'D';
+      element.notifyPath('myThings.1.field', element.myThings[1].field);
+      element.removeAt('myThings', 0);
+      element.myThings[1].field = 'E';
+      element.notifyPath('myThings.1.field', element.myThings[1].field);
+
+      expect(element.myThings.map((Thing t) => t.field).toList(), ['D', 'E']);
+      expect(element.jsElement['myThings'].map((t) => t['field']).toList(),
+          ['D', 'E']);
+    });
+
+    test('List.replace', () {
+      element.myThings = [new Thing('A'), new Thing('B'), new Thing('C')];
+      element.notifyPath('myThings', element.myThings);
+      element.myThings[1] = new Thing('D');
+      element.notifyPath('myThings.1', element.myThings[1]);
+      element.removeAt('myThings', 0);
+      element.myThings[1] = new Thing('E');
+      element.notifyPath('myThings.1', element.myThings[1]);
+
+      expect(element.myThings.map((Thing t) => t.field).toList(), ['D', 'E']);
+      expect(element.jsElement['myThings'].map((t) => t['field']).toList(),
+          ['D', 'E']);
     });
 
     test('JsProxy', () {
