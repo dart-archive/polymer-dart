@@ -66,7 +66,9 @@ class JsProxyReflectable extends Reflectable {
             typeRelationsCapability,
             subtypeQuantifyCapability,
             superclassQuantifyCapability,
-            const StaticInvokeCapability('hostAttributes'));
+            const StaticInvokeCapability(
+                'hostAttributes|created|attached|detached|attributeChanged|'
+                'ready'));
 }
 const jsProxyReflectable = const JsProxyReflectable();
 
