@@ -24,7 +24,7 @@ Future initPolymer() async {
 final _polymerDart = context['Polymer']['Dart'];
 
 void _setUpPropertyChanged() {
-  _polymerDart['propertyChanged'] = (instance, String path, newValue) {
+  _polymerDart['propertyChanged'] = (instance, path, newValue) {
     if (instance is List) {
       // We only care about `splices` for Lists. This does mean we don't support
       // setting special properties of custom List implementations though.
@@ -50,14 +50,11 @@ void _setUpPropertyChanged() {
       } else if (path == 'length') {
         // Ignore this case, wait for `splices`.
         return;
+      } else if (path is int) {
+        instance[path] = convertToDart(newValue);
       } else {
-        try {
-          var index = int.parse(path);
-          instance[index] = convertToDart(newValue);
-        } on FormatException catch (_) {
-          throw 'Only `splices`, `length`, and index paths are supported for '
-              'list types, found $path.';
-        }
+        throw 'Only `splices`, `length`, and index paths are supported for '
+            'list types, found $path.';
       }
     } else if (instance is Map) {
       instance[path] = convertToDart(newValue);

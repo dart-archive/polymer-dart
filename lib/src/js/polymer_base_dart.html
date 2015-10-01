@@ -75,27 +75,38 @@ BSD-style license that can be found in the LICENSE file.
       // Secret hook into property changes. Pretty hacky but its more efficient
       // than using a JsProxy object for the element.
       _propertyChanged: function(path, newValue, oldValue) {
-        var parts = path.split('.');
-        var thisArg = parts.length == 1 ?
-            this : this.get(parts.slice(0, parts.length - 1));
-        thisArg = thisArg.__dartClass__ || thisArg;
-        Polymer.Dart.propertyChanged(
-            thisArg, parts[parts.length - 1], newValue);
-      },
-
-      notifyPath: function(path, value, fromAbove) {
-        var notified =
-            Polymer.Base.notifyPath.call(this, path, value, fromAbove);
-        if (fromAbove) return notified;
-
-        // If you call notifyPath from dart we need to do manual modifications
-        // on any JsArray or JsObject instances.
         var parts = this._getPathParts(path);
-        if (parts.length > 1) {
-          var model = this.get(parts.splice(0, parts.length - 1));
-          if (model[parts[0]] != value) model[parts[0]] = value;
+        var array;
+
+        // Get the model which is being updated.
+        var thisArg = this;
+        for (var i = 0; i < parts.length - 1; i++) {
+          var part = parts[i];
+
+          if (array && (parseInt(part) == part)) {
+            thisArg = Polymer.Collection.get(array).getItem(part);
+          } else {
+            thisArg = thisArg[part];
+          }
+
+          if (!thisArg) {
+            return;
+          }
+          array = Array.isArray(thisArg) ? thisArg : null;
         }
-        return notified;
+
+        // The property of the model which is being updated.
+        var prop = parts[parts.length - 1];
+        if (array && (parseInt(prop) == prop)) {
+          // Ouch, O(n) operation :(. Also doesn't support duplicates :(.
+          prop = array.indexOf(Polymer.Collection.get(array).getItem(prop));
+        }
+
+        // Grab the __dartClass__ if we already have one
+        thisArg = thisArg.__dartClass__ || thisArg;
+
+        // Finally, update things on the dart side.
+        Polymer.Dart.propertyChanged(thisArg, prop, newValue);
       },
 
       serialize: function(value, type) {
