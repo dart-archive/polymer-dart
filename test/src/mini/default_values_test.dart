@@ -18,7 +18,7 @@ main() async {
     element = document.createElement('simple-element');
 
     expect(element.message, 'hello world!');
-    expect(element.jsProxy['message'], 'hello world!');
+    expect(element.jsElement['message'], 'hello world!');
     expect(element.text, contains('hello world!'));
   });
 }
