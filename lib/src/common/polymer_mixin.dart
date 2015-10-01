@@ -9,7 +9,8 @@ import 'package:web_components/web_components.dart';
 import 'js_proxy.dart';
 
 /// Basic api for re-using the polymer js prototypes.
-abstract class PolymerMixin implements JsProxy, CustomElementProxyMixin {
+@jsProxyReflectable
+abstract class PolymerMixin implements CustomElementProxyMixin {
   JsObject _proxy;
 
   JsObject get jsElement {
@@ -22,6 +23,4 @@ abstract class PolymerMixin implements JsProxy, CustomElementProxyMixin {
   void polymerCreated() {
     jsElement.callMethod('originalPolymerCreatedCallback');
   }
-
-
 }

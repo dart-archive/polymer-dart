@@ -14,13 +14,11 @@ import 'src/common/polymer_mixin.dart';
 export 'src/common/polymer_mixin.dart';
 export 'src/common/polymer_register.dart';
 export 'src/common/polymer_serialize.dart';
-import 'src/common/js_proxy.dart';
 export 'src/common/js_proxy.dart';
 export 'src/common/property.dart';
 export 'init.dart' show initPolymer;
 
-class PolymerElement extends HtmlElement
-    with PolymerMixin, PolymerBase, JsProxy {
+class PolymerElement extends HtmlElement with PolymerMixin, PolymerBase {
   PolymerElement.created() : super.created() {
     polymerCreated();
   }
