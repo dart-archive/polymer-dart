@@ -17,18 +17,25 @@ main() async {
     element = document.createElement('test-element');
   });
 
-  test('Properties withough setters are read only', () {
+  test('Properties without setters are read only', () {
     expect(element.jsElement['properties']['name']['readOnly'], isTrue);
     expect(element.$['name'].text, 'Jack');
 
     expect(() => element.set('name', 'John'), throws);
+  });
+
+  test('Properties without setters can be notified of changes', () {
+    element._name = 'John';
+    expect(element.notifyPath('name', element._name), isNull);
+    expect(element.$['name'].text, element._name);
   });
 }
 
 @PolymerRegister('test-element')
 class TestElement extends PolymerElement {
   @property
-  String get name => 'Jack';
+  String get name => _name;
+  String _name = 'Jack';
 
   TestElement.created() : super.created();
 }
