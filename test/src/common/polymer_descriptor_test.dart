@@ -96,7 +96,7 @@ class DartBehaviorOne {
   @Listen('someEventOne')
   void onSomeEventOne() {}
 
-  @eventHandler
+  @reflectable
   void behaviorOneExposedMethod() {}
 }
 
@@ -111,7 +111,7 @@ class DartBehaviorTwo {
   @Listen('someEventTwo')
   void onSomeEventTwo() {}
 
-  @eventHandler
+  @reflectable
   void behaviorTwoExposedMethod() {}
 }
 
@@ -158,13 +158,13 @@ class Test extends PolymerElement
   @Listen('someId.tap')
   void onSomeIdTap() {}
 
-  @eventHandler
+  @reflectable
   void handleSomeEvent() {}
 
-  @eventHandler
+  @reflectable
   void myDoubleChanged() {}
 
-  @eventHandler
+  @reflectable
   num myNumsCombined() {
     return myInt + myDouble + myNum;
   }

@@ -232,10 +232,11 @@ class DartBehavior {
   // Properties
   @Property(observer: 'dartBehaviorStringChanged')
   String dartBehaviorString;
+
   @property
   int dartBehaviorNum;
 
-  @eventHandler
+  @reflectable
   void dartBehaviorStringChanged(String newValue, String oldValue) {
     dartInvocations['dartBehaviorStringChanged'].add([newValue, oldValue]);
   }

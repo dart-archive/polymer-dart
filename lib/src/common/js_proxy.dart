@@ -4,11 +4,15 @@
 library polymer.lib.src.common.js_proxy;
 
 import 'dart:js';
+import 'dart:html';
 import 'package:polymer_interop/polymer_interop.dart';
-export 'package:polymer_interop/polymer_interop.dart' show convertToDart, convertToJs;
+export 'package:polymer_interop/polymer_interop.dart'
+    show convertToDart, convertToJs;
 import 'package:reflectable/reflectable.dart';
 import 'behavior.dart';
 import 'declarations.dart';
+import 'reflectable.dart';
+import 'property.dart';
 
 /// Mixin this class to get js proxy support! If a [JsProxy] is passed to
 /// [convertToJs] then you will get back a [JsObject] which is fully usable from
@@ -54,22 +58,29 @@ JsObject _buildJsProxy(JsProxy instance) {
   return proxy;
 }
 
+const _knownMethodAndPropertyNames =
+    'hostAttributes|created|attached|detached|attributeChanged|ready|serialize'
+    '|deserialize';
+
 /// The [Reflectable] class which gives you the ability to do everything that
 /// PolymerElements and JsProxies need to do.
 class JsProxyReflectable extends Reflectable {
   const JsProxyReflectable()
-      : super(
-            instanceInvokeCapability,
-            metadataCapability,
-            declarationsCapability,
-            typeCapability,
-            typeRelationsCapability,
-            subtypeQuantifyCapability,
-            superclassQuantifyCapability,
-            const StaticInvokeCapability(
-                'hostAttributes|created|attached|detached|attributeChanged|'
-                'ready'));
+      : super.fromList(const [
+          const InstanceInvokeMetaCapability(PolymerReflectable),
+          const InstanceInvokeCapability(_knownMethodAndPropertyNames),
+          metadataCapability,
+          declarationsCapability,
+          typeAnnotationQuantifyCapability,
+          typeCapability,
+          typeRelationsCapability,
+          subtypeQuantifyCapability,
+          const SuperclassQuantifyCapability(HtmlElement,
+              excludeUpperBound: true),
+          const StaticInvokeCapability(_knownMethodAndPropertyNames)
+        ]);
 }
+
 const jsProxyReflectable = const JsProxyReflectable();
 
 final JsObject _polymerDart = context['Polymer']['Dart'];

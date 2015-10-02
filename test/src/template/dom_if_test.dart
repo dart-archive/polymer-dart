@@ -47,7 +47,11 @@ class UserElement extends PolymerElement {
 }
 
 class User extends JsProxy {
+  @reflectable
   String name;
+
+  @reflectable
   bool isAdmin;
+
   User(this.name, [this.isAdmin = false]);
 }

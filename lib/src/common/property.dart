@@ -3,7 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.src.common.property;
 
-class Property {
+import 'reflectable.dart';
+
+class Property extends PolymerReflectable {
   /// Fire *-change events to support two way binding.
   final bool notify;
 

@@ -58,6 +58,8 @@ class UserElement extends PolymerElement {
 }
 
 class User extends JsProxy {
+  @reflectable
   String name;
+
   User(this.name);
 }

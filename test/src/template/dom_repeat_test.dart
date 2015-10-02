@@ -102,12 +102,12 @@ class UserList extends PolymerElement {
     set('users', [new User('A'), new User('B'),]);
   }
 
-  @eventHandler
+  @reflectable
   int sortUsers(User a, User b) {
     return a.name.compareTo(b.name);
   }
 
-  @eventHandler
+  @reflectable
   bool removeAAndE(User user, [_, __]) {
     const skip = const ['A', 'E'];
     return !skip.contains(user.name);
@@ -115,6 +115,8 @@ class UserList extends PolymerElement {
 }
 
 class User extends JsProxy {
+  @reflectable
   String name;
+
   User(this.name);
 }

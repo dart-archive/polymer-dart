@@ -44,6 +44,6 @@ class TestElement extends PolymerElement {
 
   TestElement.created() : super.created();
 
-  @eventHandler
+  @reflectable
   int addProperties([_, __]) => first + second;
 }

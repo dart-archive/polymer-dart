@@ -9,7 +9,7 @@ import 'behavior.dart';
 import 'declarations.dart';
 import 'js_proxy.dart';
 import 'property.dart';
-import 'event_handler.dart';
+import 'reflectable.dart';
 import 'listen.dart';
 import 'observe.dart';
 import 'polymer_register.dart';
@@ -29,7 +29,7 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
     '__isPolymerDart__': true,
   };
   _setupLifecycleMethods(type, object);
-  _setupEventHandlerMethods(type, object);
+  _setupReflectableMethods(type, object);
   _setupHostAttributes(type, object);
 
   return new JsObject.jsify(object);
@@ -131,17 +131,17 @@ void _setupLifecycleMethods(Type type, Map descriptor) {
   });
 }
 
-/// All methods annotated with @eventHandler.
-Map<String, DeclarationMirror> _eventHandlerMethodsFor(Type type) {
+/// All methods annotated with @reflectable.
+Map<String, DeclarationMirror> _reflectableMethodsFor(Type type) {
   return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
     if (!isRegularMethod(declaration)) return false;
-    return declaration.metadata.any((d) => d is EventHandler);
+    return declaration.metadata.any((d) => d is PolymerReflectable);
   });
 }
 
-/// Set up a proxy for any method with an @eventHandler annotation.
-void _setupEventHandlerMethods(Type type, Map descriptor) {
-  var declarations = _eventHandlerMethodsFor(type);
+/// Set up a proxy for any method with an @reflectable annotation.
+void _setupReflectableMethods(Type type, Map descriptor) {
+  var declarations = _reflectableMethodsFor(type);
   declarations.forEach((String name, DeclarationMirror declaration) {
     // TODO(jakemac): Support functions with more than 6 args? We should at
     // least throw a better error in that case.
@@ -164,28 +164,25 @@ void _setupHostAttributes(Type type, Map descriptor) {
   }
 }
 
-/// Object that represents a proeprty that was not found.
-final _emptyPropertyInfo = new JsObject.jsify({'defined': false});
+/// Object that represents a property that was not found.
+final _emptyPropertyInfo = {'defined': false};
 
 /// Compute or return from cache information about `property` for `t`.
 Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
   assert(declaration is VariableMirror || declaration is MethodMirror);
-  var propertyType;
+  var jsPropertyType;
   var isFinal;
   if (declaration is VariableMirror) {
-    propertyType = declaration.type.reflectedType;
+    jsPropertyType = jsType(declaration.type.reflectedType);
     isFinal = declaration.isFinal;
   } else if (declaration is MethodMirror) {
     assert(declaration.isGetter);
-    propertyType = declaration.returnType.reflectedType;
+    jsPropertyType = jsType(declaration.returnType.reflectedType);
     isFinal = !hasSetter(declaration);
   }
-  var jsTyped = jsType(propertyType);
-  if (jsTyped == null) return _emptyPropertyInfo;
 
   Property annotation = declaration.metadata.firstWhere((a) => a is Property);
   var property = {
-    'type': jsTyped,
     'defined': true,
     'notify': annotation.notify,
     'observer': annotation.observer,
@@ -203,6 +200,9 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
   };
   if (isFinal) {
     property['readOnly'] = true;
+  }
+  if (jsPropertyType != null) {
+    property['type'] = jsPropertyType;
   }
   return property;
 }

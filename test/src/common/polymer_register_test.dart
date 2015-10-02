@@ -27,6 +27,6 @@ class TestElement extends PolymerElement {
 }
 
 @PolymerRegister('test-input', extendsTag: 'input')
-class TestInput extends InputElement with PolymerMixin, JsProxy {
+class TestInput extends InputElement with PolymerMixin {
   TestInput.created() : super.created();
 }
