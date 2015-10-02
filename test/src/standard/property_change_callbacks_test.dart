@@ -69,7 +69,7 @@ class TestElement extends PolymerElement {
 
   TestElement.created() : super.created();
 
-  @eventHandler
+  @reflectable
   void fooChanged([_, __]) {
     fooChangedCount++;
   }

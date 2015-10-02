@@ -7,7 +7,7 @@ library polymer.lib.polymer;
 
 import 'package:web_components/web_components.dart' show HtmlImport;
 export 'polymer_mini.dart';
-export 'src/common/event_handler.dart';
+export 'src/common/reflectable.dart';
 export 'src/common/listen.dart';
 export 'src/common/observe.dart';
 export 'src/template/array_selector.dart';

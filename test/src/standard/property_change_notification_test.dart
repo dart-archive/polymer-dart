@@ -86,7 +86,9 @@ main() async {
 }
 
 class Model extends JsProxy {
+  @reflectable
   int value;
+
   Model(this.value);
 }
 

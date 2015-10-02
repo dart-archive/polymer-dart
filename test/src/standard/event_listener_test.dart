@@ -42,7 +42,7 @@ class TestElement extends PolymerElement {
     sawCustomEvent = true;
   }
 
-  @eventHandler
+  @reflectable
   void buttonClicked([_, __]) {
     sawButtonEvent = true;
   }

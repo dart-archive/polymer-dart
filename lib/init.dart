@@ -72,6 +72,7 @@ void _setUpPropertyChanged() {
       } on NoSuchMethodError catch (_) {} on NoSuchCapabilityError catch (_) {
         // TODO(jakemac): Remove once
         // https://github.com/dart-lang/reflectable/issues/30 is fixed.
+
       }
     }
   };

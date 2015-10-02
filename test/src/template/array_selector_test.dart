@@ -62,7 +62,7 @@ class EmployeeList extends PolymerElement {
         [new Employee('Bob', 'Smith'), new Employee('Sally', 'Johnson')]);
   }
 
-  @eventHandler
+  @reflectable
   void toggleSelection(MouseEvent e, [_]) {
     var item = new DomRepeatModel.fromEvent(e).item;
     selector.select(item);
@@ -70,7 +70,11 @@ class EmployeeList extends PolymerElement {
 }
 
 class Employee extends JsProxy {
+  @reflectable
   String first;
+
+  @reflectable
   String last;
+
   Employee(this.first, this.last);
 }

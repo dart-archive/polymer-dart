@@ -95,7 +95,25 @@ class AttributesTest extends PolymerElement {
 enum Foobar { foo, bar }
 
 @PolymerRegister(serializeAttributesName)
-class SerializedAttributesTest extends AttributesTest with PolymerSerialize {
+class SerializedAttributesTest extends PolymerElement with PolymerSerialize {
+  @property
+  String myString;
+
+  @property
+  num myNum;
+
+  @property
+  bool myBool;
+
+  @property
+  Map myMap;
+
+  @property
+  List myList;
+
+  @property
+  DateTime myDateTime;
+
   @property
   Foobar myFoobar = Foobar.bar;
 

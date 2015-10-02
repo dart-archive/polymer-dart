@@ -318,7 +318,9 @@ main() async {
 }
 
 class Thing extends JsProxy {
+  @reflectable
   String field;
+
   Thing(this.field);
 
   bool operator ==(Thing other) => other.field == this.field;
@@ -327,7 +329,7 @@ class Thing extends JsProxy {
 }
 
 @PolymerRegister('test-element')
-class TestElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
+class TestElement extends HtmlElement with PolymerMixin, PolymerBase {
   @property
   int myInt = 1;
 
@@ -349,7 +351,7 @@ class TestElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
 }
 
 @PolymerRegister('sub-element')
-class SubElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
+class SubElement extends HtmlElement with PolymerMixin, PolymerBase {
   SubElement.created() : super.created() {
     polymerCreated();
   }
@@ -365,6 +367,8 @@ class SubElement extends HtmlElement with PolymerMixin, PolymerBase, JsProxy {
 }
 
 class Model extends JsProxy {
+  @reflectable
   String value;
+
   Model(this.value);
 }

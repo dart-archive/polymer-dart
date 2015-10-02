@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.lib.src.common.observe;
 
-import 'event_handler.dart';
+import 'reflectable.dart';
 
 /// Annotation class for methods, should match the argument string portion of
 /// a regular `observers` entry from polymer js, see
@@ -22,7 +22,7 @@ import 'event_handler.dart';
 ///   updateImage(bool preload, String src, String size) {
 ///     ...
 ///   }
-class Observe extends EventHandler {
+class Observe extends PolymerReflectable {
   final String properties;
   const Observe(this.properties) : super();
 }

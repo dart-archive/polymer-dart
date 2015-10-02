@@ -58,17 +58,9 @@ BSD-style license that can be found in the LICENSE file.
       }
     };
 
-    // Remove any `__dartClass__` instances during serialization.
-    Polymer.Dart.serialize = function(value, type) {
-      var dartClass = value.__dartClass__;
-      delete value.__dartClass__;
-      var serialized = Polymer.Base.serialize(value, type);
-      value.__dartClass__ = dartClass;
-      return serialized;
-    };
-
     // TODO(jakemac): This shouldn't be necessary, but it is today
     // https://github.com/dart-lang/sdk/issues/24371
+    Polymer.Dart.serialize = Polymer.Base.serialize;
     Polymer.Dart.deserialize = Polymer.Base.deserialize;
 
     Polymer.Dart.InteropBehavior = {

@@ -1,3 +1,10 @@
+#### 1.0.0-rc.2
+  * The `@eventHandler` annotation has been replaced with the more general
+    `@reflectable` annotation.
+  * All fields/methods on `JsProxy` objects which you want to expose to JS need
+    to be annotated with `@reflectable`. This results in dramatic code size
+    improvement at relatively minimal cost to the user.
+
 #### 1.0.0-rc.1
   * Port of polymer js 1.1.
   * This is a ground up rewrite, and has multiple breaking changes. See the
