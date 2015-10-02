@@ -5,6 +5,7 @@ library polymer.lib.init;
 
 import 'dart:async';
 import 'dart:js';
+import 'dart:html';
 import 'package:reflectable/reflectable.dart';
 import 'package:web_components/web_components.dart';
 import 'src/common/js_proxy.dart';
@@ -19,6 +20,9 @@ Future initPolymer() async {
   await initWebComponents(
       typeFilter: [CustomElement, CustomElementProxy, PolymerRegister],
       initAll: true);
+  // TODO(jakemac): Better solution to this, see
+  // https://github.com/dart-lang/polymer-dart/issues/611
+  document.body.attributes.remove('unresolved');
 }
 
 final _polymerDart = context['Polymer']['Dart'];
