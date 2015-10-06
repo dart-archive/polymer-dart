@@ -10,7 +10,7 @@ dependencies:
   browser: ^0.10.0
   html: ^0.12.0
   initialize: '>=0.5.1+3 <0.7.0'
-  polymer_interop: ^0.2.0
+  polymer_interop: ^1.0.0-rc.1
   reflectable: ^0.3.1
   test: ^0.12.3
   web_components: '>=0.11.3 <0.13.0'
@@ -45,10 +45,5 @@ transformers:
       - test/src/template/dom_bind_test.dart
       - test/src/template/dom_if_test.dart
       - test/src/template/dom_repeat_test.dart
-dependency_overrides:
-  polymer_interop:
-    git:
-      ref: 0.2.0-rc1
-      url: https://github.com/dart-lang/polymer_interop.git
 environment:
   sdk: '>=1.9.0 <=2.0.0'
