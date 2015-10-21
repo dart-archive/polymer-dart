@@ -1,3 +1,7 @@
+#### 1.0.0-rc.3
+  * Annotations are no longer needed on both the getter and setter for fields,
+    [#621](https://github.com/dart-lang/polymer-dart/issues/621).
+
 #### 1.0.0-rc.2
   * The `@eventHandler` annotation has been replaced with the more general
     `@reflectable` annotation.
