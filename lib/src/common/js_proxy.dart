@@ -77,7 +77,8 @@ class JsProxyReflectable extends Reflectable {
           subtypeQuantifyCapability,
           const SuperclassQuantifyCapability(HtmlElement,
               excludeUpperBound: true),
-          const StaticInvokeCapability(_knownMethodAndPropertyNames)
+          const StaticInvokeCapability(_knownMethodAndPropertyNames),
+          correspondingSetterQuantifyCapability
         ]);
 }
 

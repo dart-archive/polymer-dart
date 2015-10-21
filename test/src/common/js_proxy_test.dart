@@ -21,6 +21,13 @@ class MyModel extends Object with JsProxy {
   final finalVal = 1;
 
   @reflectable
+  int get getterSetterVal => _getterSetterVal;
+  void set getterSetterVal(int value) {
+    _getterSetterVal = value;
+  }
+  int _getterSetterVal = 1;
+
+  @reflectable
   int incrementBy([int amount = 1]) => value += amount;
 }
 
@@ -66,6 +73,15 @@ main() async {
 
       expect(model.readOnlyVal, 1);
       expect(model.finalVal, 1);
+    });
+
+    test('getter/setter fields only need to annotate the getter', () {
+      expect(model.getterSetterVal, 1);
+      expect(model.jsProxy['getterSetterVal'], 1);
+
+      model.jsProxy['getterSetterVal'] = 4;
+      expect(model.getterSetterVal, 4);
+      expect(model.jsProxy['getterSetterVal'], 4);
     });
 
     test('useCache caches values on the js object', () {
