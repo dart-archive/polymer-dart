@@ -5,6 +5,8 @@
     will be invoked with the JS prototype for the element at registration time.
     These are supported for both behaviors and elements.
   * Fixed the `items` setter for the `DomRepeat` wrapper.
+  * Temporarily added an analyzer constraint of `<0.26.1+15` to work around
+    [#24735](https://github.com/dart-lang/sdk/issues/24735).
 
 #### 1.0.0-rc.3
   * Annotations are no longer needed on both the getter and setter for fields,
