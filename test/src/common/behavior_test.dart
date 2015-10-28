@@ -42,7 +42,7 @@ main() async {
 
       _testAttached(invocations) async {
         document.body.append(el);
-        await wait(0);
+        await wait(1);
         expect(invocations['attached'], [
           [el]
         ]);
@@ -171,12 +171,12 @@ main() async {
 
     group('registration methods', () {
       test('registered gets called', () {
-        var jsEl = new JsObject.fromBrowserObject(el);
+        var jsElProto = new JsObject.fromBrowserObject(
+            new JsObject.fromBrowserObject(el)['__proto__']);
         expect(MyElement._registeredProtosMyElement.length, 1);
-        expect(MyElement._registeredProtosMyElement[0], jsEl['__proto__']);
+        expect(MyElement._registeredProtosMyElement[0], jsElProto);
         expect(DartBehavior._registeredProtosDartBehavior.length, 1);
-        expect(
-            DartBehavior._registeredProtosDartBehavior[0], jsEl['__proto__']);
+        expect(DartBehavior._registeredProtosDartBehavior[0], jsElProto);
       });
     });
   });
