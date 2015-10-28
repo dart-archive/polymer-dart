@@ -17,7 +17,9 @@ class DomRepeat extends TemplateElement
   /// An array containing items determining how many instances of the template
   /// to stamp and that that each template instance should bind to.
   List get items => convertToDart(jsElement['items']);
-  void set items(List newVal) => jsElement.callMethod('set', ['items', items]);
+  void set items(List newVal) {
+    jsElement.callMethod('set', ['items', convertToJs(newVal)]);
+  }
 
   /// The name of the variable to add to the binding scope for the array
   /// element associated with a given template instance.

@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.src.micro.properties;
 
+import 'dart:html';
 import 'dart:js';
 import 'package:reflectable/reflectable.dart';
 import 'behavior.dart';
@@ -31,6 +32,7 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
   _setupLifecycleMethods(type, object);
   _setupReflectableMethods(type, object);
   _setupHostAttributes(type, object);
+  _setupRegistrationMethods(type, object);
 
   return new JsObject.jsify(object);
 }
@@ -143,8 +145,16 @@ Map<String, DeclarationMirror> _reflectableMethodsFor(Type type) {
 void _setupReflectableMethods(Type type, Map descriptor) {
   var declarations = _reflectableMethodsFor(type);
   declarations.forEach((String name, DeclarationMirror declaration) {
-    // TODO(jakemac): Support functions with more than 6 args? We should at
-    // least throw a better error in that case.
+    // Error on anything in `_registrationMethods`.
+    if (_registrationMethods.contains(name)) {
+      throw 'Disallowed instance method `$name` with @reflectable annotation '
+        'on the `${declaration.owner.simpleName}` class, since it has a '
+        'special meaning in Polymer. You can either rename the method or'
+        'change it to a static method. If it is a static method it will be '
+        'invoked with the JS prototype of the element at registration time.';
+    }
+
+    // Add the method.
     descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
       (dartInstance, arguments) {
         var newArgs = arguments.map((arg) => convertToDart(arg)).toList();
@@ -161,6 +171,30 @@ void _setupHostAttributes(Type type, Map descriptor) {
   var hostAttributes = readHostAttributes(typeMirror);
   if (hostAttributes != null) {
     descriptor['hostAttributes'] = hostAttributes;
+  }
+}
+
+final _registrationMethods = const ['registered', 'beforeRegister'];
+
+/// Sets up any static methods contained in `_staticRegistrationMethods`.
+void _setupRegistrationMethods(Type type, Map descriptor) {
+  var typeMirror = jsProxyReflectable.reflectType(type);
+  for (String name in _registrationMethods) {
+    var method = typeMirror.staticMembers[name];
+    if (method == null || method is! MethodMirror) continue;
+    descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
+          (dartInstance, arguments) {
+        // Dartium hack, the proto has HtmlElement on its proto chain so
+        // it thinks its an HtmlElement.
+        if (dartInstance is HtmlElement) {
+          dartInstance = new JsObject.fromBrowserObject(dartInstance);
+        }
+
+        var newArgs = [dartInstance]
+          ..addAll(arguments.map((arg) => convertToDart(arg)));
+        typeMirror.invoke(name, newArgs);
+      }
+    ]);
   }
 }
 

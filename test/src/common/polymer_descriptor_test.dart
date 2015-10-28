@@ -20,6 +20,8 @@ main() async {
     expect(descriptor['extends'], annotation.extendsTag);
     expect(descriptor['__isPolymerDart__'], true);
     expectEqual(descriptor['hostAttributes'], Test.hostAttributes);
+    expect(descriptor['beforeRegister'] is JsFunction, isTrue);
+    expect(descriptor['registered'] is JsFunction, isTrue);
 
     var properties = descriptor['properties'];
     expectProperty(properties['myString'], type: context['String']);
@@ -73,9 +75,28 @@ main() async {
         context['Polymer']['Dart']['InteropBehavior']);
     expect(descriptor['behaviors'][1], context['Foo']['JsBehaviorOne']);
     expect(descriptor['behaviors'][2], behavior.getBehavior(DartBehaviorOne));
+    expect(descriptor['behaviors'][2]['beforeRegister'] is JsFunction, isTrue);
+    expect(descriptor['behaviors'][2]['registered'] is JsFunction, isTrue);
     expect(descriptor['behaviors'][3], context['Foo']['JsBehaviorTwo']);
     expect(descriptor['behaviors'][4], behavior.getBehavior(DartBehaviorTwo));
+    expect(descriptor['behaviors'][2]['beforeRegister'] is JsFunction, isTrue);
+    expect(descriptor['behaviors'][4]['registered'] is JsFunction, isTrue);
     expect(descriptor['behaviors'][2], isNot(descriptor['behaviors'][3]));
+  });
+
+  test('instance methods named `registered` are not allowed', () {
+    var annotation = const PolymerRegister('bad-registered', extendsTag: 'div');
+    expect(() {
+      createPolymerDescriptor(BadRegistered, annotation);
+    }, throws);
+  });
+
+  test('instance methods named `beforeRegister` are not allowed', () {
+    var annotation =
+        const PolymerRegister('bad-before-register', extendsTag: 'div');
+    expect(() {
+      createPolymerDescriptor(BadRegistered, annotation);
+    }, throws);
   });
 }
 
@@ -98,6 +119,10 @@ class DartBehaviorOne {
 
   @reflectable
   void behaviorOneExposedMethod() {}
+
+  static void registered(JsObject proto) {}
+
+  static void beforeRegister(JsObject proto) {}
 }
 
 @behavior
@@ -113,6 +138,10 @@ class DartBehaviorTwo {
 
   @reflectable
   void behaviorTwoExposedMethod() {}
+
+  static void registered(JsObject proto) {}
+
+  static void beforeRegister(JsObject proto) {}
 }
 
 class Test extends PolymerElement
@@ -170,6 +199,26 @@ class Test extends PolymerElement
   }
 
   static Map<String, String> hostAttributes = const {'foo': 'bar'};
+
+  static void registered(JsObject proto) {}
+
+  static void beforeRegister(JsObject proto) {}
+}
+
+// Class containing an instance method named `registered`.
+class BadRegistered extends PolymerElement {
+  BadRegistered.created() : super.created();
+
+  @reflectable
+  registered() {}
+}
+
+// Class containing an instance method named `beforeRegister`.
+class BadBeforeRegister extends PolymerElement {
+  BadBeforeRegister.created() : super.created();
+
+  @reflectable
+  beforeRegister() {}
 }
 
 void expectProperty(JsObject actual,

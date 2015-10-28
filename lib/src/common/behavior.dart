@@ -15,10 +15,16 @@ import 'js_proxy.dart';
 
 Map<Type, JsObject> _behaviorsByType = {};
 
-final RegExp _lifecycleMethodsRegex =
-    new RegExp('created|attached|detached|attributeChanged|ready');
+final RegExp _lifecycleMethodsRegex = new RegExp(
+    'created|attached|detached|$_attributeChanged|ready|$_registered|'
+    '$_beforeRegister');
 const String _hostAttributes = 'hostAttributes';
 const String _attributeChanged = 'attributeChanged';
+const String _registered = 'registered';
+const String _beforeRegister = 'beforeRegister';
+
+/// Custom js object containing some helper methods for dart.
+final JsObject _polymerDart = context['Polymer']['Dart'];
 
 // Annotation class for behaviors written in dart.
 class Behavior implements BehaviorAnnotation {
@@ -32,8 +38,7 @@ class Behavior implements BehaviorAnnotation {
         obj[_hostAttributes] = hostAttributes;
       }
 
-      // Add an entry for each static lifecycle method. These methods must take
-      // a `this` arg as the first argument.
+      // Add an entry for each static lifecycle method.
       typeMirror.staticMembers.forEach((String name, MethodMirror method) {
         if (!_lifecycleMethodsRegex.hasMatch(name)) return;
         if (name == _attributeChanged) {
@@ -42,7 +47,24 @@ class Behavior implements BehaviorAnnotation {
             typeMirror.invoke(
                 name, [convertToDart(thisArg), attributeName, oldVal, newVal]);
           });
+        } else if (name == _registered || name == _beforeRegister) {
+          // These methods take a single argument which is the JS prototype of
+          // the polymer element which just got registered.
+          obj[name] = _polymerDart.callMethod('invokeDartFactory', [
+                (dartInstance, arguments) {
+              // Dartium hack, the proto has HtmlElement on its proto chain so
+              // it thinks its an HtmlElement.
+              if (dartInstance is HtmlElement) {
+                dartInstance = new JsObject.fromBrowserObject(dartInstance);
+              }
+              var newArgs = [dartInstance]
+                ..addAll(arguments.map((arg) => convertToDart(arg)));
+              typeMirror.invoke(name, newArgs);
+            }
+          ]);
         } else {
+          // The rest of the methods take a `this` arg as the first argument
+          // which will be an element instance.
           obj[name] = new JsFunction.withThis((thisArg) {
             typeMirror.invoke(name, [thisArg]);
           });
