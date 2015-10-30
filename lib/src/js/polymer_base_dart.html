@@ -68,30 +68,16 @@ BSD-style license that can be found in the LICENSE file.
       // than using a JsProxy object for the element.
       _propertyChanged: function(path, newValue, oldValue) {
         var parts = this._getPathParts(path);
-        var array;
+        var prop = parts.splice(parts.length - 1, 1)[0];
 
         // Get the model which is being updated.
-        var thisArg = this;
-        for (var i = 0; i < parts.length - 1; i++) {
-          var part = parts[i];
+        var thisArg = this.get(parts);
 
-          if (array && (parseInt(part) == part)) {
-            thisArg = Polymer.Collection.get(array).getItem(part);
-          } else {
-            thisArg = thisArg[part];
-          }
-
-          if (!thisArg) {
-            return;
-          }
-          array = Array.isArray(thisArg) ? thisArg : null;
-        }
-
-        // The property of the model which is being updated.
-        var prop = parts[parts.length - 1];
-        if (array && (parseInt(prop) == prop)) {
+        // If the property to update is an array key, we need to get the index
+        // for that item instead.
+        if (prop.charAt(0) == '#') {
           // Ouch, O(n) operation :(. Also doesn't support duplicates :(.
-          prop = array.indexOf(Polymer.Collection.get(array).getItem(prop));
+          prop = thisArg.indexOf(Polymer.Collection.get(thisArg).getItem(prop));
         }
 
         // Grab the __dartClass__ if we already have one

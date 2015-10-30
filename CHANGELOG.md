@@ -1,3 +1,6 @@
+#### 1.0.0-rc.5
+  * Update to work with `polymer_interop` version `1.0.0-rc.4`.
+
 #### 1.0.0-rc.4
   * Throw on `registered` and `beforeRegister` instance methods if they
     are annotated with `@reflectable`. 
