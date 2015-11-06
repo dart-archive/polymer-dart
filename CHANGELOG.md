@@ -1,3 +1,7 @@
+#### 1.0.0-rc.6
+  * Add a test/example for `Templatizer` behavior.
+  * Fix a few minor strong mode type errors.
+
 #### 1.0.0-rc.5
   * Update to work with `polymer_interop` version `1.0.0-rc.4`.
 

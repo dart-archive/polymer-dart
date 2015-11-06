@@ -24,7 +24,7 @@ class ArraySelector extends HtmlElement
   /// When `multi` is false, this is the currently selected item, or `null`
   /// if no item is selected.
   dynamic get selectedItem => convertToDart(jsElement['selectedItem']);
-  dynamic set selectedItem(newVal) {
+  void set selectedItem(newVal) {
     jsElement['selectedItem'] = convertToJs(newVal);
   }
 
