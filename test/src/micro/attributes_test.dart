@@ -80,7 +80,7 @@ class AttributesTest extends PolymerElement {
   @property
   DateTime myDateTime;
 
-  static final Map<String, String> hostAttributes = {
+  static final Map<String, dynamic> hostAttributes = {
     'host-string': 'string',
     'host-num': 2,
     'host-bool': true,
@@ -117,7 +117,7 @@ class SerializedAttributesTest extends PolymerElement with PolymerSerialize {
   @property
   Foobar myFoobar = Foobar.bar;
 
-  static final Map<String, String> hostAttributes = {
+  static final Map<String, dynamic> hostAttributes = {
     'host-string': 'string',
     'host-num': 2,
     'host-bool': true,
@@ -135,7 +135,7 @@ class SerializedAttributesTest extends PolymerElement with PolymerSerialize {
         : super.serialize(value);
   }
 
-  Object deserialize(String value, dynamic type) {
+  Object deserialize(String value, Type type) {
     if (type == Foobar) {
       return value == 'bar' ? Foobar.bar : Foobar.foo;
     } else {

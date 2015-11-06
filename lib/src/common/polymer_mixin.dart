@@ -4,7 +4,6 @@
 library polymer.src.common.polymer_js_proxy;
 
 import 'dart:js';
-import 'package:polymer_interop/polymer_interop.dart' show Polymer, PolymerDom;
 import 'package:web_components/web_components.dart';
 import 'js_proxy.dart';
 

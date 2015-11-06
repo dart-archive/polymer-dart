@@ -12,7 +12,6 @@ import 'package:reflectable/reflectable.dart';
 import 'behavior.dart';
 import 'declarations.dart';
 import 'reflectable.dart';
-import 'property.dart';
 
 /// Mixin this class to get js proxy support! If a [JsProxy] is passed to
 /// [convertToJs] then you will get back a [JsObject] which is fully usable from
