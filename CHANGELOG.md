@@ -1,3 +1,6 @@
+#### 1.0.0-rc.7
+  * Add version constraint on reflectable <0.3.4 until issue #651 is resolved.
+
 #### 1.0.0-rc.6
   * Add a test/example for `Templatizer` behavior.
   * Fix a few minor strong mode type errors.
@@ -7,7 +10,7 @@
 
 #### 1.0.0-rc.4
   * Throw on `registered` and `beforeRegister` instance methods if they
-    are annotated with `@reflectable`. 
+    are annotated with `@reflectable`.
   * Added support for static `registered` and `beforeRegister` methods, which
     will be invoked with the JS prototype for the element at registration time.
     These are supported for both behaviors and elements.
@@ -69,10 +72,10 @@
   * Added `@whenPolymerReady` annotation for functions. This will call the
     function once `Polymer.onReady` completes, reducing the boilerplate in entry
     points to the following:
-    
+
         import 'package:polymer/polymer.dart';
         export 'package:polymer/init.dart';
-        
+
         @whenPolymerReady
         void onReady() {
           /// Custom setup code here.
@@ -116,7 +119,7 @@
         realMain() => ...
 
     This should be translated to:
-    
+
         main() => initPolymer().then((zone) => zone.run(realMain));
         realMain() => ...
 
@@ -175,7 +178,7 @@
   * Fix logic for detecting when the compiler is linting within an
     `auto-binding-dart` template element. This removes some false positive
     warnings.
-    
+
 #### 0.15.3
   * Narrow the constraint on observe to ensure that new features are reflected
     in polymer's version.
@@ -296,8 +299,8 @@
 
 #### 0.13.0
   * Update to match polymer 0.3.5 ([polymer-dev#5d00e4b][5d00e4b]). There was a
-    breaking change in the web_components package where selecting non-rendered 
-    elements doesn't work, but it shouldn't affect most people. See 
+    breaking change in the web_components package where selecting non-rendered
+    elements doesn't work, but it shouldn't affect most people. See
     https://github.com/Polymer/ShadowDOM/issues/495.
 
 #### 0.12.2+1
@@ -357,7 +360,7 @@
                 web/foo.css: true
                 packages/foo/bar.css: true
 
-    
+
   * Bug fix for http://dartbug.com/20286. Bindings in url attributes will no
     longer throw an error.
 
