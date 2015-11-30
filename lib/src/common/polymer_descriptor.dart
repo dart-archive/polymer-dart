@@ -206,13 +206,17 @@ Map _getPropertyInfoForType(Type type, DeclarationMirror declaration) {
   assert(declaration is VariableMirror || declaration is MethodMirror);
   var jsPropertyType;
   var isFinal;
+  var typeMirror;
   if (declaration is VariableMirror) {
-    jsPropertyType = jsType(declaration.type.reflectedType);
+    typeMirror = declaration.type;
     isFinal = declaration.isFinal;
   } else if (declaration is MethodMirror) {
     assert(declaration.isGetter);
-    jsPropertyType = jsType(declaration.returnType.reflectedType);
+    typeMirror = declaration.returnType;
     isFinal = !hasSetter(declaration);
+  }
+  if (typeMirror is ClassMirror && typeMirror.hasBestEffortReflectedType) {
+    jsPropertyType = jsType(typeMirror.bestEffortReflectedType);
   }
 
   Property annotation = declaration.metadata.firstWhere((a) => a is Property);
@@ -268,7 +272,11 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
   return <JsObject>[_polymerDart['InteropBehavior']]
     ..addAll(behaviorStack.map((ClassMirror behavior) {
       BehaviorAnnotation meta = behavior.metadata.firstWhere(_isBehavior);
-      return meta.getBehavior(behavior.reflectedType);
+      if (!behavior.hasBestEffortReflectedType) {
+        throw 'Unable to get `bestEffortReflectedType` for behavior '
+            '${behavior.simpleName}.';
+      }
+      return meta.getBehavior(behavior.bestEffortReflectedType);
     }));
 }
 

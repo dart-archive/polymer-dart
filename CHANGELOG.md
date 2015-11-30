@@ -1,3 +1,6 @@
+#### 1.0.0-rc.8
+  * Update to work with reflectable ^0.4.0.
+
 #### 1.0.0-rc.7
   * Add version constraint on reflectable <0.3.4 until issue #651 is resolved.
 
