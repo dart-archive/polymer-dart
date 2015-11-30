@@ -42,8 +42,9 @@ Map<String, DeclarationMirror> declarationsFor(
 }
 
 bool _isPolymerMixin(ClassMirror clazz) {
-  return clazz.reflectedType == PolymerMixin ||
-      clazz.reflectedType == PolymerBase;
+  return clazz.hasReflectedType &&
+      (clazz.reflectedType == PolymerMixin ||
+          clazz.reflectedType == PolymerBase);
 }
 
 ClassMirror _getSuper(ClassMirror clazz) {

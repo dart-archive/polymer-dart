@@ -77,7 +77,11 @@ class Behavior implements BehaviorAnnotation {
         var meta =
             interface.metadata.firstWhere(_isBehavior, orElse: () => null);
         if (meta == null) continue;
-        behaviors.add(meta.getBehavior(interface.reflectedType));
+        if (!interface.hasBestEffortReflectedType) {
+          throw 'Unable to get `bestEffortReflectedType` for class '
+              '${interface.simpleName}.';
+        }
+        behaviors.add(meta.getBehavior(interface.bestEffortReflectedType));
       }
 
       // If we have no additional behaviors, then just return `obj`.
