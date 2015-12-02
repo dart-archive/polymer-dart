@@ -113,17 +113,43 @@ class DomRepeat extends TemplateElement
 
 // Dart wrapper for template models that come back from dom-repeat.
 class DomRepeatModel extends Object with PolymerBase {
+  /// The underlying [JsObject] representing the template instance.
   final JsObject jsElement;
 
-  get item => convertToDart(jsElement['item']);
+  /// The `as` property from the dom-repeat element.
+  final String itemName;
+
+  /// Gets the instance from the original list which is bound to this model.
+  ///
+  /// Note: This is deprecated and the `[]` operator should be used instead.
+  @deprecated
+  get item => convertToDart(jsElement[itemName]);
+
+  /// The index of the current template model in the original [List].
   int get index => jsElement['index'];
 
-  DomRepeatModel(this.jsElement);
+  /// Generic operators for reading and writing values to this template
+  /// instance.
+  operator [](String key) => convertToDart(jsElement[key]);
+  operator []=(String key, value) {
+    jsElement[key] = convertToJs(value);
+  }
+
+  DomRepeatModel(JsObject jsElement)
+      : this.jsElement = jsElement,
+        this.itemName = _getItemName(jsElement);
   factory DomRepeatModel.fromEvent(e) {
     var proxy = new JsObject.fromBrowserObject(e)['model'];
     if (proxy is HtmlElement) {
       proxy = new JsObject.fromBrowserObject(proxy);
     }
+
     return new DomRepeatModel(proxy);
   }
+}
+
+String _getItemName(JsObject domRepeatModel) {
+  var host = domRepeatModel['dataHost'] as TemplateElement;
+  var itemName = host.attributes['as'];
+  return itemName != null ? itemName : 'item';
 }
