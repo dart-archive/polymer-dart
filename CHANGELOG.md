@@ -1,3 +1,7 @@
+#### 1.0.0-rc.9
+  * `DomRepeatModel.item` is now deprecated, although it will properly use the
+    `as` attribute for now. The `[]` operator has been added in its place.
+
 #### 1.0.0-rc.8
   * Update to work with reflectable ^0.4.0.
 

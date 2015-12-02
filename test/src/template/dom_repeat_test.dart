@@ -1,7 +1,6 @@
 @TestOn('browser')
 library polymer.test.src.template.dom_repeat_test;
 
-import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
@@ -31,7 +30,7 @@ main() async {
       element.userList.render();
       var model = element.userList
           .modelForElement(Polymer.dom(element.root).querySelector('.user'));
-      model.set('item.name', 'C');
+      model.set('user.name', 'C');
       expectUsers(element, ['C', 'B']);
     });
 
@@ -84,7 +83,9 @@ void expectUsers(UserList element, List<String> names) {
     expect(element.userList.itemForElement(userDivs[i]).name, names[i]);
     var model = element.userList.modelForElement(userDivs[i]);
     expect(model.index, i);
+    // Check both the deprecated `item` getter and the new index operator.
     expect(model.item.name, names[i]);
+    expect(model['user'].name, names[i]);
   }
 }
 
