@@ -1,4 +1,4 @@
-// Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
+// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
@@ -13,7 +13,7 @@ library polymer.bin.new_element;
 
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:path/path.dart' as path show absolute, dirname, join, split;
+import 'package:path/path.dart' as path;
 
 void printUsage(ArgParser parser) {
   print('pub run polymer:new_element [-o output_dir] element-name');
@@ -39,7 +39,7 @@ void main(List<String> args) {
     element = options.rest[0];
     if (!_isPolymerElement(element)) {
       throw new FormatException('Must specify polymer-element to create.\n'
-      'polymer-element must be all lowercase with at least 1 hyphen.');
+          'polymer-element must be all lowercase with at least 1 hyphen.');
     }
   } catch (e) {
     print('$e\n');
@@ -55,7 +55,7 @@ void main(List<String> args) {
   if (outputPath == null) {
     if ((new File('pubspec.yaml')).existsSync()) {
       print('When creating elements in root directory of package, '
-      '-o <dir> must be specified');
+          '-o <dir> must be specified');
       exitCode = 1;
       return;
     }
@@ -89,8 +89,7 @@ void main(List<String> args) {
   }
 
   try {
-    _createBoilerPlate(
-        element, outputDir, distanceToPackageRoot);
+    _createBoilerPlate(element, outputDir, distanceToPackageRoot);
   } on Exception catch (e, t) {
     print('Error creating files in $outputDir');
     print('$e $t');
@@ -119,8 +118,8 @@ String _toCamelCase(String s) {
   return s[0].toUpperCase() + s.substring(1);
 }
 
-void _createBoilerPlate(String element, String directory,
-                        int distanceToPackageRoot) {
+void _createBoilerPlate(
+    String element, String directory, int distanceToPackageRoot) {
   var segments = element.split('-');
   var capitalizedName = segments.map((e) => _toCamelCase(e)).join('');
   var underscoreName = element.replaceAll('-', '_');
