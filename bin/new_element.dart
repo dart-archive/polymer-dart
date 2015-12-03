@@ -127,16 +127,16 @@ void _createBoilerPlate(
 
   String html = '''
 <dom-module id="$element">
-    <template>
-      <style>
-        /* CSS rules for your element */
-      </style>
-	
-      <!-- local DOM for your element -->
-      <content>
-        <!-- insertion point -->
-      </content>
-    </template>
+  <template>
+    <style>
+      /* CSS rules for your element */
+    </style>
+
+    <!-- local DOM for your element -->
+    <content>
+      <!-- insertion point -->
+    </content>
+  </template>
 </dom-module>
 ''';
 
