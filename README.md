@@ -26,7 +26,7 @@ and links to other documentation.
 * See our [TodoMVC][] example by opening up the Dart Editor's Welcome Page and
 selecting "TodoMVC".
 
-* For more information about Dart, see <http://www.dartlang.org/>.
+* For more information about Dart, see <https://www.dartlang.org/>.
 
 * When you use this package,
 you automatically get the
@@ -133,13 +133,13 @@ Please file issues in our [Issue Tracker][issues] or contact us on the
 We also have a [Dart Slack Channel][devlist] for discussions about
 internals of the code, code reviews, etc.
 
-[wc]: http://dvcs.w3.org/hg/webcomponents/raw-file/tip/explainer/index.html
+[wc]: https://dvcs.w3.org/hg/webcomponents/raw-file/tip/explainer/index.html
 [pub]: http://www.dartlang.org/docs/pub-package-manager/
 [cs]: http://www.chromium.org/developers/testing/webkit-layout-tests
 [cs_lucid]: http://gsdview.appspot.com/dartium-archive/continuous/drt-lucid64.zip
 [cs_mac]: http://gsdview.appspot.com/dartium-archive/continuous/drt-mac.zip
 [cs_win]: http://gsdview.appspot.com/dartium-archive/continuous/drt-win.zip
-[dartium_src]: http://code.google.com/p/dart/wiki/BuildingDartium
+[dartium_src]: https://github.com/dart-lang/sdk
 [TodoMVC]: http://todomvc.com/
 [issues]: https://github.com/dart-lang/polymer-dart/issues/new
 [mailinglist]: https://groups.google.com/a/dartlang.org/forum/?fromgroups#!forum/web
@@ -149,5 +149,5 @@ internals of the code, code reviews, etc.
 [spec]: https://www.dartlang.org/articles/dart-web-components/spec.html
 [features]: https://www.dartlang.org/articles/dart-web-components/summary.html
 [home_page]: https://www.dartlang.org/polymer-dart/
-[polymer_expressions]: http://pub.dartlang.org/packages/polymer_expressions
-[polymer]: http://www.polymer-project.org/
+[polymer_expressions]: https://pub.dartlang.org/packages/polymer_expressions
+[polymer]: https://www.polymer-project.org/
