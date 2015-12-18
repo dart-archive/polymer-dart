@@ -1,3 +1,7 @@
+#### 1.0.0-rc.10
+  * Update to reflectable `^0.5.0`  and analyzer `^0.27.0` versions.
+  * Added back the `new_element` generator script.
+
 #### 1.0.0-rc.9
   * `DomRepeatModel.item` is now deprecated, although it will properly use the
     `as` attribute for now. The `[]` operator has been added in its place.
