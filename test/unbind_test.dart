@@ -60,9 +60,9 @@ delay(x) => new Future.delayed(new Duration(milliseconds: 50), () => x);
 
 // TODO(jmesserly): fix this when it's easier to get a private symbol.
 final unboundSymbol = reflectClass(Polymer).declarations.keys
-    .firstWhere((s) => MirrorSystem.getName(s) == '_unbound');
+    .firstWhere((s) => MirrorSystem.getName(s).endsWith('_unbound'));
 final observersSymbol = reflectClass(Polymer).declarations.keys
-    .firstWhere((s) => MirrorSystem.getName(s) == '_observers');
+    .firstWhere((s) => MirrorSystem.getName(s).endsWith('_observers'));
 
 _unbound(node) => reflect(node).getField(unboundSymbol).reflectee;
 _observerCount(node) =>
