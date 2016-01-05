@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
   <head>
     <title>attached binding test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body>
     This tests that elements inside the shadowRoot are properly upgraded and
@@ -32,6 +31,7 @@ BSD-style license that can be found in the LICENSE file.
     outer element:
     <x-outer></x-outer>
 
-    <script type="application/dart" src="entered_view_test.dart"></script>
+    <link rel="x-dart-test" href="entered_view_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

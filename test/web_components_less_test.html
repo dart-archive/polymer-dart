@@ -9,7 +9,6 @@
 <head>
   <title>web_compnents-less test</title>
   <link rel="import" href="packages/polymer/polymer.html">
-  <script src="packages/unittest/test_controller.js"></script>
   <link rel="import" href="web_components_less_test_import.html">
 </head>
 <body unresolved>
@@ -20,8 +19,8 @@
   </template>
 </polymer-element>
 
-<script type="application/dart" src="web_components_less_test.dart">
-</script>
+<link rel="x-dart-test" href="web_components_less_test.dart">
+<script src="packages/test/dart.js"></script>
 
 <x-main></x-main>
 <x-import></x-import>

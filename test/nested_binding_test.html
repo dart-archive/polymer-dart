@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
   <head>
     <title>nesting binding test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body>
     <polymer-element name="my-test">
@@ -27,6 +26,7 @@ BSD-style license that can be found in the LICENSE file.
 
     <my-test></my-test>
 
-    <script type="application/dart" src="nested_binding_test.dart"></script>
+    <link rel="x-dart-test" href="nested_binding_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

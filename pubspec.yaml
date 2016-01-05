@@ -30,7 +30,7 @@ dependencies:
   # features it provides.
   observe: '>=0.13.3 <0.13.4'
 dev_dependencies:
-  unittest: '>=0.10.0 <0.12.0'
+  test: '^0.12.0'
   markdown: '>=0.7.0 <0.8.0'
 transformers:
 - code_transformers/src/delete_file:
@@ -81,7 +81,10 @@ transformers:
       - test/unbind_test.html
       - test/web_components_less_test.html
       - test/when_polymer_ready_test.html
-    $include: test/**_test.html
+    $include: "test/**_test.{html,dart}"
+
+- test/pub_serve:
+    $include: test/**_test{.*,}.dart
 
 environment:
   sdk: '>=1.4.0 <2.0.0'

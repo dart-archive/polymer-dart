@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.event_handlers_test;
 
 import 'dart:async';
@@ -9,8 +10,7 @@ import 'dart:html';
 
 import 'package:polymer/polymer.dart';
 import 'package:template_binding/template_binding.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 @CustomTag('x-test')
 class XTest extends PolymerElement {
@@ -19,7 +19,8 @@ class XTest extends PolymerElement {
   String _lastMessage;
   List list1 = toObservable([]);
   List list2 = toObservable([]);
-  Future _onTestDone;
+  Completer _ready = new Completer();
+  Future get onReady => _ready.future;
 
   XTest.created() : super.created();
 
@@ -39,7 +40,7 @@ class XTest extends PolymerElement {
       list2.add(model);
     }
 
-    _onTestDone = new Future.sync(_runTests);
+    _ready.complete();
   }
 
   hostTapAction(event, detail, node) => _logEvent(event);
@@ -63,7 +64,7 @@ class XTest extends PolymerElement {
     _lastMessage = message;
   }
 
-  Future _runTests() {
+  Future runTests() {
     fire('tap', onNode: $['div']);
     expect(_testCount, 2, reason: 'event heard at div and host');
     expect(_lastEvent, 'tap', reason: 'tap handled');
@@ -107,12 +108,10 @@ class MiniModel extends Observable {
 main() => initPolymer();
 
 @initMethod init() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
-  test('events handled', () {
+  test('events handled', () async {
     XTest test = querySelector('x-test');
-    expect(test._onTestDone, isNotNull, reason: 'ready was called');
-    return test._onTestDone;
+    await test.onReady;
+    test.runTests();
   });
 }

@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.unbind_test;
 
 import 'dart:async' show Future, scheduleMicrotask;
@@ -11,8 +12,7 @@ import 'dart:html';
 import 'dart:mirrors' show reflect, reflectClass, MirrorSystem, MirrorsUsed;
 
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 @CustomTag('x-test')
 class XTest extends PolymerElement {
@@ -39,8 +39,6 @@ class XTest extends PolymerElement {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
 
   test('unbind', unbindTests);

@@ -9,7 +9,6 @@
 <head>
   <title>template attribute test</title>
   <link rel="import" href="packages/polymer/polymer.html">
-  <script src="packages/unittest/test_controller.js"></script>
   <link rel="import" href="template_attr_template_test_import.html">
 </head>
 <body unresolved>
@@ -39,8 +38,8 @@
 <br>
 <decoration-test2></decoration-test2>
 
-<script type="application/dart" src="template_attr_template_test.dart">
-</script>
+<link rel="x-dart-test" href="template_attr_template_test.dart">
+<script src="packages/test/dart.js"></script>
 
 </body>
 </html>

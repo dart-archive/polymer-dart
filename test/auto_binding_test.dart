@@ -2,12 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/auto_binding.dart';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 class TestModel {
   var greeting = 'Hi';
@@ -16,18 +16,17 @@ class TestModel {
   }
 }
 
-main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
+main() => initPolymer();
 
-  setUp(() => Polymer.onReady);
-
+@whenPolymerReady
+runTests() {
   test('elements upgraded', () {
     AutoBindingElement template = document.getElementById('one');
     template.model = new TestModel();
 
     var completer = new Completer();
     var events = 0;
-    window.addEventListener('template-bound', (e) {
+    document.on['template-bound'].take(3).listen((e) {
       events++;
       if (e.target.id == 'one') {
         expect(e.target, template);
@@ -53,7 +52,7 @@ main() => initPolymer().then((zone) => zone.run(() {
 
     return completer.future;
   });
-}));
+}
 
 class _NullSanitizer implements NodeTreeSanitizer {
   sanitizeTree(Node node) {}

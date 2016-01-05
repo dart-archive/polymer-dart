@@ -4,7 +4,6 @@
   <head>
     <title>force ready</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
 
   <body>
@@ -14,6 +13,7 @@
       </template>
     </polymer-element>
     <x-foo></x-foo>
-    <script type="application/dart" src="inject_bound_html_test.dart"></script>
+    <link rel="x-dart-test" href="inject_bound_html_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

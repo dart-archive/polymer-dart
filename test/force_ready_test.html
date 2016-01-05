@@ -4,12 +4,12 @@
   <head>
     <title>force ready</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
 
   <body>
     <polymer-element name="x-foo"></polymer-element>
 
-    <script type="application/dart" src="force_ready_test.dart"></script>
+    <link rel="x-dart-test" href="force_ready_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

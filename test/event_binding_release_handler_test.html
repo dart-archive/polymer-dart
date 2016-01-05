@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
 <head>
   <title>event binding release handler test</title>
   <link rel="import" href="packages/polymer/polymer.html">
-  <script src="packages/unittest/test_controller.js"></script>
 </head>
 <body>
 This tests that event bindings can properly release their event listeners.
@@ -24,6 +23,7 @@ This tests that event bindings can properly release their event listeners.
 
 <x-foo count="1"></x-foo>
 
-<script type="application/dart" src="event_binding_release_handler_test.dart"></script>
+<link rel="x-dart-test" href="event_binding_release_handler_test.dart">
+<script src="packages/test/dart.js"></script>
 </body>
 </html>

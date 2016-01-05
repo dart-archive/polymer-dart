@@ -2,12 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.web.event_path_test;
 
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/html_config.dart';
-import 'package:unittest/unittest.dart';
+import 'common.dart';
 
 @CustomTag('x-selector')
 class XSelector extends PolymerElement {
@@ -30,8 +30,6 @@ class XMenuButton extends PolymerElement {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
 
   test('bubbling in the right order', () {

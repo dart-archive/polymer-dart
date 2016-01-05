@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
 
     <title>auto-binding test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body unresolved>
 
@@ -26,7 +25,8 @@ BSD-style license that can be found in the LICENSE file.
 
     <div>bottom</div>
 
-    <script type="application/dart" src="auto_binding_test.dart"></script>
+    <link rel="x-dart-test" href="auto_binding_test.dart">
+    <script src="packages/test/dart.js"></script>
 
   </body>
 </html>

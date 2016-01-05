@@ -2,11 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 @CustomTag('x-bar')
 class XBar extends PolymerElement {
@@ -18,12 +18,12 @@ class XBar extends PolymerElement {
 @CustomTag('x-foo')
 class XFoo extends PolymerElement {
   @observable var foo = 'foo!';
-  final _testDone = new Completer();
-  Future get onTestDone => _testDone.future;
+  final _testReady = new Completer();
+  Future get onTestReady => _testReady.future;
 
   XFoo.created() : super.created();
 
-  _runTest(_) {
+  runTest() {
     expect($['bindId'].text.trim(), 'bar!');
 
     expect(foo, $['foo'].attributes['foo']);
@@ -35,18 +35,20 @@ class XFoo extends PolymerElement {
     expect($['barBool'].attributes['foo'], '');
     expect($['barBool'].attributes, isNot(contains('foo?')));
     expect($['barContent'].innerHtml, foo);
-    _testDone.complete();
   }
 
   ready() {
-    onMutation($['bindId']).then(_runTest);
+    onMutation($['bindId']).then((_) => _testReady.complete());
   }
 }
 
-main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
+main() => initPolymer();
 
-  setUp(() => Polymer.onReady);
-
-  test('ready called', () => (querySelector('x-foo') as XFoo).onTestDone);
-}));
+@whenPolymerReady
+void runTests() {
+  test('ready called', () async {
+    var xFoo = querySelector('x-foo') as XFoo;
+    await xFoo.onTestReady;
+    xFoo.runTest();
+  });
+}

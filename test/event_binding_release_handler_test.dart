@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.event_binding_release_handler_test;
 
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 import 'package:template_binding/template_binding.dart';
 
 @CustomTag('x-foo')
@@ -28,8 +28,6 @@ main() {
   // dirtyCheck. We want to verify that event bindings trigger dirty checks on
   // their own.
   initPolymer();
-
-  useHtmlConfiguration();
 
   setUp(() => Polymer.onReady);
 

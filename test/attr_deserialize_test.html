@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
   <head>
     <title>Polymer.dart attribute deserialization test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body unresolved>
     <polymer-element name="my-element">
@@ -25,6 +24,7 @@ BSD-style license that can be found in the LICENSE file.
         json="{'here': 'is', 'some': 'json', 'x': 123}">
     </my-element>
 
-    <script type="application/dart" src="attr_deserialize_test.dart"></script>
+    <link rel="x-dart-test" href="attr_deserialize_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

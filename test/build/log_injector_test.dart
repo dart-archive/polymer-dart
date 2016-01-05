@@ -2,15 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 import 'dart:async';
 import 'dart:html';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
 import 'package:polymer/src/build/log_injector.dart';
+import 'package:test/test.dart';
 
 main() {
-  useHtmlConfiguration();
-
   setUp(() => new LogInjector().injectLogs('''{
         "polymer#0":[{
             "level":"Info",

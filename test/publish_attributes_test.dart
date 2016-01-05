@@ -2,9 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 import 'dart:html';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 import 'package:polymer/polymer.dart';
 
 // Dart note: unlike JS, you can't publish something that doesn't
@@ -53,8 +53,6 @@ class XQux extends XBaz {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
 
   test('published properties', () {

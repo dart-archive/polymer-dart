@@ -4,7 +4,6 @@
   <head>
     <title>property to attribute reflection with bind</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
 
   <body>
@@ -12,7 +11,8 @@
 
     <polymer-element name="x-foo" attributes="foo bar count">
       <template>{{ fooBar }}:{{ fooBarCounted }}</template>
-      <script type="application/dart" src="computed_properties_test.dart"></script>
+      <link rel="x-dart-test" href="computed_properties_test.dart">
+      <script src="packages/test/dart.js"></script>
     </polymer-element>
   </body>
 </html>

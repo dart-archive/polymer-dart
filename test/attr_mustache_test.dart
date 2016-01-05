@@ -2,11 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 import 'package:template_binding/template_binding.dart';
 
 @CustomTag('x-target')
@@ -45,12 +45,11 @@ class XTest extends PolymerElement {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
 
   test('mustache attributes', () {
-    final xtest = document.querySelector('#test');
+    final xtest = document.createElement('x-test');
+    document.body.append(xtest);
     final xtarget = xtest.shadowRoot.querySelector('#target');
     return xtarget.foundSrc;
   });

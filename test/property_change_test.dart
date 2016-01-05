@@ -2,12 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.property_change_test;
 
 import 'dart:async';
+import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 // Dart note: this is a tad different from the JS code. We don't support putting
 // expandos on Dart objects and then observing them. On the other hand, we want
@@ -23,7 +24,6 @@ class XBase extends PolymerElement {
   XBase.created() : super.created();
 
   zonkChanged() {
-    expect(zonk, 'zonk', reason: 'change calls *Changed on superclass');
     _zonk.complete();
   }
 }
@@ -42,16 +42,24 @@ class XTest extends XBase {
   }
 
   barChanged() {
-    expect(bar, 'bar', reason: 'change in ready calls *Changed');
     _bar.complete();
   }
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
+  XTest testEl;
 
-  setUp(() => Polymer.onReady);
+  setUp(() {
+    testEl = querySelector('x-test');
+    return Polymer.onReady;
+  });
 
-  test('bar change detected', () => _bar.future);
-  test('zonk change detected', () => _zonk.future);
+  test('bar change detected', () async {
+    await _bar.future;
+    expect(testEl.bar, 'bar', reason: 'change in ready calls *Changed');
+  });
+  test('zonk change detected', () async {
+    await _zonk.future;
+    expect(testEl.zonk, 'zonk', reason: 'change calls *Changed on superclass');
+  });
 }));

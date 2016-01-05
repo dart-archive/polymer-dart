@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
   <head>
     <title>unbind</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body>
 
@@ -17,6 +16,7 @@ BSD-style license that can be found in the LICENSE file.
 
   <polymer-element name="x-test" attributes="bar"></polymer-element>
 
-  <script type="application/dart" src="unbind_test.dart"></script>
+  <link rel="x-dart-test" href="unbind_test.dart">
+  <script src="packages/test/dart.js"></script>
   </body>
 </html>

@@ -2,12 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.web.events_test;
 
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/html_config.dart';
-import 'package:unittest/unittest.dart';
+import 'common.dart';
 
 @CustomTag("test-b")
 class TestB extends PolymerElement {
@@ -45,8 +45,6 @@ class TestC extends TestBase {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
 
   test('host event', () {

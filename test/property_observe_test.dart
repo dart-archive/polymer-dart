@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.property_change_test;
 
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 var _changes = 0;
 final _done = new Completer();
@@ -37,15 +37,15 @@ class XTest extends PolymerElement {
     // Dart note: unlike polymer-js we support multiple observers, due to how
     // our @ObserveProperty metadata translated.
     // _done.completeError('barChanged should not be called.');
-    expect('bar', 'bar', reason: 'barChanged called');
+    assert(bar == 'bar');
     checkDone();
   }
 
   @ObserveProperty('bar pie')
   validate() {
     window.console.log('validate');
-    expect('bar', 'bar', reason: 'custom change observer called');
-    expect('pie', 'pie', reason: 'custom change observer called');
+    assert(bar == 'bar');
+    assert(pie == 'pie');
     checkDone();
   }
 
@@ -53,14 +53,14 @@ class XTest extends PolymerElement {
   @ObserveProperty('pie')
   validateYummyPie() {
     window.console.log('validateYummyPie');
-    expect('pie', 'pie', reason: 'validateYummyPie called');
+    assert(pie == 'pie');
     checkDone();
   }
 
   @ObserveProperty('a.b.c')
   validateSubPath(oldValue, newValue) {
     window.console.log('validateSubPath $oldValue $newValue');
-    expect(newValue, 'exists', reason: 'subpath change observer called');
+    assert(newValue == 'exists');
     checkDone();
   }
 }
@@ -81,8 +81,6 @@ class XTest2 extends XTest {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
 
   test('changes detected', () => _done.future);

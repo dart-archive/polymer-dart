@@ -3,15 +3,13 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// Tests for some of the utility helper functions used by the compiler.
+@TestOn('vm')
 library polymer.test.utils_test;
 
-import 'package:unittest/compact_vm_config.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:polymer/src/build/utils.dart';
 
 main() {
-  useCompactVMConfiguration();
-
   for (bool startUppercase in [false, true]) {
     Matcher caseEquals(String str) {
       if (startUppercase) str = str[0].toUpperCase() + str.substring(1);

@@ -9,7 +9,6 @@
   <head>
     <title>polymer.js interop test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body unresolved>
 
@@ -93,7 +92,8 @@
 
   <dart-two-way></dart-two-way>
 
-  <script type="application/dart" src="js_interop_test.dart"></script>
+  <link rel="x-dart-test" href="js_interop_test.dart">
+  <script src="packages/test/dart.js"></script>
 
   </body>
 </html>

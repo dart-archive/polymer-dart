@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.web.js_interop_test;
 
 import 'dart:async';
@@ -9,8 +10,7 @@ import 'dart:html';
 import 'dart:js';
 import 'package:polymer/polymer.dart';
 import 'package:polymer_interop/polymer_interop.dart';
-import 'package:unittest/html_config.dart';
-import 'package:unittest/unittest.dart';
+import 'common.dart';
 
 @CustomTag('dart-element')
 class DartElement extends PolymerElement {
@@ -40,8 +40,6 @@ class DartTwoWay extends PolymerElement {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
 
   test('dart-element upgraded', () {

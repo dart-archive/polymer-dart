@@ -2,12 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.sort_registration_test;
 
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/html_config.dart';
-import 'package:unittest/unittest.dart';
+import 'common.dart';
 
 part 'sort_registration_part1.dart';
 part 'sort_registration_part2.dart';
@@ -18,7 +18,6 @@ class A extends PolymerElement {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
   setUp(() => Polymer.onReady);
 
   test('registration is done in the right order', () {

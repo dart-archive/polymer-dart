@@ -1,7 +1,7 @@
 // Copyright (c) 2013, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-
+@TestOn('vm')
 library polymer.test.build.all_phases_test;
 
 import 'package:code_transformers/tests.dart' show testingDartSdkDirectory;
@@ -10,12 +10,11 @@ import 'package:polymer/src/build/polymer_smoke_generator.dart'
     show MAIN_HEADER;
 import 'package:polymer/transformer.dart';
 import 'package:smoke/codegen/generator.dart' show DEFAULT_IMPORTS;
-import 'package:unittest/compact_vm_config.dart';
+import 'package:test/test.dart';
 
 import 'common.dart';
 
 void main() {
-  useCompactVMConfiguration();
   var phases = createDeployPhases(new TransformOptions(),
       sdkDir: testingDartSdkDirectory);
 

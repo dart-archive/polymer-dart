@@ -2,18 +2,16 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('vm')
 library polymer.test.build.polyfill_injector_test;
 
 import 'package:polymer/src/build/common.dart';
 import 'package:polymer/src/build/polyfill_injector.dart';
-import 'package:unittest/compact_vm_config.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import 'common.dart';
 
 void main() {
-  useCompactVMConfiguration();
-
   group('js', () => runTests());
   group('dart', () => runTests(js: false));
 }
