@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
 
     <title>register test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body>
   <polymer-element name="x-a" noscript><template>a</template></polymer-element>
@@ -24,6 +23,7 @@ BSD-style license that can be found in the LICENSE file.
   </template>
   <x-d></x-d>
 
-  <script type="application/dart" src="noscript_test.dart"></script>
+  <link rel="x-dart-test" href="noscript_test.dart">
+  <script src="packages/test/dart.js"></script>
   </body>
 </html>

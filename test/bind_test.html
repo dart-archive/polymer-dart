@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
   <head>
     <title>bind simple</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body>
     <x-foo></x-foo>
@@ -34,6 +33,7 @@ BSD-style license that can be found in the LICENSE file.
       </template>
     </polymer-element>
 
-    <script type="application/dart" src="bind_test.dart"></script>
+    <link rel="x-dart-test" href="bind_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

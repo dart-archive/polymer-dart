@@ -8,7 +8,6 @@
 
   <head><title>event path declarative test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
     <!--
     Test ported from:
     https://github.com/Polymer/polymer/blob/7936ff8/test/html/event-path-declarative.html
@@ -71,6 +70,7 @@
       </template>
     </polymer-element>
 
-  <script type="application/dart" src="event_path_declarative_test.dart"></script>
+  <link rel="x-dart-test" href="event_path_declarative_test.dart">
+  <script src="packages/test/dart.js"></script>
   </body>
 </html>

@@ -1,3 +1,7 @@
+#### 0.16.4
+  * Migrate to test package, and update analyzer and code_transformers
+    dependencies.
+
 #### 0.16.3+3
   * Inject the polyfills after any `<base>` tags in the head.
 
@@ -39,10 +43,10 @@
   * Added `@whenPolymerReady` annotation for functions. This will call the
     function once `Polymer.onReady` completes, reducing the boilerplate in entry
     points to the following:
-    
+
         import 'package:polymer/polymer.dart';
         export 'package:polymer/init.dart';
-        
+
         @whenPolymerReady
         void onReady() {
           /// Custom setup code here.
@@ -86,7 +90,7 @@
         realMain() => ...
 
     This should be translated to:
-    
+
         main() => initPolymer().then((zone) => zone.run(realMain));
         realMain() => ...
 
@@ -145,7 +149,7 @@
   * Fix logic for detecting when the compiler is linting within an
     `auto-binding-dart` template element. This removes some false positive
     warnings.
-    
+
 #### 0.15.3
   * Narrow the constraint on observe to ensure that new features are reflected
     in polymer's version.
@@ -266,8 +270,8 @@
 
 #### 0.13.0
   * Update to match polymer 0.3.5 ([polymer-dev#5d00e4b][5d00e4b]). There was a
-    breaking change in the web_components package where selecting non-rendered 
-    elements doesn't work, but it shouldn't affect most people. See 
+    breaking change in the web_components package where selecting non-rendered
+    elements doesn't work, but it shouldn't affect most people. See
     https://github.com/Polymer/ShadowDOM/issues/495.
 
 #### 0.12.2+1
@@ -327,7 +331,7 @@
                 web/foo.css: true
                 packages/foo/bar.css: true
 
-    
+
   * Bug fix for http://dartbug.com/20286. Bindings in url attributes will no
     longer throw an error.
 

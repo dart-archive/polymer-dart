@@ -223,8 +223,8 @@ class PolymerSmokeGenerator {
   ///    * invoke methods in event handlers.
   _processClass(ClassElement cls, Recorder recorder) {
     if (!_hasPolymerMixin(cls)) return;
-    if (cls.node is! ClassDeclaration) return;
-    var node = cls.node as ClassDeclaration;
+    if (cls.computeNode() is! ClassDeclaration) return;
+    var node = cls.computeNode() as ClassDeclaration;
 
     // Check whether the class has a @CustomTag annotation. Typically we expect
     // a single @CustomTag, but it's possible to have several.
@@ -334,7 +334,7 @@ class PolymerSmokeGenerator {
           span: _spanForNode(context, args[0]));
       return null;
     }
-    return res.value.stringValue;
+    return res.value.toStringValue();
   }
 
   /// Process members that are annotated with `@ComputedProperty` and records
@@ -342,7 +342,7 @@ class PolymerSmokeGenerator {
   _processComputedExpressions(List<analyzer.Element> computed) {
     var constructor = types.computedPropertyElement.constructors.first;
     for (var member in computed) {
-      for (var meta in member.node.metadata) {
+      for (var meta in member.computeNode().metadata) {
         if (meta.element != constructor) continue;
         var expr =
             _extractFirstAnnotationArgument(meta, 'ComputedProperty', member);

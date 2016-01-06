@@ -4,7 +4,6 @@
   <head>
     <title>port of bindProperties test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
 
   <body>
@@ -35,6 +34,7 @@
       </template>
     </polymer-element>
     <bind-properties-test></bind-properties-test>
-    <script type="application/dart" src="bind_properties_test.dart"></script>
+    <link rel="x-dart-test" href="bind_properties_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

@@ -2,19 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('vm')
 library polymer.test.build.html_finalizer_test;
 
 import 'package:polymer/src/build/common.dart';
 import 'package:polymer/src/build/html_finalizer.dart';
 import 'package:polymer/src/build/messages.dart';
-import 'package:unittest/compact_vm_config.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'common.dart';
 
 final phases = [[new HtmlFinalizer(new TransformOptions())]];
 
 void main() {
-  useCompactVMConfiguration();
   group('csp', cspTests);
   group('rel=stylesheet', stylesheetTests);
   group('url attributes', urlAttributeTests);

@@ -2,14 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.when_polymer_ready_test;
 
 import 'dart:async';
 import 'dart:html';
 
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 final Completer done = new Completer();
 
@@ -19,8 +19,6 @@ class XA extends PolymerElement {
 }
 
 main() {
-  useHtmlConfiguration();
-
   test('whenPolymerReady functions get called when polymer is ready', () {
     expect(querySelector('x-a') is XA, isFalse);
     initPolymer();

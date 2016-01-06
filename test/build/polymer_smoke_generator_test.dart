@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('vm')
 library polymer.test.build.polymer_smoke_generator_test;
 
 import 'package:code_transformers/tests.dart'
@@ -10,13 +11,11 @@ import 'package:polymer/src/build/common.dart';
 import 'package:polymer/src/build/messages.dart';
 import 'package:polymer/src/build/polymer_smoke_generator.dart';
 import 'package:smoke/codegen/generator.dart' show DEFAULT_IMPORTS;
-import 'package:unittest/compact_vm_config.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import 'common.dart';
 
 void main() {
-  useCompactVMConfiguration();
   var phases = [
     [
       new PolymerSmokeGeneratorTransformer(new TransformOptions(),

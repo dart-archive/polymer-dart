@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.web.events_test;
 
 import 'dart:html';
 import 'dart:js';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/html_config.dart';
-import 'package:unittest/unittest.dart';
+import 'common.dart';
 
 @CustomTag('x-test')
 class XTest extends PolymerElement {
@@ -22,7 +22,6 @@ class XTest extends PolymerElement {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
   setUp(() => Polymer.onReady);
 
   test('detail on JS custom events are proxied', () {

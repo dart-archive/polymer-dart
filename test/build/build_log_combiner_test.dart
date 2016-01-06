@@ -2,14 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('vm')
 library polymer.test.build.build_log_combiner_test;
 
 import 'package:code_transformers/messages/build_logger.dart'
     show LOG_EXTENSION;
 import 'package:polymer/src/build/build_log_combiner.dart';
 import 'package:polymer/src/build/common.dart';
-import 'package:unittest/compact_vm_config.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import 'common.dart';
 
@@ -17,8 +17,6 @@ final options = new TransformOptions(injectBuildLogsInOutput: true);
 final phases = [[new BuildLogCombiner(options)]];
 
 void main() {
-  useCompactVMConfiguration();
-
   testPhases('combines multiple logs', phases, {
     'a|web/test.html': '<!DOCTYPE html><html></html>',
     'a|web/test.html$LOG_EXTENSION.1':

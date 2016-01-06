@@ -2,10 +2,10 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 import 'dart:async';
 import 'dart:html';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 import 'package:polymer/polymer.dart';
 
 @CustomTag('x-foo')
@@ -32,8 +32,6 @@ class NullNodeValidator implements NodeValidator {
 final nullValidator = const NullNodeValidator();
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   XFoo xFoo;
   DivElement injectDiv;
 

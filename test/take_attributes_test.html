@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
 
     <title>take attributes</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body unresolved>
 
@@ -71,6 +70,7 @@ BSD-style license that can be found in the LICENSE file.
            values="{ 'movie': 'Buckaroo Banzai', 'DOB': '07/31/1978' }">
     </x-obj>
 
-  <script type="application/dart" src="take_attributes_test.dart"></script>
+  <link rel="x-dart-test" href="take_attributes_test.dart">
+  <script src="packages/test/dart.js"></script>
   </body>
 </html>

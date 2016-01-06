@@ -10,7 +10,6 @@ BSD-style license that can be found in the LICENSE file.
     <title>attached binding test</title>
     <script src="packages/web_components/dart_support.js"></script>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body>
     This tests that eventController can properly be detected from dart,
@@ -35,6 +34,7 @@ BSD-style license that can be found in the LICENSE file.
 
     <x-controller></x-controller>
 
-    <script type="application/dart" src="event_controller_test.dart"></script>
+    <link rel="x-dart-test" href="event_controller_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

@@ -11,7 +11,7 @@ import 'package:code_transformers/messages/build_logger.dart'
     show LOG_EXTENSION;
 import 'package:polymer/src/build/common.dart';
 import 'package:stack_trace/stack_trace.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 String idToString(AssetId id) => '${id.package}|${id.path}';
 AssetId idFromString(String s) {

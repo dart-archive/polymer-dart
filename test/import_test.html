@@ -9,7 +9,6 @@ BSD-style license that can be found in the LICENSE file.
   <head>
     <title>Polymer.import test</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
   </head>
   <body>
     <x-foo></x-foo>
@@ -21,6 +20,7 @@ BSD-style license that can be found in the LICENSE file.
       <link rel="import" href="element_import/import_b.html">
     </template>
 
-    <script type="application/dart" src="import_test.dart"></script>
+    <link rel="x-dart-test" href="import_test.dart">
+    <script src="packages/test/dart.js"></script>
   </body>
 </html>

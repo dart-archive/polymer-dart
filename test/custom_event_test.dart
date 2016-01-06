@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.web.custom_event_test;
 
 import 'dart:async';
@@ -9,8 +10,7 @@ import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:template_binding/template_binding.dart'
     show nodeBind, enableBindingsReflection;
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 @CustomTag('foo-bar')
 class FooBar extends PolymerElement {
@@ -44,8 +44,6 @@ main() {
   enableBindingsReflection = true;
 
   initPolymer().then((zone) => zone.run(() {
-    useHtmlConfiguration();
-
     setUp(() => Polymer.onReady);
 
     test('custom event', () {

@@ -2,33 +2,33 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.nested_binding_test;
 
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 
 @CustomTag('my-test')
 class MyTest extends PolymerElement {
   final List fruits = toObservable(['apples', 'oranges', 'pears']);
 
-  final _testDone = new Completer();
+  final onReady = new Completer();
 
   MyTest.created() : super.created();
 
   ready() {
-    expect($['fruit'].text.trim(), 'Short name: [pears]');
-    _testDone.complete();
+    onReady.complete();
   }
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
+      setUp(() => Polymer.onReady);
 
-  setUp(() => Polymer.onReady);
-
-  test('ready called',
-      () => (querySelector('my-test') as MyTest)._testDone.future);
-}));
+      test('ready called', () async {
+        var el = (querySelector('my-test') as MyTest);
+        await el.onReady;
+        expect(el.$['fruit'].text.trim(), 'Short name: [pears]');
+      });
+    }));

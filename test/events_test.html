@@ -9,7 +9,6 @@
   <head>
     <title>event path</title>
     <link rel="import" href="packages/polymer/polymer.html">
-    <script src="packages/unittest/test_controller.js"></script>
     <!--
     Test ported from:
     https://github.com/Polymer/polymer/blob/7936ff8/test/js/events.js
@@ -46,6 +45,7 @@
   <test-b id="b"></test-b>
   <test-c id="c"></test-c>
 
-  <script type="application/dart" src="events_test.dart"></script>
+  <link rel="x-dart-test" href="events_test.dart">
+  <script src="packages/test/dart.js"></script>
   </body>
 </html>

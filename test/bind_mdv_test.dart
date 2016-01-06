@@ -2,20 +2,19 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 library polymer.test.bind_mdv_test;
 
 import 'dart:async';
 import 'dart:html';
 import 'package:template_binding/template_binding.dart';
 import 'package:observe/observe.dart';
-import 'package:observe/mirrors_used.dart'; // make test smaller.
-import 'package:unittest/html_config.dart';
-import 'package:unittest/unittest.dart';
+import 'package:observe/mirrors_used.dart' as mu; // make test smaller.
+import 'common.dart';
 import 'package:web_components/polyfill.dart';
 
+/// Uses [mu].
 main() {
-  useHtmlConfiguration();
-
   var registered = customElementsReady.then((_) {
     document.registerElement('my-div', MyDivElement);
   });
@@ -42,19 +41,23 @@ bindModelTests() {
       .createInstance(model);
 
   test('bindModel', () {
+    var done = new Completer();
     var fragment = parseAndBindHTML('<div id="a" foo="{{bar}}"></div>', div);
     div.append(fragment);
     var a = div.query('#a');
 
-    div.bar = 5;
-    return onAttributeChange(a).then((_) {
+    onAttributeChange(a).then((_) {
       expect(a.attributes['foo'], '5');
-      div.bar = 8;
-      return onAttributeChange(a).then((_) {
+      onAttributeChange(a).then((_) {
         expect(a.attributes['foo'], '8');
+        done.complete();
       });
+      div.bar = 8;
     });
-  });
+    div.bar = 5;
+
+    return done.future;
+  }, skip: 'https://github.com/dart-lang/polymer-dart/issues/78');
 
   test('bind input', () {
     var fragment = parseAndBindHTML('<input value="{{bar}}" />', div);
@@ -62,13 +65,10 @@ bindModelTests() {
     var a = div.query('input');
 
     div.bar = 'hello';
-    // TODO(sorvell): fix this when observe-js lets us explicitly listen for
-    // a change on input.value
-    Observable.dirtyCheck();
-    return new Future.microtask(() {
+    return new Future(() {
       expect(a.value, 'hello');
     });
-  });
+  }, skip: 'https://github.com/dart-lang/polymer-dart/issues/78');
 }
 
 class MyDivElement extends HtmlElement with Observable {

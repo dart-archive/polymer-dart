@@ -6,13 +6,13 @@
 // While the original test was intended to test event.path support, we changed
 // the test structure just to check that the event was handled in the expected
 // order.
+@TestOn('browser')
 library polymer.test.event_path_declarative_test;
 
 import 'dart:async';
 import 'dart:html';
 
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'common.dart';
 import 'package:polymer/polymer.dart';
 
 var _observedEvents = [];
@@ -78,7 +78,6 @@ class XBar extends PolymerElement {
 }
 
 @initMethod init() {
-  useHtmlConfiguration();
   // TODO(sigmund): switch back to use @CustomTag. We seem to be running into a
   // problem where using @CustomTag doesn't guarantee that we register the tags
   // in the following order (the query from mirrors is non deterministic).

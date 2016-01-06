@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('vm')
 library polymer.test.linter_test;
 
 import 'dart:convert';
@@ -9,7 +10,7 @@ import 'dart:convert';
 import 'package:polymer/src/build/common.dart';
 import 'package:polymer/src/build/linter.dart';
 import 'package:polymer/src/build/messages.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import 'common.dart';
 

@@ -1,21 +1,20 @@
 // Copyright (c) 2013, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
+@TestOn('vm')
 library polymer.test.build.index_page_builder_test;
 
 import 'dart:async';
-import 'package:unittest/compact_vm_config.dart';
-import 'package:unittest/unittest.dart';
+import 'common.dart';
 import 'package:polymer/src/build/common.dart';
 import 'package:polymer/src/build/index_page_builder.dart';
+import 'package:test/test.dart';
 
 import 'common.dart';
 
 final phases = [[new IndexPageBuilder(new TransformOptions())]];
 
 void main() {
-  useCompactVMConfiguration();
-
   testPhases('outputs index pages', phases, {
     'a|web/test.html': '<!DOCTYPE html><html></html>',
     'a|web/test2.html': '<!DOCTYPE html><html></html>',

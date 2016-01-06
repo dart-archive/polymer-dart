@@ -2,13 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+@TestOn('browser')
 import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
-
-int testsRun = 0;
+import 'common.dart';
 
 @CustomTag('decoration-test')
 class DecorationTest extends PolymerElement {
@@ -16,9 +14,10 @@ class DecorationTest extends PolymerElement {
 
   DecorationTest.created() : super.created();
 
+  Completer onReady = new Completer();
+
   ready() {
-    this.test();
-    testsRun++;
+    onReady.complete();
   }
 
   test() {
@@ -41,11 +40,10 @@ class DecorationTest2 extends DecorationTest {
 }
 
 main() => initPolymer().then((zone) => zone.run(() {
-  useHtmlConfiguration();
-
   setUp(() => Polymer.onReady);
 
-  test('declaration-tests-ran', () {
-    expect(testsRun, 2, reason: 'decoration-tests-ran');
+  test('declaration-tests', () {
+    querySelector('decoration-test').test();
+    querySelector('decoration-test2').test();
   });
 }));
