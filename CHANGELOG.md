@@ -1,3 +1,13 @@
+#### 1.0.0-rc.11
+  * Added a polymer transformer which wraps up both the web_components and
+    reflectable transformers into one more consumable package. Use it just like
+    the web_components transformer:
+
+        transformers:
+        - polymer:
+            entry_points:
+              - web/index.html
+
 #### 1.0.0-rc.10
   * Update to reflectable `^0.5.0`  and analyzer `^0.27.0` versions.
   * Added back the `new_element` generator script.

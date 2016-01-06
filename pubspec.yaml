@@ -1,5 +1,5 @@
 name: polymer
-version: 1.0.0-rc.10
+version: 1.0.0-rc.11
 author: Polymer.dart Authors <web-ui-dev@dartlang.org>
 description: >
   Polymer.dart is a new type of library for the web, built on top of Web
@@ -8,45 +8,46 @@ description: >
 homepage: https://www.dartlang.org/polymer-dart/
 dependencies:
   analyzer: '^0.27.0'
+  barback: '>=0.14.2 <0.16.0'
   browser: ^0.10.0
   html: ^0.12.0
   initialize: '>=0.5.1+3 <0.7.0'
+  path: '^1.3.0'
   polymer_interop: ^1.0.0-rc.5
   reflectable: ^0.5.0
   test: ^0.12.3
   web_components: '>=0.11.3 <0.13.0'
 transformers:
-- web_components
+- polymer:
+    entry_points:
+      - test/src/common/behavior_test.html
+      - test/src/common/behavior_composition_test.html
+      - test/src/common/js_proxy_test.html
+      - test/src/common/polymer_descriptor_test.html
+      - test/src/common/polymer_mixin_test.html
+      - test/src/common/polymer_register_test.html
+      - test/src/micro/attributes_test.html
+      - test/src/micro/lifecycle_callbacks_test.html
+      - test/src/mini/bottom_up_ready_test.html
+      - test/src/mini/default_values_test.html
+      - test/src/mini/dom_distribution_test.html
+      - test/src/mini/template_stamping_test.html
+      - test/src/standard/attribute_binding_test.html
+      - test/src/standard/computed_properties_test.html
+      - test/src/standard/event_listener_test.html
+      - test/src/standard/node_finding_test.html
+      - test/src/standard/property_binding_test.html
+      - test/src/standard/property_change_callbacks_test.html
+      - test/src/standard/property_change_notification_test.html
+      - test/src/standard/read_only_properties_test.html
+      - test/src/standard/reflect_to_attribute_test.html
+      - test/src/template/array_selector_test.html
+      - test/src/template/dom_bind_test.html
+      - test/src/template/dom_if_test.html
+      - test/src/template/dom_repeat_test.html
+      - test/src/template/templatizer_test.html
+    $include: test/**_test{.*,}.{dart,html}
 - test/pub_serve:
     $include: test/**_test{.*,}.dart
-- reflectable:
-    entry_points:
-      - test/src/common/behavior_test.dart
-      - test/src/common/behavior_composition_test.dart
-      - test/src/common/js_proxy_test.dart
-      - test/src/common/polymer_descriptor_test.dart
-      - test/src/common/polymer_mixin_test.dart
-      - test/src/common/polymer_register_test.dart
-      - test/src/micro/attributes_test.dart
-      - test/src/micro/lifecycle_callbacks_test.dart
-      - test/src/mini/bottom_up_ready_test.dart
-      - test/src/mini/default_values_test.dart
-      - test/src/mini/dom_distribution_test.dart
-      - test/src/mini/template_stamping_test.dart
-      - test/src/standard/attribute_binding_test.dart
-      - test/src/standard/computed_properties_test.dart
-      - test/src/standard/event_listener_test.dart
-      - test/src/standard/node_finding_test.dart
-      - test/src/standard/property_binding_test.dart
-      - test/src/standard/property_change_callbacks_test.dart
-      - test/src/standard/property_change_notification_test.dart
-      - test/src/standard/read_only_properties_test.dart
-      - test/src/standard/reflect_to_attribute_test.dart
-      - test/src/template/array_selector_test.dart
-      - test/src/template/dom_bind_test.dart
-      - test/src/template/dom_if_test.dart
-      - test/src/template/dom_repeat_test.dart
-      - test/src/template/templatizer_test.dart
-    $include: test/**_test.dart
 environment:
   sdk: '>=1.9.0 <=2.0.0'

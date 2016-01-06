@@ -52,17 +52,14 @@ dependencies:
 Building and Deploying
 ----------------------
 
-To build a deployable version of your app, add the web_components and polymer
-transformers to your pubspec.yaml file:
+To build a deployable version of your app, add the polymer transformer to your
+pubspec.yaml file:
 
 ```yaml
 transformers:
-- web_components:
+- polymer:
     entry_points:
     - web/index.html
-- reflectable:
-    entry_points:
-    - web/index.dart
 ```
 
 Then, run `pub build`.
@@ -89,17 +86,14 @@ You will also need to define a custom html file for your test (see the README
 for the [test][test] package for more information on this).
 
 **Note**: If you are using the new `test` package, it is important that you add
-the `test` transformer after the polymer transformer, so it should look roughly
-like this:
+the `test` transformer after the `polymer` transformer, so it should look
+roughly like this:
 
 ```yaml
 transformer:
-- web_components:
+- polymer:
     entry_points:
     - test/my_test.html
-- reflectable:
-    entry_ponits:
-    - test/my_test.dart
 - test/pub_serve:
     $include: test/**_test{.*,}.dart
 ```
