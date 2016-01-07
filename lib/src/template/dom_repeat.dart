@@ -139,6 +139,7 @@ class DomRepeatModel extends Object with PolymerBase {
       : this.jsElement = jsElement,
         this.itemName = _getItemName(jsElement);
   factory DomRepeatModel.fromEvent(e) {
+    if (e is CustomEventWrapper) e = e.original;
     var proxy = new JsObject.fromBrowserObject(e)['model'];
     if (proxy is HtmlElement) {
       proxy = new JsObject.fromBrowserObject(proxy);

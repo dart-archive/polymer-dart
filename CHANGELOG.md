@@ -1,3 +1,11 @@
+#### 1.0.0-rc.12
+  * Update to work with polymer_interop v1.0.0-rc.8. The main difference relates
+    to events. On the JS side of things, regular `Event` objects are sometimes
+    used to mimic `CustomEvent` objects, and a `detail` field is just added.
+    This means that Polymer Dart now treats any `Event` with a `detail` field as
+    a `CustomEvent`, so they are wrapped with the `CustomEventWrapper` class.
+    You can always get at the original event by using the `original` property.
+
 #### 1.0.0-rc.11
   * Added a polymer transformer which wraps up both the web_components and
     reflectable transformers into one more consumable package. Use it just like

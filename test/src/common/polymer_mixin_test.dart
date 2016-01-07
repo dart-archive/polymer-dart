@@ -275,6 +275,7 @@ main() async {
       var done = new Completer();
       var detail = 'some details!';
       element.on['test-event'].take(1).listen((e) {
+        e = convertToDart(e);
         expect(e.detail, detail);
         expect(e.cancelable, isTrue);
         expect(e.bubbles, isTrue);
@@ -288,6 +289,7 @@ main() async {
       var done = new Completer();
       var detail = 'some details!';
       element.$['child'].on['test-event'].take(1).listen((e) {
+        e = convertToDart(e);
         expect(e.detail, detail);
         done.complete();
       });

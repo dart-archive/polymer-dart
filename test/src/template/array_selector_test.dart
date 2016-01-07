@@ -1,7 +1,6 @@
 @TestOn('browser')
 library polymer.test.src.template.array_selector_test;
 
-import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
@@ -63,8 +62,8 @@ class EmployeeList extends PolymerElement {
   }
 
   @reflectable
-  void toggleSelection(MouseEvent e, [_]) {
-    var item = new DomRepeatModel.fromEvent(e).item;
+  void toggleSelection(e, [_]) {
+    var item = new DomRepeatModel.fromEvent(e)['item'];
     selector.select(item);
   }
 }
