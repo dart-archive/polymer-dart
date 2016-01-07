@@ -4,7 +4,9 @@
 @TestOn('browser')
 library polymer.test.src.standard.property_change_notification_test;
 
+import 'dart:async';
 import 'dart:html';
+
 import 'package:test/test.dart';
 import 'package:polymer/polymer.dart';
 
@@ -38,50 +40,42 @@ main() async {
     expect(parent.model.value, 2);
   });
 
-  test('Elements fire property-changed events', () {
-    var grandchildValueChanged = 0;
-    grandchild.on['value-changed'].listen((_) {
-      grandchildValueChanged++;
-    });
-    var childModelChanged = 0;
-    child.on['model-changed'].listen((_) {
-      childModelChanged++;
-    });
-    var parentModelChanged = 0;
-    parent.on['model-changed'].listen((_) {
-      parentModelChanged++;
-    });
+  test('Elements fire property-changed events', () async {
+    expect(grandchild.valueChangedCount, 1);
+    expect(child.modelChangedCount, 1);
+    expect(parent.modelChangedCount, 1);
 
     // Deep child changes subproperty of model.
     grandchild.set('value', 1);
-    expect(grandchildValueChanged, 1);
-    expect(childModelChanged, 1);
-    expect(parentModelChanged, 1);
+    expect(grandchild.valueChangedCount, 2);
+    expect(child.modelChangedCount, 2);
+    expect(parent.modelChangedCount, 2);
 
     // Child changes model
     child.set('model', new Model(2));
-    expect(grandchildValueChanged, 2);
-    expect(childModelChanged, 2);
-    expect(parentModelChanged, 2);
+    await PolymerRenderStatus.afterNextRender(grandchild);
+    expect(grandchild.valueChangedCount, 3);
+    expect(child.modelChangedCount, 3);
+    expect(parent.modelChangedCount, 3);
 
     // Parent changes model, but to one with the same value. Deep child should
     // not see change since its value didn't change.
     parent.set('model', new Model(2));
-    expect(grandchildValueChanged, 2);
-    expect(childModelChanged, 3);
-    expect(parentModelChanged, 3);
+    expect(grandchild.valueChangedCount, 3);
+    expect(child.modelChangedCount, 4);
+    expect(parent.modelChangedCount, 4);
 
     // Change property path from child.
     child.set('model.value', 3);
-    expect(grandchildValueChanged, 3);
-    expect(childModelChanged, 4);
-    expect(parentModelChanged, 4);
+    expect(grandchild.valueChangedCount, 4);
+    expect(child.modelChangedCount, 5);
+    expect(parent.modelChangedCount, 5);
 
     // Change property path to identical value, should get no events.
     grandchild.set('value', 3);
-    expect(grandchildValueChanged, 3);
-    expect(childModelChanged, 4);
-    expect(parentModelChanged, 4);
+    expect(grandchild.valueChangedCount, 4);
+    expect(child.modelChangedCount, 5);
+    expect(parent.modelChangedCount, 5);
   });
 }
 
@@ -97,6 +91,13 @@ class ParentElement extends PolymerElement {
   @Property(notify: true)
   Model model = defaultModel;
 
+  int modelChangedCount = 0;
+
+  @Observe('model.*')
+  modelChanged(_) {
+    modelChangedCount++;
+  }
+
   ParentElement.created() : super.created();
 }
 
@@ -105,6 +106,13 @@ class ChildElement extends PolymerElement {
   @Property(notify: true)
   Model model;
 
+  int modelChangedCount = 0;
+
+  @Observe('model.*')
+  modelChanged(_) {
+    modelChangedCount++;
+  }
+
   ChildElement.created() : super.created();
 }
 
@@ -112,6 +120,13 @@ class ChildElement extends PolymerElement {
 class GrandchildElement extends PolymerElement {
   @Property(notify: true)
   int value;
+
+  int valueChangedCount = 0;
+
+  @Observe('value')
+  valueChanged(_) {
+    valueChangedCount++;
+  }
 
   GrandchildElement.created() : super.created();
 }
