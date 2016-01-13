@@ -19,6 +19,14 @@ class PolymerTransformerGroup implements TransformerGroup {
 
 /// Create deploy phases for Polymer.
 List<List<Transformer>> createDeployPhases(BarbackSettings settings) {
+  /// Validate the settings
+  const validOptions = const ['entry_points'];
+  for (var option in settings.configuration.keys) {
+    if (validOptions.contains(option)) continue;
+    throw 'Invalid option ``$option` supplied to polymer transformer. '
+        'The recognized options are ${validOptions.join(' ')}.';
+  }
+
   var options = new TransformOptions(
       _readFileList(settings.configuration['entry_points'])
           .map(_systemToAssetPath)

@@ -1,3 +1,6 @@
+#### 1.0.0-rc.13
+  * Transformer will now throw if given unrecognized options.
+
 #### 1.0.0-rc.12
   * Update to work with polymer_interop v1.0.0-rc.8. The main difference relates
     to events. On the JS side of things, regular `Event` objects are sometimes
