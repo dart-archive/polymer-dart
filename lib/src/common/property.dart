@@ -5,6 +5,7 @@ library polymer.src.common.property;
 
 import 'reflectable.dart';
 
+/// Use this to mark a field on a class as a polymer property.
 class Property extends PolymerReflectable {
   /// Fire *-change events to support two way binding.
   final bool notify;
