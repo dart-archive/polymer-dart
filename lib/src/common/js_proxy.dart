@@ -3,12 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.lib.src.common.js_proxy;
 
-import 'dart:js';
 import 'dart:html';
+import 'dart:js';
+
 import 'package:polymer_interop/polymer_interop.dart';
 export 'package:polymer_interop/polymer_interop.dart'
     show convertToDart, convertToJs;
 import 'package:reflectable/reflectable.dart';
+
 import 'behavior.dart';
 import 'declarations.dart';
 import 'reflectable.dart';
@@ -77,6 +79,7 @@ class JsProxyReflectable extends Reflectable {
           const SuperclassQuantifyCapability(HtmlElement,
               excludeUpperBound: true),
           const StaticInvokeCapability(_knownMethodAndPropertyNames),
+          const StaticInvokeMetaCapability(PolymerReflectable),
           correspondingSetterQuantifyCapability
         ]);
 }
@@ -97,41 +100,8 @@ JsFunction _buildJsConstructorForType(Type dartType) {
     // read/write from the dart class.
     return !declaration.owner.metadata.any((m) => m is BehaviorProxy);
   });
-  declarations.forEach((String name, DeclarationMirror declaration) {
-    if (isProperty(declaration)) {
-      var descriptor = {
-        'get': _polymerDart.callMethod('propertyAccessorFactory', [
-          name,
-          (dartInstance) {
-            var mirror = jsProxyReflectable.reflect(dartInstance);
-            return convertToJs(mirror.invokeGetter(name));
-          }
-        ]),
-        'configurable': false,
-      };
-      if (!isFinal(declaration)) {
-        descriptor['set'] = _polymerDart.callMethod('propertySetterFactory', [
-          name,
-          (dartInstance, value) {
-            var mirror = jsProxyReflectable.reflect(dartInstance);
-            mirror.invokeSetter(name, convertToDart(value));
-          }
-        ]);
-      }
-      // Add a proxy getter/setter for this property.
-      context['Object'].callMethod(
-          'defineProperty', [prototype, name, new JsObject.jsify(descriptor),]);
-    } else if (isRegularMethod(declaration)) {
-      // TODO(jakemac): consolidate this code with the code in properties.dart.
-      prototype[name] = _polymerDart.callMethod('invokeDartFactory', [
-        (dartInstance, arguments) {
-          var newArgs = arguments.map((arg) => convertToDart(arg)).toList();
-          var mirror = jsProxyReflectable.reflect(dartInstance);
-          return convertToJs(mirror.invoke(name, newArgs));
-        }
-      ]);
-    }
-  });
+  declarations.forEach((name, declaration) =>
+      addDeclarationToPrototype(name, dartType, declaration, prototype));
 
   constructor['prototype'] = prototype;
   return constructor;

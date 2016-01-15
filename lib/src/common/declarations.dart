@@ -3,8 +3,13 @@
 // BSD-style license that can be found in the LICENSE file.
 library polymer.src.common.declarations;
 
+import 'dart:js';
+
 import 'package:reflectable/reflectable.dart';
+
 import '../../polymer_micro.dart';
+
+final JsObject _polymerDart = context['Polymer']['Dart'];
 
 List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
     {bool where(ClassMirror mirror)}) {
@@ -26,7 +31,8 @@ List<ClassMirror> mixinsFor(Type type, Reflectable reflectionClass,
 /// return true from that.
 Map<String, DeclarationMirror> declarationsFor(
     Type type, Reflectable reflectionClass,
-    {bool where(String name, DeclarationMirror declaration)}) {
+    {bool where(String name, DeclarationMirror declaration),
+    bool includeSuper: true}) {
   var typeMirror = reflectionClass.reflectType(type);
   var declarations = {};
   var superClass = typeMirror;
@@ -36,7 +42,7 @@ Map<String, DeclarationMirror> declarationsFor(
       if (where != null && !where(name, declaration)) return;
       declarations[name] = declaration;
     });
-    superClass = _getSuper(superClass);
+    superClass = includeSuper ? _getSuper(superClass) : null;
   }
   return declarations;
 }
@@ -86,4 +92,49 @@ bool hasSetter(MethodMirror getterDeclaration) {
   var owner = getterDeclaration.owner;
   assert(owner is LibraryMirror || owner is ClassMirror);
   return owner.declarations.containsKey('${getterDeclaration.simpleName}=');
+}
+
+void addDeclarationToPrototype(
+    String name, Type type, DeclarationMirror declaration, JsObject prototype) {
+  if (isProperty(declaration)) {
+    var descriptor = {
+      'get': _polymerDart.callMethod('propertyAccessorFactory', [
+        name,
+        (dartInstance) {
+          var mirror = (declaration as dynamic).isStatic
+              ? jsProxyReflectable.reflectType(type)
+              : jsProxyReflectable.reflect(dartInstance);
+          return convertToJs(mirror.invokeGetter(name));
+        }
+      ]),
+      'configurable': false,
+    };
+    if (!isFinal(declaration)) {
+      descriptor['set'] = _polymerDart.callMethod('propertySetterFactory', [
+        name,
+        (dartInstance, value) {
+          var mirror = (declaration as dynamic).isStatic
+              ? jsProxyReflectable.reflectType(type)
+              : jsProxyReflectable.reflect(dartInstance);
+          mirror.invokeSetter(name, convertToDart(value));
+        }
+      ]);
+    }
+    // Add a proxy getter/setter for this property.
+    context['Object'].callMethod(
+        'defineProperty', [prototype, name, new JsObject.jsify(descriptor),]);
+  } else if (declaration is MethodMirror) {
+    // TODO(jakemac): consolidate this code with the code in properties.dart.
+    prototype[name] = _polymerDart.callMethod('invokeDartFactory', [
+      (dartInstance, arguments) {
+        var newArgs = arguments.map((arg) => convertToDart(arg)).toList();
+        var mirror = declaration.isStatic
+            ? jsProxyReflectable.reflectType(type)
+            : jsProxyReflectable.reflect(dartInstance);
+        return convertToJs(mirror.invoke(name, newArgs));
+      }
+    ]);
+  } else {
+    throw 'Unrecognized declaration `$name` for type `$type`: $declaration';
+  }
 }
