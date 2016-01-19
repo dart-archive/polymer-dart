@@ -308,7 +308,7 @@ bool _isBehavior(instance) => instance is BehaviorAnnotation;
 bool _hasBehaviorMeta(ClassMirror clazz) => clazz.metadata.any(_isBehavior);
 
 /// List of [JsObjects]s representing the behaviors for an element.
-Iterable<JsObject> _buildBehaviorsList(Type type) {
+JsArray<JsObject> _buildBehaviorsList(Type type) {
   // All behavior mixins, in order.
   var allBehaviors =
       mixinsFor(type, jsProxyReflectable).where(_hasBehaviorMeta);
@@ -328,7 +328,7 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
     behaviorStack.add(behavior);
   }
 
-  return <JsObject>[_polymerDart['InteropBehavior']]
+  return new JsArray<JsObject>.from([_polymerDart['InteropBehavior']]
     ..addAll(behaviorStack.map((ClassMirror behavior) {
       BehaviorAnnotation meta = behavior.metadata.firstWhere(_isBehavior);
       if (!behavior.hasBestEffortReflectedType) {
@@ -336,7 +336,7 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
             '${behavior.simpleName}.';
       }
       return meta.getBehavior(behavior.bestEffortReflectedType);
-    }));
+    })));
 }
 
 // Throws an error about expected mixins that must precede the [clazz] mixin.
