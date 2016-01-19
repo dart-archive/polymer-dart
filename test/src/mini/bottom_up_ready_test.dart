@@ -4,7 +4,6 @@
 @TestOn('browser')
 library polymer.test.src.mini.bottom_up_ready_test;
 
-import 'dart:async';
 import 'dart:html';
 import 'package:test/test.dart';
 import 'package:polymer/polymer_mini.dart';
@@ -21,28 +20,27 @@ main() async {
   });
 }
 
+@behavior
+class ReadyRecorder {
+  static int _readiesSeen = 0;
+  int readyOrder;
+
+  static ready(ReadyRecorder instance) {
+    instance.readyOrder = _readiesSeen++;
+  }
+}
+
 @PolymerRegister('parent-element')
-class ParentElement extends ReadyRecordingElement {
+class ParentElement extends PolymerElement with ReadyRecorder {
   ParentElement.created() : super.created();
 }
 
 @PolymerRegister('child-element')
-class ChildElement extends ReadyRecordingElement {
+class ChildElement extends PolymerElement with ReadyRecorder {
   ChildElement.created() : super.created();
 }
 
 @PolymerRegister('grandchild-element')
-class GrandchildElement extends ReadyRecordingElement {
+class GrandchildElement extends PolymerElement with ReadyRecorder {
   GrandchildElement.created() : super.created();
-}
-
-class ReadyRecordingElement extends PolymerElement {
-  static int _readiesSeen = 0;
-  int readyOrder;
-
-  ReadyRecordingElement.created() : super.created();
-
-  ready() {
-    readyOrder = _readiesSeen++;
-  }
 }

@@ -5,36 +5,50 @@ library polymer.src.micro.properties;
 
 import 'dart:html';
 import 'dart:js';
+
 import 'package:reflectable/reflectable.dart';
+
 import 'behavior.dart';
 import 'declarations.dart';
 import 'js_proxy.dart';
-import 'property.dart';
-import 'reflectable.dart';
 import 'listen.dart';
 import 'observe.dart';
 import 'polymer_register.dart';
+import 'property.dart';
+import 'reflectable.dart';
 import 'util.dart';
 import '../js/undefined.dart';
 
 /// Creates a javascript object which can be passed to polymer js to register
 /// an element, given a dart [Type] and a [PolymerRegister] annotation.
 JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
-  var object = {
-    'is': annotation.tagName,
-    'extends': annotation.extendsTag,
+  return _createDescriptor(type)
+    ..['is'] = annotation.tagName
+    ..['extends'] = annotation.extendsTag
+    ..['__isPolymerDart__'] = true
+    ..['behaviors'] = _buildBehaviorsList(type);
+}
+
+/// Creates a javascript object which can be used as a behavior by polymer js,
+/// given a dart [Type] and a [PolymerRegister] annotation.
+JsObject createBehaviorDescriptor(Type type) {
+  return _createDescriptor(type, true);
+}
+
+/// Shared descriptor between polymer elements and behaviors
+JsObject _createDescriptor(Type type, [bool isBehavior = false]) {
+  var descriptor = new JsObject.jsify({
     'properties': _buildPropertiesObject(type),
     'observers': _buildObserversObject(type),
     'listeners': _buildListenersObject(type),
-    'behaviors': _buildBehaviorsList(type),
-    '__isPolymerDart__': true,
-  };
-  _setupLifecycleMethods(type, object);
-  _setupReflectableMethods(type, object);
-  _setupHostAttributes(type, object);
-  _setupRegistrationMethods(type, object);
+  });
+  _setupLifecycleMethods(type, descriptor, isBehavior);
+  _setupReflectableMethods(type, descriptor);
+  _setupReflectableProperties(type, descriptor);
+  _setupHostAttributes(type, descriptor);
+  _setupRegistrationMethods(type, descriptor);
 
-  return new JsObject.jsify(object);
+  return descriptor;
 }
 
 /// Custom js object containing some helper methods for dart.
@@ -43,7 +57,8 @@ final JsObject _polymerDart = context['Polymer']['Dart'];
 /// Returns a list of [DeclarationMirror]s for all fields annotated as a
 /// [Property].
 Map<String, DeclarationMirror> propertyDeclarationsFor(Type type) {
-  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
+  return declarationsFor(type, jsProxyReflectable, includeSuper: false,
+      where: (name, declaration) {
     if (isRegularMethod(declaration) || isSetter(declaration)) return false;
     return declaration.metadata.any((d) => d is Property);
   });
@@ -62,7 +77,8 @@ Map _buildPropertiesObject(Type type) {
 
 /// All @Observe annotated methods.
 Map<String, DeclarationMirror> _observeMethodsFor(Type type) {
-  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
+  return declarationsFor(type, jsProxyReflectable, includeSuper: false,
+      where: (name, declaration) {
     if (!isRegularMethod(declaration)) return false;
     return declaration.metadata.any((d) => d is Observe);
   });
@@ -83,7 +99,8 @@ List _buildObserversObject(Type type) {
 
 /// All @Listen annotated methods.
 Map<String, DeclarationMirror> _listenMethodsFor(Type type) {
-  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
+  return declarationsFor(type, jsProxyReflectable, includeSuper: false,
+      where: (name, declaration) {
     if (!isRegularMethod(declaration)) return false;
     return declaration.metadata.any((d) => d is Listen);
   });
@@ -105,85 +122,127 @@ Map _buildListenersObject(Type type) {
 const _lifecycleMethods = const [
   'ready',
   'attached',
+  'created',
   'detached',
   'attributeChanged',
-  'serialize',
-  'deserialize'
 ];
 
+const _serializeMethods = const ['serialize', 'deserialize'];
+
 /// All lifecycle methods for a type.
-Map<String, DeclarationMirror> _lifecycleMethodsFor(Type type) {
-  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
-    if (!isRegularMethod(declaration)) return false;
-    return _lifecycleMethods.contains(name);
+Map<String, MethodMirror> _lifecycleMethodsFor(Type type) {
+  return declarationsFor(type, jsProxyReflectable, includeSuper: false,
+      where: (name, declaration) {
+    if (declaration is MethodMirror && declaration.isRegularMethod) {
+      return _lifecycleMethods.contains(name) ||
+          _serializeMethods.contains(name);
+    }
+    return false;
   });
 }
 
 /// Set up a proxy for the lifecyle methods, if they exists on the dart class.
-void _setupLifecycleMethods(Type type, Map descriptor) {
+/// If its a behavior we expect most of these
+void _setupLifecycleMethods(Type type, JsObject prototype,
+    [bool isBehavior = false]) {
   var declarations = _lifecycleMethodsFor(type);
-  declarations.forEach((String name, DeclarationMirror declaration) {
-    descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
+  declarations.forEach((String name, MethodMirror declaration) {
+    if (_lifecycleMethods.contains(name)) {
+      if (!declaration.isStatic && isBehavior) {
+        throw 'Lifecycle methods on behaviors must be static methods, found '
+            '`$name` on `$type`. The first argument to these methods is the'
+            'instance.';
+      } else if (declaration.isStatic && !isBehavior) {
+        throw 'Lifecycle methods on elements must not be static methods, found '
+            '`$name` on class `$type`.';
+      }
+    }
+    prototype[name] = _polymerDart.callMethod('invokeDartFactory', [
       (dartInstance, arguments) {
-        var newArgs = arguments.map((arg) => convertToDart(arg)).toList();
-        var instanceMirror = jsProxyReflectable.reflect(dartInstance);
-        return instanceMirror.invoke(name, newArgs);
+        var newArgs = [];
+        var mirror;
+        if (declaration.isStatic) {
+          mirror = jsProxyReflectable.reflectType(type);
+          newArgs.add(dartInstance);
+        } else {
+          mirror = jsProxyReflectable.reflect(dartInstance);
+        }
+        newArgs.addAll(arguments.map((arg) => convertToDart(arg)));
+        return mirror.invoke(name, newArgs);
       }
     ]);
   });
 }
 
 /// All methods annotated with @reflectable.
-Map<String, DeclarationMirror> _reflectableMethodsFor(Type type) {
-  return declarationsFor(type, jsProxyReflectable, where: (name, declaration) {
-    if (!isRegularMethod(declaration)) return false;
-    return declaration.metadata.any((d) => d is PolymerReflectable);
+Map<String, MethodMirror> _reflectableMethodsFor(Type type) {
+  return declarationsFor(type, jsProxyReflectable, includeSuper: false,
+      where: (name, declaration) {
+    if (declaration is MethodMirror && declaration.isRegularMethod) {
+      return declaration.metadata.any((d) => d is PolymerReflectable);
+    }
+    return false;
   });
 }
 
 /// Set up a proxy for any method with an @reflectable annotation.
-void _setupReflectableMethods(Type type, Map descriptor) {
+void _setupReflectableMethods(Type type, JsObject prototype) {
   var declarations = _reflectableMethodsFor(type);
-  declarations.forEach((String name, DeclarationMirror declaration) {
+  declarations.forEach((String name, MethodMirror declaration) {
     // Error on anything in `_registrationMethods`.
     if (_registrationMethods.contains(name)) {
+      if (declaration.isStatic) return;
       throw 'Disallowed instance method `$name` with @reflectable annotation '
-        'on the `${declaration.owner.simpleName}` class, since it has a '
-        'special meaning in Polymer. You can either rename the method or'
-        'change it to a static method. If it is a static method it will be '
-        'invoked with the JS prototype of the element at registration time.';
+          'on the `${declaration.owner.simpleName}` class, since it has a '
+          'special meaning in Polymer. You can either rename the method or'
+          'change it to a static method. If it is a static method it will be '
+          'invoked with the JS prototype of the element at registration time.';
     }
 
     // Add the method.
-    descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
-      (dartInstance, arguments) {
-        var newArgs = arguments.map((arg) => convertToDart(arg)).toList();
-        var instanceMirror = jsProxyReflectable.reflect(dartInstance);
-        return instanceMirror.invoke(name, newArgs);
-      }
-    ]);
+    addDeclarationToPrototype(name, type, declaration, prototype);
   });
 }
 
-/// Add the hostAttributes property to the descriptor if it exists.
-void _setupHostAttributes(Type type, Map descriptor) {
+/// All properties annotated with a [Reflectable] but not a [Property] since
+/// those are handled separately.
+Map<String, DeclarationMirror> _reflectablePropertiesFor(Type type) {
+  return declarationsFor(type, jsProxyReflectable, includeSuper: false,
+      where: (name, declaration) {
+    if (declaration is MethodMirror && declaration.isRegularMethod) {
+      return false;
+    }
+    return declaration.metadata
+        .any((d) => d is PolymerReflectable && d is! Property);
+  });
+}
+
+/// Set up all @reflectable properties (that aren't marked with @property)
+void _setupReflectableProperties(Type type, JsObject prototype) {
+  var declarations = _reflectablePropertiesFor(type);
+  declarations.forEach((name, declaration) =>
+      addDeclarationToPrototype(name, type, declaration, prototype));
+}
+
+/// Add the hostAttributes property to the prototype if it exists.
+void _setupHostAttributes(Type type, JsObject prototype) {
   var typeMirror = jsProxyReflectable.reflectType(type);
   var hostAttributes = readHostAttributes(typeMirror);
   if (hostAttributes != null) {
-    descriptor['hostAttributes'] = hostAttributes;
+    prototype['hostAttributes'] = hostAttributes;
   }
 }
 
 final _registrationMethods = const ['registered', 'beforeRegister'];
 
 /// Sets up any static methods contained in `_staticRegistrationMethods`.
-void _setupRegistrationMethods(Type type, Map descriptor) {
+void _setupRegistrationMethods(Type type, JsObject prototype) {
   var typeMirror = jsProxyReflectable.reflectType(type);
   for (String name in _registrationMethods) {
     var method = typeMirror.staticMembers[name];
     if (method == null || method is! MethodMirror) continue;
-    descriptor[name] = _polymerDart.callMethod('invokeDartFactory', [
-          (dartInstance, arguments) {
+    prototype[name] = _polymerDart.callMethod('invokeDartFactory', [
+      (dartInstance, arguments) {
         // Dartium hack, the proto has HtmlElement on its proto chain so
         // it thinks its an HtmlElement.
         if (dartInstance is HtmlElement) {
@@ -249,7 +308,7 @@ bool _isBehavior(instance) => instance is BehaviorAnnotation;
 bool _hasBehaviorMeta(ClassMirror clazz) => clazz.metadata.any(_isBehavior);
 
 /// List of [JsObjects]s representing the behaviors for an element.
-Iterable<JsObject> _buildBehaviorsList(Type type) {
+JsArray<JsObject> _buildBehaviorsList(Type type) {
   // All behavior mixins, in order.
   var allBehaviors =
       mixinsFor(type, jsProxyReflectable).where(_hasBehaviorMeta);
@@ -269,7 +328,7 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
     behaviorStack.add(behavior);
   }
 
-  return <JsObject>[_polymerDart['InteropBehavior']]
+  return new JsArray<JsObject>.from([_polymerDart['InteropBehavior']]
     ..addAll(behaviorStack.map((ClassMirror behavior) {
       BehaviorAnnotation meta = behavior.metadata.firstWhere(_isBehavior);
       if (!behavior.hasBestEffortReflectedType) {
@@ -277,7 +336,7 @@ Iterable<JsObject> _buildBehaviorsList(Type type) {
             '${behavior.simpleName}.';
       }
       return meta.getBehavior(behavior.bestEffortReflectedType);
-    }));
+    })));
 }
 
 // Throws an error about expected mixins that must precede the [clazz] mixin.

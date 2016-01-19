@@ -23,6 +23,7 @@ main() async {
     expect(descriptor['beforeRegister'] is JsFunction, isTrue);
     expect(descriptor['registered'] is JsFunction, isTrue);
 
+    // Element properties
     var properties = descriptor['properties'];
     expectProperty(properties['myString'], type: context['String']);
     expectProperty(properties['myInt'], type: context['Number'], notify: true);
@@ -39,49 +40,68 @@ main() async {
     expectProperty(properties['computedNum'],
         type: context['Number'],
         computed: 'myNumsCombined(myInt, myDouble, myNum)');
-    // From the dart behaviors!
-    expectProperty(properties['behaviorOneProperty'], type: context['String']);
-    expectProperty(properties['behaviorTwoProperty'], type: context['Number']);
 
-    var observers = descriptor['observers'];
-    expect(observers, contains('myStringChanged(myString)'));
-    expect(observers, contains('myDoubleOrIntChanged(myDouble, myInt)'));
-    // From the dart behaviors!
-    expect(
-        observers, contains('behaviorOnePropertyChanged(behaviorOneProperty)'));
-    expect(
-        observers, contains('behaviorTwoPropertyChanged(behaviorTwoProperty)'));
-
-    var listeners = descriptor['listeners'];
-    expect(listeners['tap'], 'onTap');
-    expect(listeners['someId.tap'], 'onSomeIdTap');
-    // From the dart behaviors!
-    expect(listeners['someEventOne'], 'onSomeEventOne');
-    expect(listeners['someEventTwo'], 'onSomeEventTwo');
-
-    expect(descriptor['ready'] is JsFunction, isTrue);
-    expect(descriptor['attached'] is JsFunction, isTrue);
-    expect(descriptor['detached'] is JsFunction, isTrue);
+    // Reflectable fields and methods
     expect(descriptor['handleSomeEvent'] is JsFunction, isTrue);
     expect(descriptor['myDoubleChanged'] is JsFunction, isTrue);
     expect(descriptor['myNumsCombined'] is JsFunction, isTrue);
-    // From the dart behaviors!
-    expect(descriptor['behaviorOneExposedMethod'] is JsFunction, isTrue);
-    expect(descriptor['behaviorTwoExposedMethod'] is JsFunction, isTrue);
+    expect(
+        descriptor.callMethod('hasOwnProperty', ['myReflectableInt']), isTrue);
+    expect(descriptor['myReflectableStaticInt'], isNull);
+    expect(descriptor.callMethod('getMyReflectableStaticInt'), isNull);
+    Test.myReflectableStaticInt = 1;
+    expect(descriptor['myReflectableStaticInt'], 1);
+    expect(descriptor.callMethod('getMyReflectableStaticInt'), 1);
+    descriptor['myReflectableStaticInt'] = 2;
+    expect(Test.myReflectableStaticInt, 2);
+    expect(descriptor.callMethod('getMyReflectableStaticInt'), 2);
 
-    expect(descriptor['behaviors'], isNotNull);
+    // Observers
+    var observers = descriptor['observers'];
+    expect(observers, contains('myStringChanged(myString)'));
+    expect(observers, contains('myDoubleOrIntChanged(myDouble, myInt)'));
+
+    // Listeners
+    var listeners = descriptor['listeners'];
+    expect(listeners['tap'], 'onTap');
+    expect(listeners['someId.tap'], 'onSomeIdTap');
+
+    // Lifecycle methods
+    expect(descriptor['ready'] is JsFunction, isTrue);
+    expect(descriptor['attached'] is JsFunction, isTrue);
+    expect(descriptor['detached'] is JsFunction, isTrue);
+
+    // Behaviors!
+    var behaviors = descriptor['behaviors'];
+    expect(behaviors, isNotNull);
     expect(descriptor['behaviors'].length, 5);
-    expect(descriptor['behaviors'][0],
-        context['Polymer']['Dart']['InteropBehavior']);
-    expect(descriptor['behaviors'][1], context['Foo']['JsBehaviorOne']);
-    expect(descriptor['behaviors'][2], behavior.getBehavior(DartBehaviorOne));
-    expect(descriptor['behaviors'][2]['beforeRegister'] is JsFunction, isTrue);
-    expect(descriptor['behaviors'][2]['registered'] is JsFunction, isTrue);
-    expect(descriptor['behaviors'][3], context['Foo']['JsBehaviorTwo']);
-    expect(descriptor['behaviors'][4], behavior.getBehavior(DartBehaviorTwo));
-    expect(descriptor['behaviors'][2]['beforeRegister'] is JsFunction, isTrue);
-    expect(descriptor['behaviors'][4]['registered'] is JsFunction, isTrue);
-    expect(descriptor['behaviors'][2], isNot(descriptor['behaviors'][3]));
+
+    expect(behaviors[0], context['Polymer']['Dart']['InteropBehavior']);
+
+    expect(behaviors[1], context['Foo']['JsBehaviorOne']);
+
+    expect(behaviors[2], behavior.getBehavior(DartBehaviorOne));
+    expect(behaviors[2]['listeners']['someEventOne'], 'onSomeEventOne');
+    expectProperty(behaviors[2]['properties']['behaviorOneProperty'],
+        type: context['String']);
+    expect(behaviors[2]['observers'],
+        contains('behaviorOnePropertyChanged(behaviorOneProperty)'));
+    expect(behaviors[2]['behaviorOneExposedMethod'] is JsFunction, isTrue);
+    expect(behaviors[2]['beforeRegister'] is JsFunction, isTrue);
+    expect(behaviors[2]['registered'] is JsFunction, isTrue);
+
+    expect(behaviors[3], context['Foo']['JsBehaviorTwo']);
+
+    expect(behaviors[4], behavior.getBehavior(DartBehaviorTwo));
+    expect(behaviors[4]['beforeRegister'] is JsFunction, isTrue);
+    expect(behaviors[4]['registered'] is JsFunction, isTrue);
+    expect(behaviors[4], isNot(descriptor['behaviors'][3]));
+    expect(behaviors[4]['listeners']['someEventTwo'], 'onSomeEventTwo');
+    expectProperty(behaviors[4]['properties']['behaviorTwoProperty'],
+        type: context['Number']);
+    expect(behaviors[4]['observers'],
+        contains('behaviorTwoPropertyChanged(behaviorTwoProperty)'));
+    expect(behaviors[4]['behaviorTwoExposedMethod'] is JsFunction, isTrue);
   });
 
   test('instance methods named `registered` are not allowed', () {
@@ -171,6 +191,11 @@ class Test extends PolymerElement
   @Property(computed: 'myNumsCombined(myInt, myDouble, myNum)')
   num computedNum;
 
+  @reflectable
+  int myReflectableInt;
+  @reflectable
+  static int myReflectableStaticInt;
+
   void ready() {}
   void attached() {}
   void detached() {}
@@ -197,6 +222,9 @@ class Test extends PolymerElement
   num myNumsCombined() {
     return myInt + myDouble + myNum;
   }
+
+  @reflectable
+  static int getMyReflectableStaticInt() => Test.myReflectableStaticInt;
 
   static Map<String, String> hostAttributes = const {'foo': 'bar'};
 
