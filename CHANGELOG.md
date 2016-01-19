@@ -1,3 +1,11 @@
+#### 1.0.0-rc.14
+  * Added support for adding `@reflectable` to arbitrary static fields on
+    both element classes and behavior mixins.
+  * **Breaking Change**: Extending polymer element classes will no longer work.
+    Specifically, `@property`, `@reflectable`, `@observe`, `@listen`, etc from
+    your super class will no longer be picked up. These must all be moved into a
+    behavior class which both elements mix in.
+
 #### 1.0.0-rc.13
   * Transformer will now throw if given unrecognized options.
 
