@@ -1,3 +1,6 @@
+#### 0.16.4+1
+  * Add support for code_transformers `0.4.x`.
+
 #### 0.16.4
   * Migrate to test package, and update analyzer and code_transformers
     dependencies.

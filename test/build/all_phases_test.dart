@@ -4,13 +4,13 @@
 @TestOn('vm')
 library polymer.test.build.all_phases_test;
 
-import 'package:code_transformers/tests.dart' show testingDartSdkDirectory;
 import 'package:polymer/src/build/common.dart';
 import 'package:polymer/src/build/polymer_smoke_generator.dart'
     show MAIN_HEADER;
 import 'package:polymer/transformer.dart';
 import 'package:smoke/codegen/generator.dart' show DEFAULT_IMPORTS;
 import 'package:test/test.dart';
+import 'package:transformer_test/utils.dart' show testingDartSdkDirectory;
 
 import 'common.dart';
 
