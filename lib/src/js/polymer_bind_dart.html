@@ -34,7 +34,7 @@ if (Polymer.Bind) {
     if (model.behaviors) {
       for (var i = 0; i < model.behaviors.length; i++) {
         var behavior = model.behaviors[i];
-        if (!behavior.properties) continue;
+        if (!behavior.__isPolymerDart__ || !behavior.properties) continue;
         for (var key in behavior.properties) {
           allProperties[key] = true;
         }
