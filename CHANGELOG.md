@@ -1,3 +1,7 @@
+#### 1.0.0-rc.15
+  * Fix a bug where calling `set` on a property from a behavior wouldn't update
+    the property on the Dart element.
+
 #### 1.0.0-rc.14
   * Added support for adding `@reflectable` to arbitrary static fields on
     both element classes and behavior mixins.

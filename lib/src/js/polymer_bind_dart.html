@@ -30,6 +30,17 @@ if (Polymer.Bind) {
       allProperties[key] = true;
     }
 
+    // Also add properties from behaviors
+    if (model.behaviors) {
+      for (var i = 0; i < model.behaviors.length; i++) {
+        var behavior = model.behaviors[i];
+        if (!behavior.__isPolymerDart__ || !behavior.properties) continue;
+        for (var key in behavior.properties) {
+          allProperties[key] = true;
+        }
+      }
+    }
+
     // for each dart property (with or without effects) and each js property
     // with effects
     for (var n in allProperties) {

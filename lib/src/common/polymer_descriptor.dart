@@ -25,7 +25,6 @@ JsObject createPolymerDescriptor(Type type, PolymerRegister annotation) {
   return _createDescriptor(type)
     ..['is'] = annotation.tagName
     ..['extends'] = annotation.extendsTag
-    ..['__isPolymerDart__'] = true
     ..['behaviors'] = _buildBehaviorsList(type);
 }
 
@@ -41,6 +40,7 @@ JsObject _createDescriptor(Type type, [bool isBehavior = false]) {
     'properties': _buildPropertiesObject(type),
     'observers': _buildObserversObject(type),
     'listeners': _buildListenersObject(type),
+    '__isPolymerDart__': true,
   });
   _setupLifecycleMethods(type, descriptor, isBehavior);
   _setupReflectableMethods(type, descriptor);
