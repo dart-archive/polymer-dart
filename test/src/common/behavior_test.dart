@@ -179,6 +179,15 @@ main() async {
         expect(DartBehavior._registeredProtosDartBehavior[0], jsElProto);
       });
     });
+
+    group('properties with no effects', () {
+      test('get set on the Dart element when you call `set`', () {
+        expect(el.dartBehaviorBoolNoEffects, isNot(true));
+        el.set('dartBehaviorBoolNoEffects', true);
+        expect(el.dartBehaviorBoolNoEffects, true);
+        expect(el.jsElement['dartBehaviorBoolNoEffects'], true);
+      });
+    });
   });
 }
 
@@ -239,6 +248,9 @@ class DartBehavior {
 
   @property
   int dartBehaviorNum;
+
+  @property
+  bool dartBehaviorBoolNoEffects;
 
   @reflectable
   void dartBehaviorStringChanged(String newValue, String oldValue) {
