@@ -1,5 +1,5 @@
 {
   "test_package": {
-    "platforms": ["vm", "dartium"]
+    "platforms": ["dartium", "vm"]
   }
 }
