@@ -1,6 +1,5 @@
 {
   "test_package": {
-    "platforms": ["vm", "dartium"],
-    "barback": true
+    "platforms": ["vm", "dartium"]
   }
 }
