@@ -85,6 +85,36 @@ class DomRepeat extends TemplateElement
     jsElement.callMethod('set', ['delay', newVal]);
   }
 
+  /// Defines an initial count of template instances to render after setting
+  /// the `items` array, before the next paint, and puts the `dom-repeat`
+  /// into "chunking mode".  The remaining items will be created and rendered
+  /// incrementally at each animation frame therof until all instances have
+  /// been rendered.
+  num get initialCount => jsElement['initialCount'];
+  void set initialCount(num newVal) {
+    jsElement.callMethod('set',['initialCount',newVal]);
+  }
+
+  /// Count of currently rendered items after `filter` (if any) has been applied.
+  /// If "chunking mode" is enabled, `renderedItemCount` is updated each time a
+  /// set of template instances is rendered.
+  num get renderedItemCount => jsElement['renderedItemCount'];
+  void set renderedItemCount(num newVal) {
+    jsElement.callMethod('set',['renderedItemCount',newVal]);
+  }
+
+
+  /// When `initialCount` is used, this property defines a frame rate to
+  /// target by throttling the number of instances rendered each frame to
+  /// not exceed the budget for the target frame rate.  Setting this to a
+  /// higher number will allow lower latency and higher throughput for
+  /// things like event handlers, but will result in a longer time for the
+  /// remaining items to complete rendering.
+  num get targetFramerate => jsElement['targetFramerate'];
+  void set targetFramerate(num newVal) {
+    jsElement.callMethod('set',['targetFramerate',newVal]);
+  }
+
   void render() => jsElement.callMethod('render');
 
   /// Returns the template "model" associated with a given element, which
