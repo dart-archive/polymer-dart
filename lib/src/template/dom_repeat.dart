@@ -99,10 +99,6 @@ class DomRepeat extends TemplateElement
   /// If "chunking mode" is enabled, `renderedItemCount` is updated each time a
   /// set of template instances is rendered.
   num get renderedItemCount => jsElement['renderedItemCount'];
-  void set renderedItemCount(num newVal) {
-    jsElement.callMethod('set',['renderedItemCount',newVal]);
-  }
-
 
   /// When `initialCount` is used, this property defines a frame rate to
   /// target by throttling the number of instances rendered each frame to
