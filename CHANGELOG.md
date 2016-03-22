@@ -1,6 +1,8 @@
 #### 1.0.0-rc.16
   * Added new properties on `DomRepeat` :  `initialCount`, `renderedItemCount`
     and `targetFramerate`
+  * Temporarily fixed reflectable version to `<0.5.3` due to
+    [#690](https://github.com/dart-lang/polymer-dart/issues/690).
 
 #### 1.0.0-rc.15
   * Fix a bug where calling `set` on a property from a behavior wouldn't update
