@@ -1,3 +1,7 @@
+#### 1.0.0-rc.16
+  * Added new properties on `DomRepeat` :  `initialCount`, `renderedItemCount`
+    and `targetFramerate`
+
 #### 1.0.0-rc.15
   * Fix a bug where calling `set` on a property from a behavior wouldn't update
     the property on the Dart element.

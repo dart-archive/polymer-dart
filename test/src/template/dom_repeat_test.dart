@@ -65,14 +65,21 @@ main() async {
       expectUsers(element, ['A', 'E']);
     });
 
-    test("chuncked mode",() async {
-      element.set('users',new List.generate(6, (int i)=> new User("User ${i}") ) );
+    test("chuncked mode and rendered item count",() async {
+      const int count = 6;
+      int initial = element.chunkedUserList.initialCount;
+      element.set('users',new List.generate(count, (int i)=> new User("User ${i}") ) );
+      expect(element.chunkedUserList.renderedItemCount,isNull);
+
       await element.chunkedUserList.on["dom-change"].first;
+      expect(element.chunkedUserList.renderedItemCount,count);
       int userCount = new PolymerDom(element.root).querySelectorAll(".chunckedUser").length;
-      expect(userCount,5);
+      expect(userCount,initial);
+
       await element.chunkedUserList.on["dom-change"].first;
+      expect(element.chunkedUserList.renderedItemCount,count);
       userCount = new PolymerDom(element.root).querySelectorAll(".chunckedUser").length;
-      expect(userCount,6);
+      expect(userCount,count);
     });
   });
 }
@@ -116,6 +123,9 @@ class UserList extends PolymerElement {
   ready() {
     set('users', [new User('A'), new User('B'),]);
   }
+
+  @reflectable
+  bool fakeFilter(x) => true;
 
   @reflectable
   int sortUsers(User a, User b) {

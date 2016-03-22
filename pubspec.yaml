@@ -1,5 +1,5 @@
 name: polymer
-version: 1.0.0-rc.15
+version: 1.0.0-rc.16
 author: Polymer.dart Authors <web-ui-dev@dartlang.org>
 description: >
   Polymer.dart is a new type of library for the web, built on top of Web
@@ -13,9 +13,12 @@ dependencies:
   html: ^0.12.0
   initialize: '>=0.5.1+3 <0.7.0'
   path: ^1.3.0
-  polymer_interop: ^1.0.0-rc.5
+  polymer_interop: ^1.0.0-rc.9
   reflectable: ^0.5.0
   web_components: '>=0.11.3 <0.13.0'
+dependency_overrides:
+  polymer_interop:
+    path: ../polymer_interop
 dev_dependencies:
   browser: ^0.10.0
   test: ^0.12.3
