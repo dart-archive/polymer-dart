@@ -18,6 +18,9 @@ BSD-style license that can be found in the LICENSE file.
     <template is="dom-repeat" id="userList" items="{{users}}" as="user">
       <div class="user">{{user.name}}</div>
     </template>
+    <template is="dom-repeat" id="chunkedUserList" items="{{users}}" as="user" initial-count="5" target-framerate="5" >
+      <div class="chunckedUser">{{user.name}}</div>
+    </template>
   </template>
 </dom-module>
 </body>

@@ -4,6 +4,7 @@ library polymer.test.src.template.dom_repeat_test;
 import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
+import 'dart:async';
 
 main() async {
   await initPolymer();
@@ -63,8 +64,26 @@ main() async {
       element.userList.filter = keepAAndE;
       expectUsers(element, ['A', 'E']);
     });
+
+    test("chuncked mode and rendered item count",() async {
+      const int count = 6;
+      int initial = element.chunkedUserList.initialCount;
+      element.set('users',new List.generate(count, (int i)=> new User("User ${i}") ) );
+      expect(element.chunkedUserList.renderedItemCount,isNull);
+
+      await element.chunkedUserList.on["dom-change"].first;
+      expect(element.chunkedUserList.renderedItemCount,count);
+      int userCount = new PolymerDom(element.root).querySelectorAll(".chunckedUser").length;
+      expect(userCount,initial);
+
+      await element.chunkedUserList.on["dom-change"].first;
+      expect(element.chunkedUserList.renderedItemCount,count);
+      userCount = new PolymerDom(element.root).querySelectorAll(".chunckedUser").length;
+      expect(userCount,count);
+    });
   });
 }
+
 
 int reverseSort(User a, User b) => b.name.compareTo(a.name);
 
@@ -99,9 +118,14 @@ class UserList extends PolymerElement {
 
   DomRepeat get userList => $['userList'];
 
+  DomRepeat get chunkedUserList => $['chunkedUserList'];
+
   ready() {
     set('users', [new User('A'), new User('B'),]);
   }
+
+  @reflectable
+  bool fakeFilter(x) => true;
 
   @reflectable
   int sortUsers(User a, User b) {
