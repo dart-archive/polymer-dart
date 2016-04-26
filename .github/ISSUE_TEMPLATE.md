@@ -1,6 +1,5 @@
 <!--
-**IMPORTANT**: This repo is just a wrapper around Polymer JS. Any general framework issues and/or feature requests
-should be filed on the JS repo here (https://github.com/Polymer/polymer/issues/new).
+**IMPORTANT**: This repo is just a wrapper around Polymer JS. Any general framework issues and/or feature requests should be filed on the JS repo here (https://github.com/Polymer/polymer/issues/new).
 
 If you are asking a question rather than filing a bug, try one of these instead:
 - StackOverflow (http://stackoverflow.com/questions/tagged/dart-polymer, http://stackoverflow.com/questions/tagged/polymer)
