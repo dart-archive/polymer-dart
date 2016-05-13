@@ -1,3 +1,7 @@
+#### 1.0.0-rc.17
+  * Update reflectable version to allow latest.
+  * Fixed some analyzer hints.
+
 #### 1.0.0-rc.16
   * Added new properties on `DomRepeat` :  `initialCount`, `renderedItemCount`
     and `targetFramerate`

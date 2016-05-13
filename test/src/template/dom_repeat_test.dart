@@ -4,7 +4,6 @@ library polymer.test.src.template.dom_repeat_test;
 import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
-import 'dart:async';
 
 main() async {
   await initPolymer();

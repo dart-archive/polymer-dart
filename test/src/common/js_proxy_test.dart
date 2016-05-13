@@ -4,7 +4,6 @@
 @TestOn('browser')
 library polymer.test.src.common.js_proxy_test;
 
-import 'dart:js';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
 
