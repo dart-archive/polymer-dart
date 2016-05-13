@@ -17,7 +17,7 @@ import 'package:path/path.dart' as path;
 
 void printUsage(ArgParser parser) {
   print('pub run polymer:new_element [-o output_dir] element-name');
-  print(parser.getUsage());
+  print(parser.usage);
 }
 
 void main(List<String> args) {
@@ -48,7 +48,7 @@ void main(List<String> args) {
     return;
   }
 
-  var outputDir, startDir;
+  var outputDir;
 
   var outputPath = options['output-dir'];
 

@@ -4,7 +4,6 @@
 @TestOn('browser')
 library polymer.test.src.standard.property_change_notification_test;
 
-import 'dart:async';
 import 'dart:html';
 
 import 'package:test/test.dart';

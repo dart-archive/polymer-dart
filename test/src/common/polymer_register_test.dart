@@ -4,7 +4,6 @@
 @TestOn('browser')
 library polymer.test.src.common.polymer_register_test;
 
-import 'dart:async';
 import 'dart:html';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';

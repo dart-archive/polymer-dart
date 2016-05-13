@@ -156,7 +156,7 @@ class UserListElement extends PolymerElement with Templatizer {
           }
           _instances.insert(adjustedIndex, instance);
           var user = users[adjustedIndex];
-          _instancesByKey[_usersCollection.getKey(user)] = user;
+          _instancesByKey[_usersCollection.getKey(user)] = instance;
         }
       }
     } else if (path.startsWith('users.#')) {

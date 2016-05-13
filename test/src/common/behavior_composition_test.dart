@@ -4,13 +4,10 @@
 @TestOn('browser')
 library polymer.test.src.common.behavior_composition_test;
 
-import 'dart:html';
 import 'dart:js';
 import 'package:polymer/polymer.dart';
 import 'package:polymer/src/common/polymer_descriptor.dart';
 import 'package:test/test.dart';
-import 'package:web_components/web_components.dart';
-import '../../common.dart';
 
 main() async {
   await initPolymer();
