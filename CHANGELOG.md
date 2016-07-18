@@ -1,3 +1,6 @@
+#### 1.0.0-rc.18
+  * Update tests because of `notifyPath` signature change
+
 #### 1.0.0-rc.17
   * Update reflectable version to allow latest.
   * Fixed some analyzer hints.
