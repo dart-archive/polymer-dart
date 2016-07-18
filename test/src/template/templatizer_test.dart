@@ -165,7 +165,7 @@ class UserListElement extends PolymerElement with Templatizer {
       instance.notifyPath(
           (['user']..addAll(parts.getRange(2, parts.length))).join('.'),
           get(path),
-          fromAbove: true);
+          true);
     }
   }
 }

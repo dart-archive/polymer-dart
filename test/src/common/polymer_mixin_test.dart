@@ -325,7 +325,7 @@ class Thing extends JsProxy {
 
   Thing(this.field);
 
-  bool operator ==(Thing other) => other.field == this.field;
+  bool operator ==(var other) => other is Thing && (other.field == this.field);
 
   int get hashCode => field.hashCode;
 }
