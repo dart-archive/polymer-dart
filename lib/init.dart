@@ -6,17 +6,26 @@ library polymer.lib.init;
 import 'dart:async';
 import 'dart:js';
 import 'dart:html';
+import 'package:polymer/src/polymer_config.dart';
 import 'package:reflectable/reflectable.dart';
 import 'package:web_components/web_components.dart';
 import 'src/common/js_proxy.dart';
 import 'src/common/polymer_register.dart';
+import 'package:polymer_interop/polymer_interop.dart';
 
 main() => initPolymer();
 
-Future initPolymer() async {
+Future initPolymer({JsInteropStrategy strategy}) async {
+  if (strategy != null) {
+    PolymerInteropConfiguration.listConversionStrategy = strategy;
+    PolymerInteropConfiguration.mapConversionStrategy = strategy;
+    PolymerDartConfiguration.jsProxyConversionStrategy = strategy;
+  }
   await initWebComponents(typeFilter: [HtmlImport], initAll: false);
   // Make sure polymer is loaded first.
   _setUpPropertyChanged();
+  // Init ES6
+  initES6Proxy();
   await initWebComponents(
       typeFilter: [CustomElement, CustomElementProxy, PolymerRegister],
       initAll: true);
@@ -24,6 +33,7 @@ Future initPolymer() async {
   // https://github.com/dart-lang/polymer-dart/issues/611
   document.body.attributes.remove('unresolved');
 }
+
 
 final _polymerDart = context['Polymer']['Dart'];
 

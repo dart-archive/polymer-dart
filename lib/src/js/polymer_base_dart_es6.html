@@ -1,0 +1,93 @@
+<!--
+Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+for details. All rights reserved. Use of this source code is governed by a
+BSD-style license that can be found in the LICENSE file.
+-->
+<script>
+  Polymer.Dart = Polymer.Dart || {};
+  Polymer.Dart.ES6 = Polymer.Dart.ES6 || {};
+
+
+
+  (function(ES6) {
+
+    ES6.Unsupported = {};
+
+    var _throwShouldBeOverridden = function() {
+      throw new Error("This method should be overridden by dart implementation");
+    };
+
+    ES6._dartGetter = _throwShouldBeOverridden;
+    ES6._dartSetter = _throwShouldBeOverridden;
+    ES6._dartGetProperties = _throwShouldBeOverridden;
+
+
+    /**
+     * Object ES6JsProxy support
+     */
+
+    var commonBehaviors = {
+      '__dartClass__' : function(instance) { return instance; },
+      '__isES6Proxy__' : function(instance) { return true; }
+    };
+
+    ES6.createES6JsProxy = function(instance) {
+      // Collect property names
+      var _dartProperties = ES6._dartGetProperties(instance);
+      var dartPropertySet = {};
+      var dartMethodSet= {};
+      _dartProperties.props.forEach(function(propertyName) {
+        dartPropertySet[propertyName] = true;
+      });
+
+      _dartProperties.mets.forEach(function(propertyName) {
+        dartPropertySet[propertyName] = true;
+        dartMethodSet[propertyName] = true;
+      });
+
+
+      return new Proxy({},{
+        'get' : function(target,propertyName,proxy) {
+
+          if (commonBehaviors.hasOwnProperty(propertyName)) {
+            return commonBehaviors[propertyName].call(this,instance);
+          }
+
+          if (dartPropertySet.hasOwnProperty(propertyName)) {
+            return ES6._dartGetter(instance,propertyName);
+          } else {
+            return target[propertyName];
+          }
+        },
+        'has' : function(target,prop) {
+          return prop in dartPropertySet;
+        },
+        'set' : function(target,propertyName,value,proxy) {
+          if (dartPropertySet.hasOwnProperty(propertyName)) {
+            ES6._dartSetter(instance,propertyName,value);
+          } else {
+            target[propertyName] = value;
+          }
+          return true;
+        },
+        'ownKeys' : function(target) {
+          return Object.getOwnPropertyNames(target).concat(dartPropertySet.getOwnPropertyNames());
+        },
+        'getOwnPropertyDescriptor' : function(target,prop) {
+          if (dartPropertySet.hasOwnProperty(prop)) {
+            return  { configurable: false, enumerable: !dartMethodSet.hasOwnProperty(prop), value: ES6._dartGetter(instance,prop) };
+          } else {
+            return Object.getOwnPropertyDescriptor(target,prop);
+          }
+        }
+      });
+    };
+
+    ES6.createMethodInvoker = function(dartInvoker) {
+      return function() {
+        return dartInvoker(Array.prototype.slice.call(arguments));
+      };
+    };
+
+  })(Polymer.Dart.ES6);
+</script>

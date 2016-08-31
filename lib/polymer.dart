@@ -14,3 +14,5 @@ export 'src/template/array_selector.dart';
 export 'src/template/dom_bind.dart';
 export 'src/template/dom_if.dart';
 export 'src/template/dom_repeat.dart';
+export 'src/polymer_config.dart';
+export 'package:polymer_interop/polymer_interop.dart' show JsInteropStrategy;

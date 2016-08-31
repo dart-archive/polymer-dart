@@ -6,6 +6,7 @@ library polymer.lib.src.common.js_proxy;
 import 'dart:html';
 import 'dart:js';
 
+import 'package:polymer/src/polymer_config.dart';
 import 'package:polymer_interop/polymer_interop.dart';
 export 'package:polymer_interop/polymer_interop.dart'
     show convertToDart, convertToJs;
@@ -14,6 +15,8 @@ import 'package:reflectable/reflectable.dart';
 import 'behavior.dart';
 import 'declarations.dart';
 import 'reflectable.dart';
+
+part 'es6_js_proxy.dart';
 
 /// Mixin this class to get js proxy support! If a [JsProxy] is passed to
 /// [convertToJs] then you will get back a [JsObject] which is fully usable from
@@ -35,6 +38,7 @@ abstract class JsProxy implements JsProxyInterface {
   /// The Javascript constructor that will be used to build proxy objects for
   /// this class.
   JsFunction get jsProxyConstructor {
+    if (PolymerDartConfiguration.jsProxyConversionStrategy == JsInteropStrategy.es6Proxy) throw new UnsupportedError("Constructor not yet supported for es6 proxy strategy");
     var type = runtimeType;
     return _jsProxyConstructors.putIfAbsent(
         type, () => _buildJsConstructorForType(type));
@@ -42,7 +46,14 @@ abstract class JsProxy implements JsProxyInterface {
 
   JsObject _jsProxy;
   JsObject get jsProxy {
-    if (_jsProxy == null) _jsProxy = _buildJsProxy(this);
+    if (_jsProxy == null) {
+      if (PolymerDartConfiguration.jsProxyConversionStrategy ==
+          JsInteropStrategy.es6Proxy) {
+        _jsProxy = _buildES6JsProxy(this);
+      } else {
+        _jsProxy = _buildJsProxy(this);
+      }
+    }
     return _jsProxy;
   }
 }
