@@ -11,6 +11,22 @@ BSD-style license that can be found in the LICENSE file.
   <!--<script type="application/dart" src="js_proxy_test.dart"></script>-->
   <!--<script src="packages/browser/dart.js"></script>-->
   <script src="packages/test/dart.js"></script>
+  <script>
+    function testForIn(obj) {
+      var res = {
+        t1 : [],
+        t2 : []
+      };
+
+      for (var k in obj) {
+        res.t1.push(k);
+        res.t2.push(obj[k]);
+      }
+
+      return res;
+
+    }
+  </script>
 </head>
 <body></body>
 </html>

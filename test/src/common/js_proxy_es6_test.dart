@@ -4,6 +4,7 @@
 @TestOn('chrome')
 library polymer.test.src.common.js_proxy_test;
 
+import 'dart:js';
 import 'package:polymer/polymer.dart';
 import 'package:test/test.dart';
 
@@ -39,6 +40,17 @@ main() async {
     setUp(() {
       model = new MyModel();
     });
+
+
+    test('for .. in  works for es6 proxied objects',() {
+      MyModel model = new MyModel();
+      Map res= convertToDart(context.callMethod('testForIn',[convertToJs(model)]));
+      expect(res['t1'].length,5);
+      expect(res['t2'].length,5);
+      expect(res['t1'].indexOf('finalVal'),greaterThanOrEqualTo(0));
+
+    });
+
 
     test('proxy has reference to the original dart object', () {
       expect(model.jsProxy['__dartClass__'], model);

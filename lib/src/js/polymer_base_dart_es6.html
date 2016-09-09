@@ -71,11 +71,12 @@ BSD-style license that can be found in the LICENSE file.
           return true;
         },
         'ownKeys' : function(target) {
-          return Object.getOwnPropertyNames(target).concat(dartPropertySet.getOwnPropertyNames());
+          return Object.getOwnPropertyNames(target).concat(Object.getOwnPropertyNames(dartPropertySet));
         },
         'getOwnPropertyDescriptor' : function(target,prop) {
           if (dartPropertySet.hasOwnProperty(prop)) {
-            return  { configurable: false, enumerable: !dartMethodSet.hasOwnProperty(prop), value: ES6._dartGetter(instance,prop) };
+            // Configurable = true because we cannot override configurable attribute to non existant properties from target
+            return  { configurable: true, enumerable: true, value: ES6._dartGetter(instance,prop) };
           } else {
             return Object.getOwnPropertyDescriptor(target,prop);
           }
