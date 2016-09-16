@@ -74,7 +74,7 @@ BSD-style license that can be found in the LICENSE file.
         var thisArg = this.get(parts);
 
         // Avoid processing ES6 proxies.
-        if (thisArg.__isES6Proxy__) {
+        if (thisArg!=null && thisArg.__isES6Proxy__) {
           return; // Do nothing for ES6 Proxy
         }
 

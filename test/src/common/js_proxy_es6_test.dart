@@ -10,6 +10,14 @@ import 'package:test/test.dart';
 
 class EmptyModel {}
 
+abstract class ModelA extends Object with JsProxy {
+  @reflectable String field1;
+}
+
+class ModelB extends ModelA with JsProxy {
+  @reflectable String field2;
+}
+
 class MyModel extends Object with JsProxy {
   @reflectable
   int value = 0;
@@ -49,6 +57,18 @@ main() async {
       expect(res['t2'].length,5);
       expect(res['t1'].indexOf('finalVal'),greaterThanOrEqualTo(0));
 
+    });
+
+    test("derive from abstract",(){
+      ModelB b = new ModelB();
+      b.field1 = "f1";
+      b.field2 = "f2";
+
+      JsObject bJs = convertToJs(b);
+
+      expect(bJs['field2'],'f2');
+      expect(bJs['field1'],'f1');
+    
     });
 
 

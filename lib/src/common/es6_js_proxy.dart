@@ -46,7 +46,7 @@ initES6Proxy() {
 
       Map<String, DeclarationMirror> declarations = declarationsFor(
           dartInstance.runtimeType, jsProxyReflectable,
-          includeSuper: false,
+          includeSuper: true,
           where: (String name, DeclarationMirror m) =>
               name == propertyName &&
               (isProperty(m) || (m is MethodMirror && m.isRegularMethod)));
@@ -73,14 +73,14 @@ initES6Proxy() {
     '_dartGetProperties': (dartInstance) {
       Map<String, DeclarationMirror> props = declarationsFor(
           dartInstance.runtimeType, jsProxyReflectable,
-          includeSuper: false,
+          includeSuper: true,
           where: (String name, DeclarationMirror m) =>
               (isProperty(m) && !isSetter(m)) ||
               (m is MethodMirror && m.isRegularMethod));
 
       Map<String, DeclarationMirror> mets = declarationsFor(
           dartInstance.runtimeType, jsProxyReflectable,
-          includeSuper: false,
+          includeSuper: true,
           where: (String name, DeclarationMirror m) =>
               (isProperty(m) && !isSetter(m)) ||
               (m is MethodMirror && m.isRegularMethod));
@@ -93,7 +93,7 @@ initES6Proxy() {
       InstanceMirror instanceMirror = jsProxyReflectable.reflect(dartInstance);
       Map<String, DeclarationMirror> declarations = declarationsFor(
           dartInstance.runtimeType, jsProxyReflectable,
-          includeSuper: false,
+          includeSuper: true,
           where: (String name, DeclarationMirror decl) =>
               (name == propertyName &&
                   (decl is VariableMirror) &&
