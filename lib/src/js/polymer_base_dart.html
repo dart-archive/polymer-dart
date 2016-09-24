@@ -86,10 +86,13 @@ BSD-style license that can be found in the LICENSE file.
         }
 
         // Grab the __dartClass__ if we already have one
-        thisArg = thisArg.__dartClass__ || thisArg;
 
-        // Finally, update things on the dart side.
-        Polymer.Dart.propertyChanged(thisArg, prop, newValue);
+	if (thisArg) {
+        	thisArg = thisArg.__dartClass__ || thisArg;
+
+        	// Finally, update things on the dart side.
+	        Polymer.Dart.propertyChanged(thisArg, prop, newValue);
+	}
       },
 
       serialize: function(value, type) {
