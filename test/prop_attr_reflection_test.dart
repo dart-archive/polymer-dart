@@ -58,7 +58,7 @@ Future onAttributeChange(Element node) {
     observer.disconnect();
     completer.complete();
   })..observe(node, attributes: true);
-  scheduleMicrotask(Observable.dirtyCheck);
+  scheduleMicrotask(AutoObservable.dirtyCheck);
   return completer.future;
 }
 

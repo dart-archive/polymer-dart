@@ -131,7 +131,7 @@ class ComputedProperty {
 /// Base class for PolymerElements deriving from HtmlElement.
 ///
 /// See [Polymer].
-class PolymerElement extends HtmlElement with Polymer, Observable {
+class PolymerElement extends HtmlElement with Polymer, AutoObservable {
   PolymerElement.created() : super.created() {
     polymerCreated();
   }
@@ -1165,7 +1165,7 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
 
     // when polyfilling Object.observe, ensure changes
     // propagate before executing the async method
-    scheduleMicrotask(Observable.dirtyCheck);
+    scheduleMicrotask(AutoObservable.dirtyCheck);
     PolymerJs.flush(); // for polymer-js interop
     return new Timer(timeout, method);
   }
@@ -1181,7 +1181,7 @@ abstract class Polymer implements Element, Observable, NodeBindExtension {
   int async(RequestAnimationFrameCallback method) {
     // when polyfilling Object.observe, ensure changes
     // propagate before executing the async method
-    scheduleMicrotask(Observable.dirtyCheck);
+    scheduleMicrotask(AutoObservable.dirtyCheck);
     PolymerJs.flush(); // for polymer-js interop
     return window.requestAnimationFrame(method);
   }
