@@ -66,7 +66,9 @@ void main() {
           import 'package:polymer/polymer.dart' as i2;
 
           main() {
-            initializers.addAll([new InitEntry(const i2.CustomTag('x-A'), i1.XA),]);
+            initializers.addAll([
+              new InitEntry(const i2.CustomTag('x-A'), i1.XA),
+            ]);
 
             return i0.main();
           }
@@ -120,7 +122,9 @@ void main() {
         import 'package:polymer/polymer.dart' as i2;
 
         main() {
-          initializers.addAll([new InitEntry(const i2.CustomTag('x-A'), i1.XA),]);
+          initializers.addAll([
+            new InitEntry(const i2.CustomTag('x-A'), i1.XA),
+          ]);
 
           return i0.main();
         }
@@ -174,7 +178,9 @@ void main() {
           import 'package:polymer/polymer.dart' as i2;
 
           main() {
-            initializers.addAll([new InitEntry(const i2.CustomTag('x-B'), i1.XB),]);
+            initializers.addAll([
+              new InitEntry(const i2.CustomTag('x-B'), i1.XB),
+            ]);
 
             return i0.main();
           }
@@ -307,7 +313,7 @@ library ${className}_$fieldName;
 import 'package:observe/observe.dart';
 import 'package:polymer/polymer.dart';
 
-class $className extends ChangeNotifier {
+class $className extends Observable {
   $fieldReplacement
   $className($fieldName) : __\$$fieldName = $fieldName;
 }
