@@ -1,3 +1,6 @@
+#### 0.16.4+4
+  * Misc cleanup
+
 #### 0.16.4+3
   * Update to use `package:observable`
 

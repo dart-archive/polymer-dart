@@ -173,7 +173,7 @@ void _createBoilerPlate(String element, String superClass, String directory,
     importDartHtml = "import 'dart:html';\n";
     classDeclaration =
         'class $capitalizedName extends ${HTML_ELEMENT_NAMES[superClass]} '
-        'with Polymer, Observable {';
+        'with Polymer, AutoObservable {';
     polymerCreatedString = '\n    polymerCreated();';
     extendsElementString = ' extends="$superClass"';
   }

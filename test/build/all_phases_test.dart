@@ -288,7 +288,7 @@ library ${className}_$fieldName;
 import 'package:observe/observe.dart';
 import 'package:polymer/polymer.dart';
 
-class $className extends Observable {
+class $className extends AutoObservable {
   @observable int $fieldName;
   $className(this.$fieldName);
 }

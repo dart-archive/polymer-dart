@@ -48,7 +48,7 @@ import 'package:template_binding/template_binding.dart';
  *
  */
 // Dart note: renamed to avoid conflict with JS auto-binding.
-class AutoBindingElement extends TemplateElement with Polymer, Observable
+class AutoBindingElement extends TemplateElement with Polymer, AutoObservable
     implements TemplateBindExtension {
 
   /// Make template_binding "extension methods" friendly.

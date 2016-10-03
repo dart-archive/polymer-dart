@@ -7,6 +7,7 @@ library polymer.test.nested_binding_test;
 
 import 'dart:async';
 import 'dart:html';
+import 'package:observable/observable.dart';
 import 'package:polymer/polymer.dart';
 import 'common.dart';
 
