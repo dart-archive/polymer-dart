@@ -94,7 +94,7 @@ class XTest extends PolymerElement {
   }
 }
 
-class MiniModel extends Observable {
+class MiniModel extends AutoObservable {
   XTest _element;
   @observable final int index;
   @reflectable void itemTapAction(e, d, n) {

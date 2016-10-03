@@ -17,7 +17,7 @@ class XHtml2Element extends XHtmlElement {
 }
 
 @CustomTag('x-div')
-class XDivElement extends DivElement with Polymer, Observable {
+class XDivElement extends DivElement with Polymer, AutoObservable {
   XDivElement.created() : super.created() {
     polymerCreated();
   }
@@ -36,7 +36,7 @@ class XPolymerElement extends PolymerElement {
 
 /// Dart-specific test:
 /// This element is registered from code without an associated polymer-element.
-class XButtonElement extends ButtonElement with Polymer, Observable {
+class XButtonElement extends ButtonElement with Polymer, AutoObservable {
   XButtonElement.created() : super.created() {
     polymerCreated();
   }

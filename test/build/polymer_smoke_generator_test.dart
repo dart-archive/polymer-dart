@@ -5,7 +5,7 @@
 @TestOn('vm')
 library polymer.test.build.polymer_smoke_generator_test;
 
-import 'package:transformer_test/utils.dart'
+import 'package:code_transformers/tests.dart'
     show testingDartSdkDirectory, StringFormatter;
 import 'package:polymer/src/build/common.dart';
 import 'package:polymer/src/build/messages.dart';

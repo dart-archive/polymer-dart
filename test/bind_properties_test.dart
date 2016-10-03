@@ -6,6 +6,7 @@
 import 'dart:async';
 import 'dart:html';
 import 'common.dart';
+import 'package:observable/observable.dart';
 import 'package:polymer/polymer.dart';
 
 export 'package:polymer/init.dart';
