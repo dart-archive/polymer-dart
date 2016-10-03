@@ -71,7 +71,7 @@ bindModelTests() {
   }, skip: 'https://github.com/dart-lang/polymer-dart/issues/78');
 }
 
-class MyDivElement extends HtmlElement with Observable {
+class MyDivElement extends HtmlElement with AutoObservable {
   factory MyDivElement() => new Element.tag('my-div');
   MyDivElement.created() : super.created();
   @observable var bar;
@@ -88,6 +88,6 @@ Future onAttributeChange(Element node) {
     observer.disconnect();
     completer.complete();
   })..observe(node, attributes: true);
-  scheduleMicrotask(Observable.dirtyCheck);
+  scheduleMicrotask(AutoObservable.dirtyCheck);
   return completer.future;
 }

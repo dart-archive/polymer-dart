@@ -46,6 +46,7 @@ import 'dart:js' hide context;
 
 import 'package:initialize/initialize.dart' hide run;
 import 'package:logging/logging.dart';
+import 'package:observable/observable.dart';
 import 'package:observe/observe.dart';
 import 'package:observe/src/dirty_check.dart' show dirtyCheckZone;
 import 'package:polymer_expressions/polymer_expressions.dart'
@@ -59,6 +60,7 @@ import 'auto_binding.dart';
 import 'deserialize.dart' as deserialize;
 
 export 'package:initialize/initialize.dart' show initMethod;
+export 'package:observable/observable.dart';
 export 'package:observe/observe.dart';
 export 'package:observe/html.dart';
 export 'package:web_components/web_components.dart' show HtmlImport;

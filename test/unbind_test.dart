@@ -71,7 +71,7 @@ _observerCount(node) =>
 unbindTests() {
   var xTest = document.querySelector('x-test');
   xTest.foo = 'bar';
-  scheduleMicrotask(Observable.dirtyCheck);
+  scheduleMicrotask(AutoObservable.dirtyCheck);
 
   return delay(null).then((_) {
     expect(_unbound(xTest), null, reason: 'element is bound when inserted');
@@ -88,7 +88,7 @@ unbindTests() {
     expect(_unbound(node), null, reason: 'element is bound when not inserted');
     node.foo = 'bar';
     expect(_observerCount(node), greaterThan(0));
-    scheduleMicrotask(Observable.dirtyCheck);
+    scheduleMicrotask(AutoObservable.dirtyCheck);
     return node;
   }).then(delay).then((node) {
     expect(node.fooWasChanged, true, reason: 'node is actually bound');

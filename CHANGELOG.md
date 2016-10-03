@@ -1,3 +1,6 @@
+#### 0.16.4+3
+  * Update to use `package:observable`
+
 #### 0.16.4+2
   * Update to transformer_test `0.2.x`.
 
