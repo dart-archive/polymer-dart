@@ -1,3 +1,6 @@
+#### 1.0.0-rc.19
+  * Update analyzer, html, and reflectable versions.
+
 #### 1.0.0-rc.18
   * Update tests because of `notifyPath` signature change
 
