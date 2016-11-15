@@ -12,7 +12,7 @@ BSD-style license that can be found in the LICENSE file.
       this.originalPolymerCreatedCallback();
     };
 
-    Polymer.Dart = {};
+    Polymer.Dart = Polymer.Dart || {};
 
     // Placeholder for `undefined` return values. This should eventually go
     // away, once we have dart:js support for `undefined`.
@@ -73,6 +73,11 @@ BSD-style license that can be found in the LICENSE file.
         // Get the model which is being updated.
         var thisArg = this.get(parts);
 
+        // Avoid processing ES6 proxies.
+        if (thisArg!=null && thisArg.__isES6Proxy__) {
+          return; // Do nothing for ES6 Proxy
+        }
+
         // If the property to update is an array key, we need to get the index
         // for that item instead.
         if (prop.charAt(0) == '#') {
@@ -81,10 +86,13 @@ BSD-style license that can be found in the LICENSE file.
         }
 
         // Grab the __dartClass__ if we already have one
-        thisArg = thisArg.__dartClass__ || thisArg;
 
-        // Finally, update things on the dart side.
-        Polymer.Dart.propertyChanged(thisArg, prop, newValue);
+	if (thisArg) {
+        	thisArg = thisArg.__dartClass__ || thisArg;
+
+        	// Finally, update things on the dart side.
+	        Polymer.Dart.propertyChanged(thisArg, prop, newValue);
+	}
       },
 
       serialize: function(value, type) {
